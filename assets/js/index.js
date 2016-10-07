@@ -31,11 +31,11 @@ $(function() {
       return (`
         <div class="pure-g white-box">
           <div class="pure-u-1-4">${post.category}</div>
-          <div class="pure-u-1-3">
+          <div class="pure-u-2-5">
             <a href="${url}">${post.title}</a>
           </div>
           <div class="pure-u-1-8">${tagHtml}</div>          
-          <div class="pure-u-1-6">${dateString}</div>
+          <div class="pure-u-1-8">${dateString}</div>
         </div>
       `);
     });

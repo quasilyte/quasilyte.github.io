@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Open Sans";
+  font-style: normal;
+  font-weight: 400;
+  src: local("Open Sans"), local("OpenSans"), url(../fonts/open_sans.woff) format('woff');
+}
+
+
 * {
   box-sizing: border-box;
   font-weight: 100;
@@ -7,15 +15,18 @@ hr {
   border: 1px solid #eee;
 }
 
+html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
+  font-family: "Open Sans";
+}
+
 body {
   padding-top: 8px;
   padding-bottom: 16px;
   padding-left: 32px;
   
-  font-family: sans-serif;
   color: #111;
 
-  width: 800px;
+  width: 736px;
 
   line-height: 1.8em;
   font-size: 13pt;
@@ -41,7 +52,11 @@ ul {
 
 .box {
   padding: 4px;
-  background-color: rgb(250, 250, 255);
+  background-color: rgb(250, 250, 255);  
+}
+
+p {
+  word-spacing: 3px;
 }
 
 .white-box {
