@@ -40,6 +40,10 @@ h3 {
   font-weight: 200;
 }
 
+table {
+  margin: 8px;
+}
+
 ul {
   padding-left: 40px;
 }

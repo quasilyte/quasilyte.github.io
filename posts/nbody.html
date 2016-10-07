@@ -11,6 +11,8 @@
 <script src="../assets/js/post.js"></script>
 <script src="../assets/js/posts_data.js"></script>
 <script src="../assets/js/post_init.js"></script>
+<script src="../assets/js/rich_content.js"></script>
+
 <!-- body -->
 
 <div id="header" class="header"></div>
@@ -18,62 +20,121 @@
 <div id="post-info"></div>
 
 <div class="box">
-  <h3 class="dark-box">This is subtitle</h3>
+  <h3 class="dark-box">Nbody</h3>
 
-  <p>
-    Lorem ipsum, sapien lectus morbi, 
-    quam bibendum duis ut sagittis a 
-    nam ipsum nec tellus magna: 
-    gravida diam curabitur enim sapien a: 
-    tempus donec bibendum. 
-    Tellus, sapien orci congue sapien orci, 
-    vivamus vitae malesuada odio justo ornare 
-    eros congue maecenas urna commodo 
-    rutrum urna in ornare, sem. 
-    Porttitor — ornare nulla, sit 
-    sapien diam adipiscing, et,
-    sed pellentesque sed. 
+  <p class="rich">
+    {Ragf} has no support for floating point type yet.
+    To do them right I need an example of their usage in
+    tight calculations. 
+
+    [Nbody:Nbody] programming task consists of 80% floating point
+    arithmetics. No allocations, no external libraries needed, 
+    only number crunching, which is good.
   </p>
 
-  <pre id="snippet1" title="snippet name" class="snippet"></pre>
+  <p class="rich">
+    [DSL:Ruby DSL] is going to be the first one released, so the plan is:
+    <ol>
+      <li class="rich">Rewrite [RubyNbody:this] ruby code in x86_64 asm</li>
+      <li>Compare its perfomance with top programs and optimize it</li>
+      <li class="rich">Use earned knowledge in {Ragf} design</li>
+    </ol>
+  </p>
 </div>
 
 <br>
 
 <div class="box">
-  <h3 class="dark-box">Another part</h3>
+  <h3 class="dark-box">First attempts</h3>
 
   <p>
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
+    The good thing about Ruby program: expressions are manually
+    optimized; common subexpressions are saved into locals and reused.
+    Nasm (chosen assembler), like other assemblers, will not optimize
+    redundant calculations. Ruby program algorithm is a good starting point. 
   </p>
 
   <p>
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
-    some content lorem ipsum dolor sim omet
+    How can we rewrite classes/structs in assembler?
+    It depends on the assembler.
+    Nasm has some support for compound types.
+  </p>
+
+  <pre id="snippet1" title="Nasm structs" class="snippet"></pre>
+  
+  <p>
+    We can lay out solar system bodies in data segment.
+    Later, we access this "array" via register that holds address of
+    the element. The rest is rather trivial and includes nothing
+    more than arithmetics/data moves/function calls.
+  </p>
+
+  <p>
+    When the program was finally done, I measured execution time.
+  </p>
+
+  <table class="pure-table pure-table-horizontal">
+    <tr>
+      <th>Implementation</th>
+      <th>Time elapsed</th>
+    </tr>
+    <tr>
+      <td>Ruby</td>
+      <td>2.900s</td>
+    </tr>
+    <tr>
+      <td>Nasm</td>
+      <td>0.180s</td>
+    </tr>
+    <tr>
+      <td>Go</td>
+      <td>0.070s</td>
+    </tr>
+  </table>
+
+  <p class="rich">
+    My program is 2 times slower than [GoNbody:Go] version?
+    Both compiled straight to machine code and gcgo is known
+    for its weak optimizations (but SSA backend made things better).
+    If Go compiler achieved that speed, it is possible to improve 
+    my initial code. Most significant optimizations I made
+    are explained below.
+  </p>
+</div>
+
+<br>
+
+<div class="box">
+  <h3 class="dark-box">Optimizing to the limits</h3>
+
+  <p>
+    #TODO    
+  </p>
+</div>
+
+<br>
+
+<div class="box">
+  <h3 class="dark-box">Ragf update</h3>
+
+  <p>
+    #TODO    
   </p>
 </div>
 
 <div id="footer"></div>
 
-<script id="snippet1-src" data-lang="nasm" type="text/template">
-main:
-  mov rax, 0
-  ret
+<script id="snippet1-src" type="text/template">
+struc Body 
+  .x:    resq 1 
+  .y:    resq 1
+  .z:    resq 1
+  .vx:   resq 1 
+  .vy:   resq 1
+  .vz:   resq 1
+  .mass: resq 1
+  .size:
+endstruc
 </script>
 
 <script>
@@ -84,5 +145,12 @@ main:
     var lang = $src.data("lang");
 
     this.innerHTML = html;
+  });
+  var benchmarksgameUrl = "http://benchmarksgame.alioth.debian.org/";
+  App.enrichContent({
+    "DSL": "https://github.com/Quasilyte/RAGF/blob/master/docs/dsl/ruby_dsl.rb",
+    "Nbody": `${benchmarksgameUrl}/u64q/nbody-description.html#nbody`,
+    "RubyNbody": `${benchmarksgameUrl}/u64q/program.php?test=nbody&lang=jruby&id=2`,
+    "GoNbody": `${benchmarksgameUrl}/u64q/program.php?test=nbody&lang=go&id=1`
   });
 </script> 
