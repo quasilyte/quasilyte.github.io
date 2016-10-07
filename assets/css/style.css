@@ -8,7 +8,9 @@ hr {
 }
 
 body {
-  padding: 16px;
+  padding-top: 8px;
+  padding-bottom: 16px;
+  padding-left: 32px;
   
   font-family: sans-serif;
   color: #111;
