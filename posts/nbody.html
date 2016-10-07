@@ -1,0 +1,86 @@
+<!-- head -->
+
+<title>(identity 'quasilyte)</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="../assets/css/pure/pure-min.css">
+<link rel="stylesheet" href="../assets/css/style.css">
+<script src="../assets/js/jquery/jquery.min.js"></script>
+<script src="../assets/js/underscore/underscore.min.js"></script>
+<script src="../assets/js/init.js"></script>
+<script src="../assets/js/post.js"></script>
+<script src="../assets/js/posts_data.js"></script>
+<script src="../assets/js/post_init.js"></script>
+
+<!-- body -->
+
+<div id="header" class="header"></div>
+
+<div id="post-info"></div>
+
+<div class="box">
+  <h3>This is subtitle</h3>
+
+  <p>
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+  </p>
+
+  <pre id="snippet1" title="snippet name" class="snippet"></pre>
+</div>
+
+<br>
+
+<div class="box">
+  <h3>Another part</h3>
+
+  <p>
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+  </p>
+
+  <p>
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+    some content lorem ipsum dolor sim omet
+  </p>
+</div>
+
+<div id="footer"></div>
+
+<script id="snippet1-src" data-lang="nasm" type="text/template">
+main:
+  mov rax, 0
+  ret
+</script>
+
+<script>
+  $(".snippet").each(function() {
+    var $src = $(`#${this.id}-src`);
+
+    var html = $src.text().split("\n").slice(1).join("<br>");
+    var lang = $src.data("lang");
+
+    this.innerHTML = html;
+  });
+</script> 
