@@ -24,11 +24,10 @@
   <p class="rich">
     {Ragf} is easy to embed low level language
     which can be expressed in many programming languages as [EDSL:EDSL].
-    It is designed to be integrated inside very high level languages like 
-    Ruby, Perl6 and Lisp. Its perfomance rivals native code,
-    so the main purpose of using Ragf is to sped up 
-    application hot spots. 
-    Because most frontends done as EDSL, 
+    It is designed to be integrated inside Ruby, Perl6, Lisp and others.
+    Ragf perfomance is on par with native code, therefore
+    its main purpose is to sped up application hot spots.
+    Because most frontends are done as EDSL, 
     user can mix both Ragf code & host language to achieve 
     better flexibility while still getting all benefits from IDE.
   </p>
@@ -98,13 +97,18 @@
   <h3 class="chapter"><a name="aspects">Key aspects</a></h3>
 
   <p>
+    Each aspect is listed as if it is already satisfied.
+    They are rules that drive project. They define Ragf.
+  </p>
+
+  <p>
     1) Easy binary format. The aim is to make frontend
     development as easy as possible to support higher 
     number of execution environments. 
   </p>
 
   <p>
-    2) Instruction set must be both convenient and 
+    2) Instruction set is both convenient and 
     efficient: underlying machine quirks are avoided,
     API provides interface which is optimization friendly.
   </p>
@@ -117,14 +121,14 @@
   </p>
 
   <p>
-    4) Being low level. Programmer maps his data directly 
-    in the hardware registers and uses indirect addressing
+    4) Low level. Programmer maps his data directly 
+    into hardware registers and uses indirect addressing
     for memory operations. Ragf is closer to the metal than C.
   </p>
 
   <p>
-    5) No feature bloat. All optional stuff should be moved
-    to contrib repositories. Core should be very lightweight.
+    5) No feature bloat. All optional stuff moved
+    to contrib repositories. Core is very lightweight.
   </p>
 </div>
 
