@@ -5,6 +5,7 @@ $(function() {
     var $latestPosts = $("#latest-posts");
 
     var latestPosts = _.chain(App.posts). 
+      filter(x => !x.hidden).
       sort((a, b) => a.date > b.date).
       first(5). 
       value();
