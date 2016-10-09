@@ -11,6 +11,10 @@ $(function() {
           <h2>${App.postDateString(post)}</h2>          
         </div>
       </div>
+      
+      Category: ${post.category}
+      <br>
+      <br>
     `);
 
     $("#footer").html(`
