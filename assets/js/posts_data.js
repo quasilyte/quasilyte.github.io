@@ -11,7 +11,8 @@ App.posts = [
       "assembly",
       "nasm",
       "perfomance",
-    ]
+    ],
+    "hidden": true
   },
   {
     "category": "Ragf project",
@@ -23,27 +24,6 @@ App.posts = [
   {
     "category": "Ragf project",
     "title": "Dummy entry2",
-    "date": 1475844050,
-    "file": "",
-    "tags": []
-  },
-  {
-    "category": "Ragf project",
-    "title": "Dummy entry3",
-    "date": 1475844050,
-    "file": "",
-    "tags": []
-  },
-  {
-    "category": "Ragf project",
-    "title": "Dummy entry4",
-    "date": 1475844050,
-    "file": "",
-    "tags": []
-  },
-  {
-    "category": "Ragf project",
-    "title": "Dummy entry5",
     "date": 1475844050,
     "file": "",
     "tags": []
