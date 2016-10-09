@@ -1,6 +1,8 @@
 "use strict";
 
-var App = {};
+var App = {
+  "rodata": {}
+};
 
 $(function() {
   function renderHeader() {

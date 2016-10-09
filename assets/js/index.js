@@ -10,12 +10,12 @@ $(function() {
       first(5). 
       value();
 
-    var htmlParts = _.map(latestPosts, function(post, id) {
+    var htmlParts = _.map(latestPosts, function(post) {
       var dateString = App.postDateString(post);
 
       var url = "#";
       if (post.file) {
-        url = `posts/${post.file}.html?id=${id}`;
+        url = `posts/${post.file}.html?id=${post.id}`;
       }
 
       var tagHtml = (function() {

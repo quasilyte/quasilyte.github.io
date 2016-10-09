@@ -1,5 +1,6 @@
 "use strict";
 
+
 (function() {
   var globalVars = {
     "Ragf": `<a href="https://github.com/Quasilyte/RAGF">Ragf</a>`,
@@ -12,6 +13,16 @@
   function enrichContent(links, localVars) {
     links = links || {};
     localVars = localVars || {};
+
+    // Insert snippets 
+    $(".snippet").each(function() {
+      var $src = $(`#${this.id}-src`);
+
+      var html = $src.text().split("\n").slice(1).join("<br>");
+      var lang = $src.data("lang");
+
+      this.innerHTML = html;
+    });
 
     $(".rich").each(function() {
       var html = this.innerHTML;

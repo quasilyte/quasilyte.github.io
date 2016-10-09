@@ -16,7 +16,6 @@
 <!-- body -->
 
 <div id="header" class="header"></div>
-
 <div id="post-info"></div>
 
 <div class="box">
@@ -61,7 +60,7 @@
   </p>
 
   <table class="pure-table pure-table-horizontal">
-    <tr>
+    <tr class="dark-color2">
       <th>Implementation</th>
       <th>Time elapsed</th>
     </tr>
@@ -237,14 +236,6 @@ dx:
 </script>
 
 <script>
-  $(".snippet").each(function() {
-    var $src = $(`#${this.id}-src`);
-
-    var html = $src.text().split("\n").slice(1).join("<br>");
-    var lang = $src.data("lang");
-
-    this.innerHTML = html;
-  });
   var benchmarksgameUrl = "http://benchmarksgame.alioth.debian.org/";
   App.enrichContent({
     "DSL": "https://github.com/Quasilyte/RAGF/blob/master/docs/dsl/ruby_dsl.rb",
