@@ -2,6 +2,18 @@
 
 $(function() {
   function renderPost(post) {
+    var chapters = _.map($(".chapter"), function(chapter) {
+      var $anchor = $(chapter).children();
+      return (`
+        <li>
+          <a href="#${$anchor.prop("name")}">
+            ${$anchor.text()}
+          </a>
+        </li>
+      `);
+    }).join("");
+    chapters = "<ol>" + chapters + "</ol>";
+
     $("#post-info").html(`
       <div class="pure-g">
         <div class="pure-u-2-3">
@@ -14,14 +26,28 @@ $(function() {
       
       Category: ${post.category}
       <br>
-      <br>
+      Content: ${chapters}
     `);
 
     $("#footer").html(`
       <br>
       Post tagged with: ${post.tags.join(", ")}
       <hr>      
-      <a href="../index.html">Go to main page</a>
+      <nav>
+        <table class="pure-table">
+          <tr class="dark-color2"><th>
+            Navigation
+          </th></tr>
+          <tr><td>
+            Found a typo? Please, 
+            <a href="https://github.com/Quasilyte/quasilyte.github.io/issues">fire an issue</a>!<br>
+          </td></tr>
+          <tr><td>
+            Go to 
+            <a href="../index.html">main page</a>      
+          </td></tr>
+        </table>
+      </nav>
     `);
   } 
 
