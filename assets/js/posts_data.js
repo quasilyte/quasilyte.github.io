@@ -36,20 +36,6 @@
         "perfomance",
       ],
       "hidden": true
-    },
-    {
-      "category": "Ragf project",
-      "title": "Dummy entry1",
-      "date": 1475844050,
-      "file": "",
-      "tags": []
-    },
-    {
-      "category": "Ragf project",
-      "title": "Dummy entry2",
-      "date": 1475844050,
-      "file": "",
-      "tags": []
     }
   ];
 
