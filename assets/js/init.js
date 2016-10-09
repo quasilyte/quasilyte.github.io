@@ -9,7 +9,11 @@ $(function() {
     var $header = $("#header");
 
     $header.html(`
-      <h3>Iskander Sharipov personal blog</h3>
+      <h3>
+        <a href="https://quasilyte.github.io/">
+          Iskander Sharipov personal blog
+        </a>
+      </h3>
       <hr>
     `);
   }
