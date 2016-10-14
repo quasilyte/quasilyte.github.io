@@ -5,7 +5,6 @@
   src: local("Open Sans"), local("OpenSans"), url(../fonts/open_sans.woff) format('woff');
 }
 
-
 * {
   box-sizing: border-box;
   font-weight: 100;
@@ -26,7 +25,7 @@ body {
   
   color: #111;
 
-  width: 736px;
+  width: 800px;
 
   line-height: 1.8em;
   font-size: 13pt;

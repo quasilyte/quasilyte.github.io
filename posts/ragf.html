@@ -19,6 +19,55 @@
 <div id="post-info"></div>
 
 <div class="box">
+  <h3 class="chapter"><a name="aspects">JIT it manually</a></h3>
+
+  <p class="rich">
+    Before [JIT:JIT] compilers became popular, there were only one
+    way to make something that runs fast: translate it 
+    into machine code ahead of time using only static information.
+    Code interpretation is slow without just in time compilation;
+    you just can not build anything that outperforms native format
+    for the fastest interpreter possible - CPU itself.
+  </p>
+
+  <p class="rich">
+    The project described in this post is somewhere between 
+    JIT and [AOT:AOT]: during execution,
+    its compiled into machine code,
+    but each operation can have value that is bound using 
+    run time variable. More than that, using conditionals we can
+    leave some code uncompiled at all.
+  </p>
+
+  <p>
+    Manual dynamic compilation has several advantages 
+    over sophisticated JIT engines:
+
+    <ul>
+      <li>
+        Less dependencies on non-determined optimizations
+        that may vary or even absent on many platform
+      </li>
+
+      <li>
+        It easier to integrate because of unobtrusive nature
+        of Ragf. No need for tight cooperation with the evaluator
+      </li>
+
+      <li>
+        Far more explicit; no hidden costs (performance-wise)
+      </li>
+
+      <li>
+        Easier to implement => more lightweight 
+      </li>
+    </ul>
+  </p>
+</div>
+
+<br>
+
+<div class="box">
   <h3 class="chapter"><a name="about">What is "Raaagf!" about</a></h3>
 
   <p class="rich">
@@ -132,6 +181,48 @@
   </p>
 </div>
 
+<br>
+
+<div class="box">
+  <h3 class="chapter"><a name="lang">Deliberate limitations</a></h3>
+
+  <p>
+    It is important to note that Ragf is not that useful 
+    outside host language. Here are few reasons why: 
+
+    <ul>
+      <li>
+        No way to allocate dynamic memory. 
+        Ragf code can only access preallocated data segment which
+        is provided by the callee.
+      </li>
+
+      <li>
+        No builtin macro system; It depends on the containing
+        language capabilities for this. For example, macro
+        can be implemented as a simple function returning
+        piece of Ragf code; if/else can be
+        used to achieve conditional compilation; variables/constants can
+        be used for parametrization and argument passing.
+      </li>
+
+      <li>
+        It shares many drawbacks of the assembly languages. 
+        Main codebase should be written in 
+        host language and only parts that require tons of 
+        CPU cycles could be rewritten Ragf.
+      </li>
+    </ul>
+  </p>
+
+  <p>
+    Everything listed above is a design choice.
+    Ragf adds minimal cognitive load on the programmer;
+    it takes as many constructs from familiar languages 
+    as possible.
+  </p>
+</div>
+
 <div id="footer"></div>
 
 <script id="snippet1-src" type="text/template">
@@ -154,6 +245,8 @@ result = Ragf.run code # => -20
 
 <script>
   App.enrichContent({
+    "JIT": "https://en.wikipedia.org/wiki/Just-in-time_compilation",
+    "AOT": "https://en.wikipedia.org/wiki/Ahead-of-time_compilation",
     "EDSL": "https://en.wikipedia.org/wiki/Domain-specific_language",
     "Fluent": "https://en.wikipedia.org/wiki/Fluent_interface",
     "RubyDSL": "https://github.com/Quasilyte/RAGF/blob/master/docs/dsl/ruby_dsl.rb"
