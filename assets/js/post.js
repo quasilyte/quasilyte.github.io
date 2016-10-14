@@ -4,8 +4,8 @@
   App.postDateString = function(post) {
     var date = new Date(post.date * 1000);
 
-    var dd =   date.getDate();
-    var mm =   date.getMonth() + 1;
+    var dd = date.getDate();
+    var mm = date.getMonth() + 1;
     var yyyy = date.getFullYear();
 
     dd = dd < 10 ? `0${dd}` : dd;
