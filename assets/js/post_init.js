@@ -17,7 +17,7 @@ $(function() {
     $("#post-info").html(`
       <div class="pure-g">
         <div class="pure-u-2-3">
-          <h2>Post: ${post.title}</h2>
+          <h2><a name="top">Post: ${post.title}</a></h2>
         </div>
         <div class="pure-u-1-3" style="text-align: right">
           <h2>${App.postDateString(post)}</h2>          
@@ -38,10 +38,17 @@ $(function() {
           <tr class="dark-color2"><th>
             Navigation
           </th></tr>
+
+          <tr><td>
+            Jump to the 
+            <a href="#top">post top</a>
+          </td></tr>
+
           <tr><td>
             Found a typo? Please, 
             <a href="https://github.com/Quasilyte/quasilyte.github.io/issues">fire an issue</a>!<br>
           </td></tr>
+
           <tr><td>
             Go to 
             <a href="../index.html">main page</a>      
