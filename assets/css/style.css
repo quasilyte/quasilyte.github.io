@@ -11,7 +11,7 @@
 }
 
 hr {
-  border: 1px solid #eee;
+  border: 1px solid #ddd;
 }
 
 html, button, input, select, textarea, .pure-g [class *= "pure-u"] {
@@ -68,7 +68,9 @@ ul, ol {
 
 .box {
   padding: 4px;
-  background-color: rgb(250, 250, 255);  
+  background-color: rgb(245, 245, 245);  
+  border-right: 2px solid #ddd;
+  border-left: 2px solid #ddd;
 }
 
 p {
@@ -85,12 +87,6 @@ p {
 }
 
 .snippet {
-    border-left-width: 1px;
-    border-right-width: 1px;
-    
-    border-color: #333;
-    border-style: solid;
-    border-width: 2px 0;
 
     overflow-x: auto;
     padding: 2px;
@@ -99,7 +95,10 @@ p {
 }
 
 pre, code {
-  background-color: #FFF; 
-  color: rgb(60, 60, 50);
-  font-family: Consolas, Courier, Monospace;
+  border-radius: 10px;
+  border: 4px solid rgb(80, 80, 120);
+  background-color: #000; 
+  color: #D9D0C6;
+  font-family: 'Droid Sans Mono', 'Courier New', Consolas, Courier;
+  line-height: 120%;
 }

@@ -3,15 +3,21 @@
 (function() {
   // Common categories
   var ragf = "Ragf project";
+  var mixed = "Mixed";
 
   // Possible tags 
   var tagList = [
+    "Ruby lang",
+    "C lang",
+    "C11",
+
     "DSL",
     "x86_64",
     "assembly",
     "nasm",
     "perfomance",
-    "Ruby"
+    
+    "hacks",
   ];
 
   var posts = [
@@ -21,7 +27,8 @@
       "date": 1475996682,
       "file": "ragf",
       "tags": [
-        "DSL", "Ruby"
+        "DSL", 
+        "Ruby lang"
       ]
     },
     {
@@ -36,6 +43,17 @@
         "perfomance",
       ],
       "hidden": true
+    },
+    {
+      "category": mixed,
+      "title": "C APIs and closures",
+      "date": 1480146077,
+      "file": "c_closures",
+      "tags": [
+        "C lang",
+        "C11",
+        "hacks"
+      ]
     }
   ];
 
