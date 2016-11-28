@@ -67,7 +67,10 @@ ul, ol {
 }
 
 .box {
-  padding: 4px;
+  padding-left: 12px;
+  padding-right: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
   background-color: rgb(245, 245, 245);  
   border-right: 2px solid #ddd;
   border-left: 2px solid #ddd;
