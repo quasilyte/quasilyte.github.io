@@ -31,7 +31,7 @@
       html = html.replace(globalsRx, (_, key) => globalVars[key]);
       // Replace links with anchors 
       html = html.replace(linksRx, function(_, key, text) {
-        return `<a href="${links[key]}">${text}</a>`;
+        return `<a target="_blank" href="${links[key]}">${text}</a>`;
       });
       // Replace local vars 
       html = html.replace(localsRx, (_, key) => localVars[key]);
