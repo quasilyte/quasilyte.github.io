@@ -11,6 +11,8 @@
     "C lang",
     "C11",
 
+    "Language design",
+		
     "DSL",
     "x86_64",
     "assembly",
@@ -18,6 +20,7 @@
     "perfomance",
     
     "hacks",
+		"rants"
   ];
 
   var posts = [
@@ -54,7 +57,18 @@
         "C11",
         "hacks"
       ]
-    }
+    },
+		{
+			"category": mixed,
+			"title": "Broken C defaults",
+			"date": 1482764456,
+			"file": "c_rants",
+			"tags": [
+				"C lang",
+				"rants",
+				"Language design",
+			]
+		}
   ];
 
   // Adding id to each post 
