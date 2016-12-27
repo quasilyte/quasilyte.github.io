@@ -32,15 +32,22 @@
     This is one the reasons why it "evolves so slowly".
     The only parts that could be improved without making C
     yet another bloated language require breaking changes.
-    C will never break backwards compatibility, so we are stuck.
-    We stuck in a good sense, having a mature,
-    stable programming language is a good thing.
-    But C could be designed better; there is some room for improvement.
+  </p>
+
+  <p class="rich">
+    If you are using C, you must know many of its quirks,
+    use external static code analyzers and read carefully
+    a lots of [CodingStandards:safe coding standards].
   </p>
 
   <p>
-    In this post I will try to enumerate and explain
-    my rants towards C.
+    <span class="bold">
+      C could be designed better; there is some room for improvement...
+    </span>
+  </p>
+
+  <p>
+    ...but in reallity it is nearly impossible to achieve.
   </p>
 </div>
 
@@ -224,7 +231,17 @@
 
   <p>
     <span class="bold">
-      Expression-oriented is better than statement-oriented
+      Expression-oriented is better than statement-oriented.
+    </span>
+  </p>
+
+  <p>
+    But there is an important exception:
+  </p>
+
+  <p>
+    <span class="bold">
+      Assignments should be statements, not expressions.
     </span>
   </p>
 
@@ -246,6 +263,26 @@
     Too bad I have yet to see a compiler that checks controlling
     expressions to be in sequential order (like enum constants)
     to perform optimizations akin to switch.
+  </p>
+</div>
+
+<br>
+
+<div class="box">
+  <h3 class="chapter"><a name="constness_erasure">Constness erasure</a></h3>
+
+  <p>
+    In modern code, casting away cv-qualifier is almost always a bad idea.
+    Potentially, it can lead to undefined behavior.
+    As long as const can be casted away, compiler can not make
+    strong assumptions about it. Again, this affects both hypothetical
+    perfomance and overall language safety.
+  </p>
+
+   <p>
+    <span class="bold">
+      It should be impossible to cast away const quallifiers.
+    </span>
   </p>
 </div>
 
@@ -353,6 +390,7 @@ void GOOD(ErrorCode code) {
     "Typedef": "http://www.embedded.com/electronics-blogs/programming-pointers/4024450/Tag-vs-Type-Names",
     "Decay": "http://www.drdobbs.com/architecture-and-design/cs-biggest-mistake/228701625",
     "Cello": "http://libcello.org/learn/a-fat-pointer-library",
-    "Ternary": "https://en.wikipedia.org/wiki/%3F:"
+    "Ternary": "https://en.wikipedia.org/wiki/%3F:",
+    "CodingStandards": "https://www.securecoding.cert.org/confluence/display/c/SEI+CERT+C+Coding+Standard"
   });
 </script> 
