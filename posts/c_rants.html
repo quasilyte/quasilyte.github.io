@@ -28,26 +28,31 @@
   </p>
 
   <p>
-    Many people, me included, find that C is quite complete.
-    This is one the reasons why it "evolves so slowly".
-    The only parts that could be improved without making C
+    It "evolves so slowly" because it is already quite complete.
+    Most of the parts that can be improved without making C
     yet another bloated language require breaking changes.
   </p>
 
+  <p>
+    <span class="bold">
+      C could be designed better if we accept older code invalidation
+    </span>
+  </p>
+
   <p class="rich">
+    ...but in reallity it is impossible to achieve.
     If you are using C, you must know many of its quirks,
     use external static code analyzers and read carefully
     a lots of [CodingStandards:safe coding standards].
   </p>
 
   <p>
-    <span class="bold">
-      C could be designed better; there is some room for improvement...
-    </span>
-  </p>
-
-  <p>
-    ...but in reallity it is nearly impossible to achieve.
+    This post describes subjects that I believe should be
+    changed in order to get a better language.
+    Note that C is mostly unsafe by design;
+    it trusts programmer nearly as much as assemblers do.
+    The main target is not making C higher level, but rather
+    reconsider the defaults and make best practice enforcements easier.
   </p>
 </div>
 
@@ -113,7 +118,7 @@
 
   <p>
     <span class="bold">
-      User defined types should have real name, not merely tag.
+      User-defined types should have real names (not mere tags)
     </span>
   </p>
 </div>
@@ -125,9 +130,9 @@
 
   <p>
     Multiple declarations on the same line do not improve code readability.
-    C is not about typing fewer keywords,
-    I see no gain in using this syntax.
-    They can also lead for confusion among amateurs.
+    C is not about typing fewer keywords => no real gain in using this syntax.
+    They can also be a source of confusion for amateurs (when they define
+    both pointer and non-pointer variables of type T).
   </p>
 
   <p>
@@ -152,9 +157,10 @@
     Language would feel more coherent if things like size_t,
     int32_t and bool were builtin.
     Currently, we must include at least 3 headers to have most
-    of the useful primitive types: "stddef.h" for size_t,
+    useful primitive types: "stddef.h" for size_t,
     "stdint.h" for fixed width types and "stdbool.h" to
-    avoid ugly _Bool.
+    avoid ugly _Bool. Predefined NULL of special type
+    would be great as well, but this is C++-ism.
   </p>
   
   <p>
@@ -183,7 +189,7 @@
     The problem is: this structure is vital, universal and useful,
     but it is missing from the standard library =&gt;
     every project defines their own fat pointer.
-    Who stole my "stdarray.h"?
+    I demand "stdarray.h".
   </p>
   
   <p>
@@ -289,6 +295,26 @@
 <br>
 
 <div class="box">
+  <h3 class="chapter"><a name="features">Missing features</a></h3>
+
+  <p>
+    This section briefly describes controversial features
+    from my wishlist. Completely optional things.
+  </p>
+  
+  <p class="rich">
+    Strict/strong typedefs were proposed for C++ more than once
+    now. Check [Typedef: this document].
+    C could benefit from type-checked typedefs,
+    but it can also lead to code pollution with casts if
+    used wildly. If you interested in making C code more
+    reliable via types, try [CQual:CQual] tool.
+  </p>
+</div>
+
+<br>
+
+<div class="box">
   <h3 class="chapter"><a name="more">To be continued</a></h3>
 
   <p>
@@ -298,7 +324,7 @@
     at compile time and some other things I dislike in C.
   </p>
 
-  <p>Updates coming soon.</p>
+  <p>Updates are not promised, but possible.</p>
 </div>
 
 <div id="footer"></div>
@@ -391,6 +417,9 @@ void GOOD(ErrorCode code) {
     "Decay": "http://www.drdobbs.com/architecture-and-design/cs-biggest-mistake/228701625",
     "Cello": "http://libcello.org/learn/a-fat-pointer-library",
     "Ternary": "https://en.wikipedia.org/wiki/%3F:",
-    "CodingStandards": "https://www.securecoding.cert.org/confluence/display/c/SEI+CERT+C+Coding+Standard"
+    "CodingStandards":
+    "https://www.securecoding.cert.org/confluence/display/c/SEI+CERT+C+Coding+Standard",
+    "Typedef": "http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3515.pdf",
+    "CQual": "http://www.cs.umd.edu/~jfoster/cqual/"
   });
 </script> 
