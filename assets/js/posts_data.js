@@ -59,16 +59,26 @@
       ]
     },
 		{
-			"category": mixed,
-			"title": "Broken C defaults",
-			"date": 1482764456,
-			"file": "c_rants",
-			"tags": [
-				"C lang",
-				"rants",
-				"Language design",
-			]
-		}
+      "category": mixed,
+      "title": "Broken C defaults",
+      "date": 1482764456,
+      "file": "c_rants",
+      "tags": [
+        "C lang",
+        "rants",
+        "Language design",
+      ]
+    },
+    {
+      "category": mixed,
+      "title": "C style hints",
+      "date": 1483795709,
+      "file": "c_style_hints",
+      "tags": [
+        "C lang",
+      ],
+      "hidden": true
+    }
   ];
 
   // Adding id to each post 
