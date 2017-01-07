@@ -6,6 +6,7 @@ cat assets/js/jquery/jquery.min.js \
     assets/js/init.js \
     assets/js/post.js \
     assets/js/posts_data.js \
+    assets/js/post_init.js \
     assets/js/rich_content.js \
     > posts/app.js
 
