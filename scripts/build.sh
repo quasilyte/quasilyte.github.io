@@ -30,4 +30,3 @@ cp src/posts/* html/
 
 # 4) prepare index page 
 cp src/index.html html/
-ln -sf html/index.html ./index.html
