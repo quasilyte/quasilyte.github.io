@@ -11,7 +11,7 @@ $(function() {
     $header.html(`
       <h3>
         <a href="https://quasilyte.github.io/">
-          Iskander Sharipov personal blog
+          Iskander Sharipov technical blog
         </a>
       </h3>
       <hr>
