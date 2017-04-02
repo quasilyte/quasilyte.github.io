@@ -112,7 +112,7 @@ $(function() {
       "category": mixed,
       "title": "Broken C defaults",
       "date": 1482764456,
-      "file": "c_rants",
+      "file": "broken_c_defaults",
       "tags": [
         "C lang",
         "rants",

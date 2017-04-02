@@ -112,7 +112,7 @@
 
   <p>
     <span class="bold">
-      User-defined types should have real names (not mere tags)
+      Tag symbols for type names = mistake
     </span>
   </p>
 </div>
@@ -136,9 +136,16 @@
   </p>
 
   <p>
-    <pre id="multi_decls-bad" title="This is bad" class="snippet"></pre>
-    <pre id="multi_decls-good" title="This is good" class="snippet"></pre>
   </p>
+
+  <div class="pure-g">
+    <div class="pure-u-1-2">
+      <pre id="multi_decls-bad" title="This is bad" class="snippet"></pre>
+    </div>
+    <div class="pure-u-1-2">
+      <pre id="multi_decls-good" title="This is good" class="snippet"></pre>
+    </div>    
+  </div>
 </div>
 
 <br>
@@ -156,7 +163,12 @@
     avoid ugly _Bool. Predefined NULL of special type
     would be great as well, but this is C++-ism.
   </p>
-  
+
+  <p>
+    Talking about breaking existing code, I prefer int32 as a type name
+    opposed to int32_t.
+  </p>
+
   <p>
     <span class="bold">
       Most useful primitive types should be builtin.
@@ -184,6 +196,21 @@
     but it is missing from the standard library =&gt;
     every project defines their own fat pointer.
     I demand "stdarray.h".
+  </p>
+
+  <p>
+    Every homebrew array is incompatible with someone else's array. 
+    We end up with two kinds of APIs as a result:
+    one which expects two separate arguments
+    for data and its length and another which exposes custom array type.
+  </p>
+
+  <p>
+    As an addition, you will most likely need {void*, size_t, size_t} 
+    structure to express fixed-size container that is partially filled.
+    This is essential to build extendable arrays (C++ calls them vectors).
+    There are many useful fundamental data structures, but we need 
+    to start from something. Array seems like a good and easy first step.
   </p>
   
   <p>
@@ -345,7 +372,7 @@ void str_copy(Str* dst, const Str* src);
 /* Header */
 typedef struct Str Str;
 struct Str {
-  char* mutable data;
+  mutable char* data;
   mutable size_t len;
 };
 
