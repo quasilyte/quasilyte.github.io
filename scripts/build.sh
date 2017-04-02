@@ -1,19 +1,33 @@
 #!/bin/bash
 
 # 1) concatenate all js/css files into one
-cat assets/js/jquery/jquery.min.js \
-    assets/js/underscore/underscore.min.js \
-    assets/js/init.js \
-    assets/js/post.js \
-    assets/js/posts_data.js \
-    assets/js/post_init.js \
-    assets/js/rich_content.js \
-    > posts/app.js
+cat src/js/jquery/jquery.min.js \
+    src/js/underscore/underscore.min.js \
+    src/js/init.js \
+    src/js/post.js \
+    src/js/posts_data.js \
+    src/js/post_init.js \
+    src/js/rich_content.js \
+    > html/post.js
 
-cat assets/css/pure/pure-min.css \
-    assets/css/style.css \
-    > posts/style.css
+cat src/js/jquery/jquery.min.js \
+    src/js/underscore/underscore.min.js \
+    src/js/init.js \
+    src/js/post.js \
+    src/js/posts_data.js \
+    src/js/index.js \
+    > html/index.js
 
-# 2) create symlincs to resources
-ln -sf `pwd`/assets/fonts/* posts/
-ln -sf `pwd`/assets/fonts/* assets/css/
+cat src/assets/css/pure/pure-min.css \
+    src/assets/css/style.css \
+    > html/style.css
+
+# 2) copy assets 
+cp src/assets/fonts/* html/
+
+# 3) copy posts 
+cp src/posts/* html/
+
+# 4) prepare index page 
+cp src/index.html html/
+ln -sf html/index.html ./index.html

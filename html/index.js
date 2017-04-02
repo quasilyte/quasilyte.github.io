@@ -30,7 +30,8 @@ $(function() {
   }
 
   renderHeader();
-});"use strict";
+});
+"use strict";
 
 (function() {
   App.postDateString = function(post) {
@@ -104,7 +105,8 @@ $(function() {
         "C lang",
         "C11",
         "hacks"
-      ]
+      ],
+      "hidden": true
     },
 		{
       "category": mixed,
@@ -147,111 +149,48 @@ $(function() {
 "use strict";
 
 $(function() {
-  function renderPost(post) {
-    var chapters = _.map($(".chapter"), function(chapter) {
-      var $anchor = $(chapter).children();
+  function renderLatestPosts() {
+    var $latestPosts = $("#latest-posts");
+
+    var latestPosts = _.chain(App.posts). 
+      filter(x => !x.hidden).
+      sort((a, b) => a.date > b.date).
+      first(5). 
+      value();
+
+    var htmlParts = _.map(latestPosts, function(post) {
+      var dateString = App.postDateString(post);
+
+      var url = "#";
+      if (post.file) {
+        url = `${post.file}.html?id=${post.id}`;
+      }
+
+      var tagHtml = (function() {
+        var tags = post.tags;
+        var tagString = tags.join(', ');
+        var spanClass = tags.length ? "hover-me" : ""; 
+        return (`
+          <span class="${spanClass}" title="${tagString}">
+            [${tags.length}]
+          </span>
+        `);
+      }());
+        
       return (`
-        <li>
-          <a href="#${$anchor.prop("name")}">
-            ${$anchor.text()}
-          </a>
-        </li>
+        <div class="pure-g white-box">
+          <div class="pure-u-1-4">${post.category}</div>
+          <div class="pure-u-2-5">
+            <a href="${url}">${post.title}</a>
+          </div>
+          <div class="pure-u-1-8">${tagHtml}</div>          
+          <div class="pure-u-1-8">${dateString}</div>
+        </div>
       `);
-    }).join("");
-    chapters = "<ol>" + chapters + "</ol>";
-
-    $("#post-info").html(`
-      <div class="pure-g">
-        <div class="pure-u-2-3">
-          <h2><a name="top">Post: ${post.title}</a></h2>
-        </div>
-        <div class="pure-u-1-3" style="text-align: right">
-          <h2>${App.postDateString(post)}</h2>          
-        </div>
-      </div>
-      
-      Category: ${post.category}
-      <br>
-      Content: ${chapters}
-    `);
-
-    $("#footer").html(`
-      <br>
-      Post tagged with: ${post.tags.join(", ")}
-      <hr>      
-      <nav>
-        <table class="pure-table">
-          <tr class="dark-color2"><th>
-            Navigation
-          </th></tr>
-
-          <tr><td>
-            Jump to the 
-            <a href="#top">post top</a>
-          </td></tr>
-
-          <tr><td>
-            Found a typo? Please, 
-            <a href="https://github.com/Quasilyte/quasilyte.github.io/issues">fire an issue</a>!<br>
-          </td></tr>
-
-          <tr><td>
-            Go to 
-            <a href="../index.html">main page</a>      
-          </td></tr>
-        </table>
-      </nav>
-    `);
-  } 
-
-  var queryParams = window.location.search.substring(1).split("&");
-  var postId = ( 
-    _.find(queryParams, x => x.startsWith("id"))
-    .split("=")[1]
-  );
-
-  renderPost(App.posts[postId]);
-});"use strict";
-
-
-(function() {
-  var globalVars = {
-    "Ragf": `<a href="https://github.com/Quasilyte/RAGF">Ragf</a>`,
-  };
-
-  var globalsRx = /{(\w+)}/g;
-  var localsRx = /{{(\w+)}}/g;
-  var linksRx = /\[(\w+):(.*?)\]/g;
-
-  function enrichContent(links, localVars) {
-    links = links || {};
-    localVars = localVars || {};
-
-    // Insert snippets 
-    $(".snippet").each(function() {
-      var $src = $(`#${this.id}-src`);
-
-      var html = $src.text().split("\n").slice(1).join("<br>");
-      var lang = $src.data("lang");
-
-      this.innerHTML = html;
     });
 
-    $(".rich").each(function() {
-      var html = this.innerHTML;
-
-      // Replace global vars
-      html = html.replace(globalsRx, (_, key) => globalVars[key]);
-      // Replace links with anchors 
-      html = html.replace(linksRx, function(_, key, text) {
-        return `<a target="_blank" href="${links[key]}">${text}</a>`;
-      });
-      // Replace local vars 
-      html = html.replace(localsRx, (_, key) => localVars[key]);
-
-      this.innerHTML = html;
-    });
+    $latestPosts.html(htmlParts.join(''));
   }
 
-  App.enrichContent = enrichContent;
-}());
+  renderLatestPosts();
+});

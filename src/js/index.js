@@ -15,7 +15,7 @@ $(function() {
 
       var url = "#";
       if (post.file) {
-        url = `posts/${post.file}.html?id=${post.id}`;
+        url = `${post.file}.html?id=${post.id}`;
       }
 
       var tagHtml = (function() {

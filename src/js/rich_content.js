@@ -1,6 +1,5 @@
 "use strict";
 
-
 (function() {
   var globalVars = {
     "Ragf": `<a href="https://github.com/Quasilyte/RAGF">Ragf</a>`,

@@ -1,0 +1,252 @@
+<!-- head -->
+
+<title>C APIs and closures</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<script src="app.js"></script>
+
+<!-- body -->
+
+<div id="header" class="header"></div>
+<div id="post-info"></div>
+
+<div class="box">
+  <h3 class="chapter"><a name="APIs">C APIs</a></h3>
+
+  <p>
+    In C, you basically have one way to provide a public API - functions.
+    There are multiple choices on how to organize functions inside public module:
+    
+    <ul>
+      <li>Many global functions (the most accepted way to my knowledge)</li>
+      <li>
+        Signle global init function returning API object containing
+        function pointers to every exposed function
+      </li>
+      <li class="rich">
+        Single global function which understands different commands and 
+        arguments (it can return [Union:tagged union] or use out parameters)
+      </li>
+    </ul>
+
+    Each method has its own specific flaws and advantages.
+    The choice should depend on the library kind; only the first
+    option is somewhat universal, but it can lead to name clashes 
+    (if you not using proper library prefix).
+  </p>
+
+  <p class="rich">
+    As a library writer, you must decide how to provide extension
+    points for your users. To be more concrete, lets concentrate on
+    one particular problem from that domain: 
+    what mechanism you provide to enable context passing into 
+    callbacks? Almost certanly, user will need his data to be available
+    inside those calls.
+  </p>
+
+  <p>
+    Our goal today is to define such API which makes it possible to
+    use captured context inside callbacks without unused arguments
+    burden.
+  </p>
+
+  <pre id="snippet1" title="Public API / target signature" class="snippet"></pre>  
+
+  <p>
+    Note that IntMapper does not know if underlying function is pure
+    or not; there are no assumptions about state at all.
+  </p>
+</div>
+
+<br>
+
+<div class="box">
+  <h3 class="chapter"><a name="inputs">Function inputs</a></h3>
+
+  <p>
+    Lets enumerate all possible data inputs for a function.
+  </p>
+
+  <pre id="snippet2" title="Function input sources" class="snippet"></pre>
+
+  <p>
+    Options #1 and #3 do not require API changes.
+    Option #2 makes it annoying when you do not actually need
+    any data (or there is nothing to be forwarded into
+    your callback).
+  </p>
+  
+  <p class="rich">
+    [Closure:Closures] make it possible to pass around not only
+    function (most likely - unnamed function), but also its
+    captured data. We can emulate function context binding, but can not
+    mimic unnamed functions portably. 
+  </p>
+</div>
+
+<br>
+
+<div class="box">
+  <h3 class="chapter"><a name="impl_a">Closure-1: by code organization</a></h3>
+
+  <p class="rich">
+    Closure implementation can be divided into separate parts:
+
+    <ol>
+      <li>Initialization (context binding; how you pass initial state?)</li>
+      <li>Data holding (context carrying; where you store state?)</li>
+      <li>Execution inside bounded context (how you extract stored state?)</li>
+    </ol>
+  </p>
+
+  <p>
+    Start from creating a special folder named "closures".
+    This folder will contain files that expose two functions: 
+    initializer and the function itself.
+  </p>
+
+  <pre id="snippet3" title="closures/adder.h" class="snippet"></pre>
+
+  <p>
+    Each closure must have separate implementation file.
+    File defines static global variables to store context that
+    is passed into initializer function.
+  </p>
+
+  <pre id="snippet4" title="closures/adder.c" class="snippet"></pre>
+
+  <p class="rich">
+    Yes, we have a global variable, but it is restrained inside file;
+    and that file is dedicated for a sole closure.
+    This simplest technique already gives us a solution.
+    [TLS:Thread local] storage class is required if your
+    closure can be called in multiple threads.  
+  </p>
+
+  <pre id="snippet5" title="Usage example" class="snippet"></pre>
+</div>
+
+<br>
+
+<div class="box">
+  <h3 class="chapter"><a name="impl_a">Closure-2: by undefined behavior</a></h3>
+
+  <p class="rich">
+    If we know [ABI:ABI] used by our compiler, we can use this technique.
+    It does not work for [CC:calling conventions] that require the called
+    function to cleanup the stack.
+  </p>
+
+  <p>
+    The main observation here is that it is OK to call a function
+    with fewer arguments than declared in prototype. 
+    Depending on the calling convention,
+    two outcomes are possible: we either place fewer arguments on a stack,
+    or we fill less registers with data; both of them are acceptable as
+    long as we do not touch undefined (not passed) arguments.
+  </p>
+
+  <pre id="snippet6" title="ub.c part 1" class="snippet"></pre>
+
+  <p>
+    This implementation does not allow to re-initialize captured data.
+    If you know that a closure will be called only once,
+    initialization flag can be set back to false before return. 
+  </p>
+
+  <pre id="snippet7" title="ub.c part 2" class="snippet"></pre>
+
+  <p>
+    The only advantage of this trick is that function itself
+    becomes self-contained unit, complete closure.
+  </p>
+</div>
+
+<br>
+
+<div class="box">
+  <h3 class="chapter"><a name="impl_a">Closure-3: TBA</a></h3>
+
+  <p>
+    Other alternatives, if I will ever manage to find them,
+    are going to be explained here. 
+  </p>
+</div>
+
+<div id="footer"></div>
+
+<script id="snippet1-src" type="text/template">
+// Signature which closure must satisfy
+typedef int(*IntMapper)(int);
+
+// Callback consumer
+int apply_int(IntMapper f, int x) { return f(x); }
+</script>
+
+<script id="snippet2-src" type="text/template">
+static T global;                 /* 1 */
+T fn(T argument) {               /* 2 */
+  static T function_static_data; /* 3 */
+  T data = other_function();     /* 4 */
+}
+</script>
+
+<script id="snippet3-src" type="text/template">
+#pragma once
+
+void adder_closure_init(int base);
+int adder_closure(int x);
+</script>
+
+<script id="snippet4-src" type="text/template">
+static _Thread_local int captured_base;
+
+void adder_closure_init(int base) { captured_base = base; }
+
+int adder_closure(int x) { return captured_base + x; }
+</script>
+
+<script id="snippet5-src" type="text/template">
+// Some includes are skipped
+#include "closures/adder.h"
+
+int main(void) {
+  adder_closure_init(10);
+  printf("%d\n", apply_int(adder_closure, 5)); // => 15
+}
+</script>
+
+<script id="snippet6-src" type="text/template">
+#define DONT_CARE 0
+static int adder_closure(int x, int base) {
+  static bool initialized = false;
+  static _Thread_local int captured_base;
+  
+  if (initialized) {
+    return captured_base + x;
+  }
+  else {
+    initialized = true;
+    captured_base = x_init;
+    return DONT_CARE; 
+  }
+}
+</script>
+
+<script id="snippet7-src" type="text/template">
+int main(void) {
+  adder_closure(DONT_CARE, 10);
+  printf("%d\n", apply_int((IntMapper)adder_closure, 5)); // => 15
+}
+</script>
+
+<script>
+  App.enrichContent({
+    "Union": "https://en.wikipedia.org/wiki/Tagged_union",
+    "TLS": "https://en.wikipedia.org/wiki/Thread-local_storage#C_and_C.2B.2B",
+    "Closure": "https://en.wikipedia.org/wiki/Closure_%28computer_programming%29",
+    "ABI": "https://en.wikipedia.org/wiki/Application_binary_interface",
+    "CC": "http://wiki.osdev.org/Calling_Conventions"
+  });
+</script> 

@@ -56,7 +56,8 @@
         "C lang",
         "C11",
         "hacks"
-      ]
+      ],
+      "hidden": true
     },
 		{
       "category": mixed,
