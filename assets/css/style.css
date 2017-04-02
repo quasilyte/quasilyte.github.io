@@ -1,8 +1,10 @@
+/**/
+
 @font-face {
   font-family: "Open Sans";
   font-style: normal;
   font-weight: 400;
-  src: local("Open Sans"), local("OpenSans"), url(../fonts/open_sans.woff) format('woff');
+  src: local("Open Sans"), local("OpenSans"), url(open_sans.woff) format('woff');
 }
 
 * {

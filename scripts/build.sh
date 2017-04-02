@@ -14,6 +14,6 @@ cat assets/css/pure/pure-min.css \
     assets/css/style.css \
     > posts/style.css
 
-# 2) transpile to es5
-
-# 3) minify es5
+# 2) create symlincs to resources
+ln -sf `pwd`/assets/fonts/* posts/
+ln -sf `pwd`/assets/fonts/* assets/css/

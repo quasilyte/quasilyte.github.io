@@ -124,7 +124,8 @@ $(function() {
       "file": "c_style_hints",
       "tags": [
         "C lang",
-      ]
+      ],
+      "hidden": true
     }
   ];
 
