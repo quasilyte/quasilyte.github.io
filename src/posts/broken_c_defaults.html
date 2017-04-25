@@ -372,12 +372,12 @@ struct Str {
   size_t len;
 };
 
-bool str_eq(const Str* a, const Str* b);
+bool str_eq(const Str*, const Str*);
 void str_copy(Str* dst, const Str* src);
 
 /* Source */
-bool str_eq(const Str* const a,
-            const Str* const b);
+bool str_eq(const Str* a, 
+            const Str* b);
 void str_copy(Str* dst, const Str* src);
 </script>
 <script id="mutability-good-src" type="text/template">
