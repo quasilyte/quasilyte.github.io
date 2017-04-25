@@ -225,23 +225,36 @@
 <div class="box">
   <h3 class="chapter"><a name="aliasing">Aliasing defaults</a></h3>
 
+  <p>
+    Additional pointer qualifier is needed to make aliasing 
+    possible only with explicit marker.
+    If scope has more than one non-const T* then it 
+    should be marked either "alias" or "restrict".
+    Abscence of qualifier is an error.
+  </p>
+
   <p class="rich">
-    This is harder to get right, but I believe it is possible to
-    make pointers "restrict" by default while providing "alias"
-    keyword to mark pointers of the same type that can overlap.
-    Just like in case of const-by-default, language should favor
-    more restrictive defaults. 
+    If pointers have different type, "restrict" is 
+    implied, but this can be redefined by explicit "alias".
+    This is needed to avoid breaking of 
+    [StrictAliasing:Strict aliasing] rules.
   </p>
 
   <p>
     <span class="bold">
-      All pointers are restrict-qualified by default.
+      There should be more "restrict" and const pointers than 
+      mutable and/or aliased pointers.
     </span>
   </p>
 
   <p>
     <pre id="aliasing-bad" title="This is bad" class="snippet"></pre>
     <pre id="aliasing-good" title="This is good" class="snippet"></pre>
+  </p>
+
+  <p class="rich">
+    "alias" is choosed as a keyword because GCC already have 
+    similar attribute "may_alias" ([GccAlias:link]).
   </p>
 </div>
 
@@ -403,7 +416,7 @@ void move(char* dst, char* src);
 </script>
 <script id="aliasing-good-src" type="text/template">
 /// GOOD 
-void copy(char* dst, char* src);
+void copy(char* restrict dst, char* restrict src);
 void move(char* alias dst, char* alias src);
 </script>
 
@@ -441,6 +454,8 @@ void GOOD(ErrorCode code) {
     "CodingStandards":
     "https://www.securecoding.cert.org/confluence/display/c/SEI+CERT+C+Coding+Standard",
     "Typedef": "http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3515.pdf",
-    "CQual": "http://www.cs.umd.edu/~jfoster/cqual/"
+    "CQual": "http://www.cs.umd.edu/~jfoster/cqual/",
+    "GccAlias": "https://gcc.gnu.org/onlinedocs/gcc-4.0.2/gcc/Type-Attributes.html",
+    "StrictAliasing": "http://blog.regehr.org/archives/1307"
   });
 </script> 
