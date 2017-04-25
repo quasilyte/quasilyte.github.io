@@ -10,14 +10,16 @@
     "Ruby lang",
     "C lang",
     "C11",
+    "Go lang",
 
-    "Language design",
+    "language design",
 		
     "DSL",
     "x86_64",
     "assembly",
     "nasm",
     "perfomance",
+    "error handling",
     
     "hacks",
 		"rants"
@@ -67,7 +69,7 @@
       "tags": [
         "C lang",
         "rants",
-        "Language design",
+        "language design",
       ]
     },
     {
@@ -79,6 +81,16 @@
         "C lang",
       ],
       "hidden": true
+    },
+    {
+      "category": mixed,
+      "title": "Dumbed-down Go interfaces",
+      "date": 1493144073,
+      "file": "dumbed_down_go_interfaces",
+      "tags": [
+        "Go lang",
+        "error handling",
+      ]
     }
   ];
 

@@ -59,14 +59,16 @@ $(function() {
     "Ruby lang",
     "C lang",
     "C11",
+    "Go lang",
 
-    "Language design",
+    "language design",
 		
     "DSL",
     "x86_64",
     "assembly",
     "nasm",
     "perfomance",
+    "error handling",
     
     "hacks",
 		"rants"
@@ -116,7 +118,7 @@ $(function() {
       "tags": [
         "C lang",
         "rants",
-        "Language design",
+        "language design",
       ]
     },
     {
@@ -128,6 +130,16 @@ $(function() {
         "C lang",
       ],
       "hidden": true
+    },
+    {
+      "category": mixed,
+      "title": "Dumbed-down Go interfaces",
+      "date": 1493144073,
+      "file": "dumbed_down_go_interfaces",
+      "tags": [
+        "Go lang",
+        "error handling",
+      ]
     }
   ];
 
@@ -153,8 +165,8 @@ $(function() {
     var $latestPosts = $("#latest-posts");
 
     var latestPosts = _.chain(App.posts). 
-      filter(x => !x.hidden).
-      sort((a, b) => a.date > b.date).
+      filter(post => !post.hidden).
+      sort((post1, post2) => post1.date < post2.date).
       first(5). 
       value();
 
