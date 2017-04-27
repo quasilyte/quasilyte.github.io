@@ -1,5 +1,0 @@
-| Task                           | Priority |
-|--------------------------------+----------|
-| Make post filenames fit titles | 4/5      |
-| Transpile and Minify JS files  | 2/5      |
-|                                |          |
