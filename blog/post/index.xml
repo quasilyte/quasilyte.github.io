@@ -22,5 +22,17 @@
 This interface is inconvenient to use when you want to call Write multiple times and get total number of bytes pushed during these invocations. You also do not want to loose error if it ever occurs.</description>
     </item>
     
+    <item>
+      <title>C broken defaults</title>
+      <link>https://quasilyte.github.io/blog/post/c-broken-defaults/</link>
+      <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/c-broken-defaults/</guid>
+      <description>State of the C C fits its niche quite well. If you want relatively simple, ubiquitous and efficient language there is no much room for selection.
+It &amp;ldquo;evolves so slowly&amp;rdquo; because it is already quite complete. Most of the parts that can be improved without making C yet another bloated language require breaking changes.
+ C could be designed better if we accept older code invalidation.
+ &amp;hellip;but in reallity it is impossible to achieve.</description>
+    </item>
+    
   </channel>
 </rss>

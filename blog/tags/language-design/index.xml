@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Language Design on Quasilyte blog</title>
+    <link>https://quasilyte.github.io/blog/tags/language-design/</link>
+    <description>Recent content in Language Design on Quasilyte blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Released under the MIT license.</copyright>
+    <lastBuildDate>Mon, 26 Dec 2016 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://quasilyte.github.io/blog/tags/language-design/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>C broken defaults</title>
+      <link>https://quasilyte.github.io/blog/post/c-broken-defaults/</link>
+      <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/c-broken-defaults/</guid>
+      <description>State of the C C fits its niche quite well. If you want relatively simple, ubiquitous and efficient language there is no much room for selection.
+It &amp;ldquo;evolves so slowly&amp;rdquo; because it is already quite complete. Most of the parts that can be improved without making C yet another bloated language require breaking changes.
+ C could be designed better if we accept older code invalidation.
+ &amp;hellip;but in reallity it is impossible to achieve.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -7,6 +7,17 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/post/c-broken-defaults/</loc>
+    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.github.io/blog/tags/c/</loc>
+    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/categories/</loc>
     <priority>0</priority>
   </url>
@@ -30,6 +41,12 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/tags/language-design/</loc>
+    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/post/</loc>
     <lastmod>2017-04-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -42,8 +59,14 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/tags/rants/</loc>
+    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/tags/</loc>
-    <lastmod>2017-04-26T00:00:00+00:00</lastmod>
+    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
