@@ -16,15 +16,13 @@
     
 
     <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
-    <link rel="stylesheet" href="https://quasilyte.github.io/blog/normalize.min.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/normalize.css">
 
     <!-- Stylesheets -->
     <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
     <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/github.css">
     <link rel="stylesheet" href="https://quasilyte.github.io/blog/styles/hybrid.css">
     <link rel="stylesheet" href="https://quasilyte.github.io/blog/font-awesome.css">
-    
-    <link rel="stylesheet" href="https://quasilyte.github.io/blog/style.css">
     
 
     
@@ -75,6 +73,7 @@
 <li><a href="#dumbing-it-down">Dumbing it down</a></li><br>
 <li><a href="#without-manual-counting">Without manual counting</a></li><br>
 <li><a href="#without-eager-error-handling">Without eager error handling</a></li><br>
+<li><a href="#not-only-io-writer">Not only io.Writer</a></li><br>
 </ul></li><br>
 </ul>
 </nav>
@@ -96,7 +95,7 @@ use when you want to call <code>Write</code> multiple times and get
 total number of bytes pushed during these invocations.
 You also do not want to loose error if it ever occurs.</p>
 
-<pre><code class="language-go">func main(w io.Writer, s fmt.Stringer, parts [][]byte) (int, error) {
+<pre><code class="language-go">func f1(w io.Writer, s fmt.Stringer, parts [][]byte) (int, error) {
 	written, err := w.Write([]byte(s.String()))
 	if err != nil {
 		return written, err
@@ -112,15 +111,22 @@ You also do not want to loose error if it ever occurs.</p>
 }
 </code></pre>
 
+<p>The boilerplate of error propagation can be annoying,
+Go has no things like <a href="https://doc.rust-lang.org/std/macro.try.html">try!</a>
+in Rust, but it does not mean that there is no solutions.</p>
+
 <h2 id="dumbing-it-down">Dumbing it down</h2>
 
-<p>Code presented above contains to much details about
-well-known operations. Good news: it can be improved
-and there is even more than one way to do so.</p>
+<p>Code presented above can be considered idiomatic.
+Error checking is explicit and in-place (near error occurrence).
+It is OK when you have small amount of <code>f1</code>-like function,
+there is nothing wrong in small code duplication.
+When you reach your limit of DRY violation, consider
+possible changes.</p>
 
-<p>Basically, we do two things (except writing):
+<p>Except writing, we do two things in that function:
 counting bytes and checking for errors.
-To dumb down interface we need to wrap it in concrete type
+To dumb down interface we need to wrap it in a type
 that does additional job for us.</p>
 
 <p>I will present two examples that simplify <code>f1</code> function.
@@ -134,8 +140,8 @@ but may not be always appropriate.</p>
 obscuring code to concentrate on error handling.</p>
 
 <pre><code class="language-go">type countingWriter struct {
-	written int
-	dst     io.Writer
+	written int       // Accumulates 1st return value of Write.
+	dst     io.Writer // Wrapped writer.
 }
 
 func (cw *countingWriter) WriteAndCount(p []byte) error {
@@ -146,10 +152,9 @@ func (cw *countingWriter) WriteAndCount(p []byte) error {
 </code></pre>
 
 <p>The benefits are:
-less varibles in scope (no need for temporary &ldquo;n&rdquo;
-and &ldquo;written&rdquo; accumulator), single return value
-makes it easier to compose calls.
-I see no real disadvantages of this approach.</p>
+less varibles in scope (no need for temporary <code>n</code>
+and <code>written</code> accumulator), single return value
+makes it easier to compose calls.</p>
 
 <pre><code class="language-go">func f2(w io.Writer, s fmt.Stringer, parts [][]byte) (int, error) {
 	cw := countingWriter{dst: w}
@@ -169,7 +174,7 @@ I see no real disadvantages of this approach.</p>
 
 <h2 id="without-eager-error-handling">Without eager error handling</h2>
 
-<p>We can go further. Explicit error handling in <code>f1</code>,
+<p>Explicit error handling in <code>f1</code>,
 after all, is not important.
 That function does not try to fix error conditions,
 it just passes them back to the caller.
@@ -178,9 +183,9 @@ it writes.
 It is possible to make a write method that returns&hellip; nothing.</p>
 
 <pre><code class="language-go">type safeWriter struct {
-	err     error
-	written int
-	dst     io.Writer
+	err     error     // Error that occured during writing.
+	written int       // Bytes written before the error occured.
+	dst     io.Writer // Wrapped writer.
 }
 
 func (w *safeWriter) SafeWrite(p []byte) {
@@ -197,8 +202,9 @@ func (w *safeWriter) SafeWrite(p []byte) {
 we store it in the safeWriter.
 When first error occurs, safeWriter will continue to look like
 before, but consequent write calls are ignored.
-After all operations we wish to execute, we return an error
-(which can be nil) and total number of bytes written.</p>
+After all operations we wish to execute are made,
+we return an error (which can be nil) and
+a total number of bytes written.</p>
 
 <pre><code class="language-go">func f3(w io.Writer, s fmt.Stringer, parts [][]byte) (int, error) {
 	sw := safeWriter{dst: w}
@@ -209,6 +215,24 @@ After all operations we wish to execute, we return an error
 	return sw.written, sw.err
 }
 </code></pre>
+
+<blockquote>
+<p>Not all errors require immediate handling, we use that fact in
+safeWriter.</p>
+</blockquote>
+
+<h2 id="not-only-io-writer">Not only io.Writer</h2>
+
+<p><code>io.Writer</code> was selected to show this wrapping technique
+on concrete example, but it can be applied to any methods
+that clobber code because of the contract it establish.</p>
+
+<p>For <code>f1</code> it could be better to define <code>writeAll</code> that
+takes <code>[][]byte</code> and does the looping inside.
+It works, but the solution is less generic than <code>f3</code>
+and probably less composable. The balance of
+<strong>too concrete</strong> and <strong>over-abstract</strong> code is hard, so the decision
+is always halfway subjective.</p>
 
     </section>
 
