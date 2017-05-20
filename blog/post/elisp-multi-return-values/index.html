@@ -80,7 +80,7 @@
 <li><a href="#naive-solution">Naive solution</a></li><br>
 <li><a href="#no-allocations-with-preallocations">No allocations with preallocations</a></li><br>
 <li><a href="#list-vs-vector">List vs vector</a></li><br>
-<li><a href="#not-list-nor-vector">Not list, nor vector?</a></li><br>
+<li><a href="#neither-list-nor-vector">Neither list, nor vector?</a></li><br>
 <li><a href="#mv-lib">mv-lib</a></li><br>
 <li><a href="#why-i-prefer-go-el">Why I prefer Go.el</a></li><br>
 </ul></li><br>
@@ -145,7 +145,8 @@ store results inside private global variable.</p>
 <h2 id="list-vs-vector">List vs vector</h2>
 
 <p>The choice between <code>vector</code> and <code>list</code> is not easy,
-especially if you know Emacs bytecode.</p>
+especially if you know
+<a href="https://www.emacswiki.org/emacs/ByteCodeEngineering">Emacs bytecode</a>.</p>
 
 <p>First operation we care about is <strong>return efficiency</strong>.
 To make multi value return, preallocated list/vector
@@ -210,7 +211,7 @@ List becomes less and less efficient as the <code>N</code> grows.</p>
 <p>In my experience 2-value returns cover 90% of cases.
 This means that list is a winner here.</p>
 
-<h2 id="not-list-nor-vector">Not list, nor vector?</h2>
+<h2 id="neither-list-nor-vector">Neither list, nor vector?</h2>
 
 <p>It is possible to avoid lists and vectors completely.</p>
 
@@ -224,7 +225,7 @@ the first variable; other variables read from
 corresponding global variables.</p>
 
 <pre><code class="language-lisp">;; Return &quot;a&quot;, &quot;b&quot;, &quot;c&quot;:
-(progn 
+(progn
   (setq mv--3 &quot;c&quot;)
   (setq mv--2 &quot;b&quot;)
   &quot;a&quot;)
