@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Go.El Project on Quasilyte blog</title>
+    <link>https://quasilyte.github.io/blog/tags/go.el-project/</link>
+    <description>Recent content in Go.El Project on Quasilyte blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Released under the MIT license.</copyright>
+    <lastBuildDate>Fri, 19 May 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://quasilyte.github.io/blog/tags/go.el-project/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Emacs Lisp multi return values</title>
+      <link>https://quasilyte.github.io/blog/post/elisp-multi-return-values/</link>
+      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/elisp-multi-return-values/</guid>
+      <description>The missing feature Did you ever wrote a function in Emacs Lisp which should return more than one result?
+Emacs Lisp has no native support for multiple return values, but provides cl-lib that emulates it in a Common Lisp style.
+In this article I will show that cl-values is suboptimal and can be replaced without any sacrifices to the convenience.
+Naive solution cl-lib implements cl-values in terms of list. This approach is naive because each time you return with that, an allocation is involved.</description>
+    </item>
+    
+  </channel>
+</rss>

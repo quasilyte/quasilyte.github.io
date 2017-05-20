@@ -22,6 +22,15 @@
     </item>
     
     <item>
+      <title>Emacs Lisp</title>
+      <link>https://quasilyte.github.io/blog/tags/emacs-lisp/</link>
+      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/emacs-lisp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Error Handling</title>
       <link>https://quasilyte.github.io/blog/tags/error-handling/</link>
       <pubDate>Wed, 26 Apr 2017 00:00:00 +0000</pubDate>
@@ -40,6 +49,15 @@
     </item>
     
     <item>
+      <title>Go.El Project</title>
+      <link>https://quasilyte.github.io/blog/tags/go.el-project/</link>
+      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/go.el-project/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Golang</title>
       <link>https://quasilyte.github.io/blog/tags/golang/</link>
       <pubDate>Wed, 26 Apr 2017 00:00:00 +0000</pubDate>
@@ -54,6 +72,15 @@
       <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/language-design/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Performance</title>
+      <link>https://quasilyte.github.io/blog/tags/performance/</link>
+      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/performance/</guid>
       <description></description>
     </item>
     
