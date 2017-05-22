@@ -206,10 +206,19 @@ General algorithm for lists is:</p>
 <p>Note that used list is not <strong>proper list</strong>. The last <code>cdr</code> is not <code>nil</code>.</p>
 
 <p>At <code>N=3</code> vector and list are nealy equal in efficiency, <code>N=4</code> favors vectors.
-List becomes less and less efficient as the <code>N</code> grows.</p>
-
-<p>In my experience 2-value returns cover 90% of cases.
+List becomes less and less efficient as the <code>N</code> grows.
+In my experience 2-value returns cover 90% of cases.
 This means that list is a winner here.</p>
+
+<p>Another thing worth considering is ability to discard some
+of the return values. In <strong>Go</strong> you can do <code>a, _, c := f()</code>
+which assigns 1st and 3rd returned values; 2nd value is ignored.
+Generally, lists are slower here because you still need to
+traverse ignored elements.</p>
+
+<p>Next section describes another implementation option which
+is a good compromise between list and vector in terms of
+{return/assign/discard} operations perfomance.</p>
 
 <h2 id="neither-list-nor-vector">Neither list, nor vector?</h2>
 
@@ -272,14 +281,27 @@ presented in previous section.</p>
 
 <p><a href="/blog/code/mv-lib.el">Full mv-lib implementation</a>.</p>
 
-<pre><code class="language-lisp">(let ((lexical-binding t))
+<pre><code class="language-lisp">;; Bind multiple values with some of them being ignored.
+(mv-let (a _ b _) (mv-ret 1 2 3 4)
+  (+ a b)) ;; =&gt; 4
+
+;; Compare with `cl-lib'.
+(let ((lexical-binding t))
   (benchmark-run-compiled 1000000
     (mv-let (a b c) (mv-ret 1 2 3)
       (ignore a b c)))) ;; =&gt; (0.174552687 0 0.0)
 ;; 0 GC runs!
 </code></pre>
 
-<p>Multitple values return with zero allocations achieved.</p>
+<blockquote>
+<p>Multitple values return with zero allocations achieved</p>
+</blockquote>
+
+<p>Each <code>_</code> bind variable does not produce any code,
+they truly ignore the result.
+Important exception is the first binding. It can not
+discard the bound expression because it has side-effect
+of setting rest return values.</p>
 
 <h2 id="why-i-prefer-go-el">Why I prefer Go.el</h2>
 
