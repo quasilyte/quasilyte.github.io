@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://quasilyte.github.io/blog/post/riscv32-custom-instruction-and-its-simulation/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/post/elisp-multi-return-values/</loc>
     <lastmod>2017-05-19T00:00:00+00:00</lastmod>
   </url>
@@ -40,6 +45,18 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/tags/gcc/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.github.io/blog/tags/gcc-plugin/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/tags/go/</loc>
     <lastmod>2017-04-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -58,6 +75,12 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/tags/hardcore/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/tags/language-design/</loc>
     <lastmod>2016-12-26T00:00:00+00:00</lastmod>
     <priority>0</priority>
@@ -71,13 +94,13 @@
   
   <url>
     <loc>https://quasilyte.github.io/blog/post/</loc>
-    <lastmod>2017-05-19T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.github.io/blog/</loc>
-    <lastmod>2017-05-19T00:00:00+00:00</lastmod>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -88,8 +111,20 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/tags/risc-v/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/tags/</loc>
     <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.github.io/blog/tags/tutorial/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   

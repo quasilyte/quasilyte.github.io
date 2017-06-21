@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gcc on Quasilyte blog</title>
+    <link>https://quasilyte.github.io/blog/tags/gcc/</link>
+    <description>Recent content in Gcc on Quasilyte blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>Released under the MIT license.</copyright>
+    <lastBuildDate>Wed, 21 Jun 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://quasilyte.github.io/blog/tags/gcc/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>RISC-V: custom instruction and its simulation</title>
+      <link>https://quasilyte.github.io/blog/post/riscv32-custom-instruction-and-its-simulation/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/riscv32-custom-instruction-and-its-simulation/</guid>
+      <description>Agenda This article shows how to add a new instruction to RISC-V and simulate it.
+These topics are covered along the way:
+ Whole GNU riscv toolchain installation; Implementation of a new instruction for spike RISC-V ISA simulator; Manual instruction encoding in C/C++; Custom instruction simulation (with visible output); [riscv32-]GCC plugin development;  You may find associated repository useful.
+Many things can go wrong. Be prepared to fix upcoming issues by yourself.</description>
+    </item>
+    
+  </channel>
+</rss>

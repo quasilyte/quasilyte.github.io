@@ -40,6 +40,24 @@
     </item>
     
     <item>
+      <title>Gcc</title>
+      <link>https://quasilyte.github.io/blog/tags/gcc/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/gcc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Gcc Plugin</title>
+      <link>https://quasilyte.github.io/blog/tags/gcc-plugin/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/gcc-plugin/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Go</title>
       <link>https://quasilyte.github.io/blog/tags/go/</link>
       <pubDate>Wed, 26 Apr 2017 00:00:00 +0000</pubDate>
@@ -67,6 +85,15 @@
     </item>
     
     <item>
+      <title>Hardcore</title>
+      <link>https://quasilyte.github.io/blog/tags/hardcore/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/hardcore/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Language Design</title>
       <link>https://quasilyte.github.io/blog/tags/language-design/</link>
       <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
@@ -90,6 +117,24 @@
       <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/rants/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Risc V</title>
+      <link>https://quasilyte.github.io/blog/tags/risc-v/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/risc-v/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Tutorial</title>
+      <link>https://quasilyte.github.io/blog/tags/tutorial/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/tutorial/</guid>
       <description></description>
     </item>
     
