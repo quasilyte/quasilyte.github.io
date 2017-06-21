@@ -270,7 +270,55 @@ If result differs, <code>riscv32-unknown-elf-gdb</code> can help you in troubles
 
 <h2 id="mac-encoding-explained">Mac encoding explained</h2>
 
-<p><strong>TODO</strong></p>
+<p>Be sure to look at <a href="https://riscv.org/specifications/">official specifications</a> if
+you aim for precise descriptions.</p>
+
+<p><code>mac</code> will mimic <code>mul</code> encoding, but use different opcode.</p>
+
+<pre><code class="language-ruby"># file &quot;riscv-opcodes/opcodes&quot;
+#                                differs
+#                                |
+#                                v
+mac rd rs1 rs2 31..25=1 14..12=0 6..2=0x1A 1..0=3
+mul rd rs1 rs2 31..25=1 14..12=0 6..2=0x0C 1..0=3
+#   ^  ^   ^   ^        ^        ^         ^
+#   |  |   |   |        |        |         |
+#   |  |   |   |        |        |         |
+#   |  |   |   |        |        |         also opcode 3 bits
+#   |  |   |   |        |        opcode 5 bits
+#   |  |   |   |        funct3 3 bits
+#   |  |   |   funct7 7 bits
+#   |  |   rs2 (src2) 5 bits
+#   |  rs1 (src1) 5 bits
+#   dest 5 bits
+</code></pre>
+
+<p>Actual encoding has different order of components and opcode is
+really single 7 bit segment.</p>
+
+<blockquote>
+<p>5 bits per register operand means that we have 32 addressable registers.</p>
+</blockquote>
+
+<pre><code class="language-ruby"># Encoding used for &quot;mac a0, a1, a2&quot;
+0x02C5856B [base 16]
+==
+10110001011000010101101011 [base 2]
+== 
+00000010110001011000010101101011 [base 2]
+# Group by related bit chunks:
+0000001 01100 01011 000 01010 1101011
+^       ^     ^     ^   ^     ^
+|       |     |     |   |     |
+|       |     |     |   |     opcode (6..2=0x0C 1..0=3)
+|       |     |     |   dest (10 : a0)
+|       |     |     funct3 (14..12=0)
+|       |     src1 (11 : a1)
+|       src2 (12 : a2)
+funct7 (31..25=1)
+</code></pre>
+
+<p><img src="/blog/img/reg_table.png"></p>
 
 <h2 id="adding-mac-intrinsic-to-the-gcc">Adding &ldquo;mac&rdquo; intrinsic to the GCC</h2>
 
@@ -309,6 +357,9 @@ If result differs, <code>riscv32-unknown-elf-gdb</code> can help you in troubles
             
                 
                 <a href="https://quasilyte.github.io/blog/tags/hardcore">[hardcore] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/compilers">[compilers] </a>
             
         </div>
     </section>
