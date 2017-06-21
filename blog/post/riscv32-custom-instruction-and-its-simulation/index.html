@@ -82,7 +82,8 @@
 <li><a href="#adding-mac-instruction-to-the-rv32im">Adding &ldquo;mac&rdquo; instruction to the rv32im</a></li><br>
 <li><a href="#testing-rv32im-brand-new-instruction">Testing rv32im brand new instruction</a></li><br>
 <li><a href="#mac-encoding-explained">Mac encoding explained</a></li><br>
-<li><a href="#adding-mac-intrinsic-to-the-gcc">Adding &ldquo;mac&rdquo; intrinsic to the GCC</a></li><br>
+<li><a href="#plugin-vs-patch">Plugin vs patch</a></li><br>
+<li><a href="#gcc-rv32immac-plugin">GCC &ldquo;rv32imMac&rdquo; plugin</a></li><br>
 <li><a href="#mac-gimple-statement">Mac GIMPLE statement</a></li><br>
 <li><a href="#the-pleasure-of-intrinsics">The pleasure of intrinsics</a></li><br>
 <li><a href="#compiling-mac-without-intrinsic">Compiling &ldquo;mac&rdquo; without intrinsic</a></li><br>
@@ -117,38 +118,22 @@ The final result is very rewarding, I promise.</p>
 
 <p>Choose installation directory. Call it <code>RISCV</code>.</p>
 
-<pre><code class="language-bash">    # ~/.bashrc
-    # Directory which will contain everything we need.
+<p>Add these lines to your <code>~/.bashrc</code>:</p>
+
+<pre><code class="language-bash">    # Directory which will contain everything we need.
 export RISCV_HOME=~/riscv-home
     # $RISCV will point to toolchain install location.
 export RISCV=&quot;${RISCV_HOME}/riscv&quot;
 export PATH=&quot;${PATH}:${RISCV}/bin&quot;
 </code></pre>
 
-<p>Go to that directory and clone all required repositories.
-The process may take more than a hour; you may want to download
-them in parallel.</p>
+<p>Run <code>mkdir -p &quot;${RISCV_HOME}&quot; &quot;${RISCV}&quot;</code>.</p>
 
-<pre><code class="language-bash">mkdir -p &quot;${RISCV_HOME}&quot; &quot;${RISCV}&quot;
-cd $RISCV
-    # RISC-V frontend server. Needed for spike simulator.
-git clone https://github.com/riscv/riscv-fesvr
-    # Proxy kernel. Needed for spike simulator.
-git clone https://github.com/riscv/riscv-pk
-    # The spike itself.
-git clone https://github.com/riscv/riscv-isa-sim
-    # Useful helper package. Makes it easier to add a new opcode.
-git clone https://github.com/riscv/riscv-opcodes
-    # &quot;riscv-opcodes&quot; expects &quot;riscv-tests&quot; to be present in $RISCV_HOME.
-git clone https://github.com/riscv/riscv-tests.git
-    # This will take awhile... The longest step.
-    # Toolchain contains riscv ports of binutils, GCC and more.
-git clone git clone --recursive https://github.com/riscv/riscv-gnu-toolchain
-</code></pre>
+<p>Use <a href="https://github.com/Quasilyte/gnu-riscv32_ext/blob/master/1_install/2_download-repos">1_install/2_download-repos</a> script to clone all required repositories.</p>
 
 <p>If you wish to save some time and traffic, avoid recursive clone of
 toolchain repository. Instead, clone sub-modules by hand.
-You may exclude &ldquo;riscv-glibc&rdquo;. Not sure about &ldquo;riscv-dejagnu&rdquo; though.</p>
+You may exclude &ldquo;riscv-glibc&rdquo;.</p>
 
 <blockquote>
 <p>Be warned: I have not tested partial toolchain build, caveat emptor</p>
@@ -320,7 +305,29 @@ funct7 (31..25=1)
 
 <p><img src="/blog/img/reg_table.png"></p>
 
-<h2 id="adding-mac-intrinsic-to-the-gcc">Adding &ldquo;mac&rdquo; intrinsic to the GCC</h2>
+<h2 id="plugin-vs-patch">Plugin vs patch</h2>
+
+<p>There are two ways to extend GCC:</p>
+
+<ol>
+<li>Patch GCC itself</li>
+<li>Write loadable plugin for GCC</li>
+</ol>
+
+<p>Prefer plugins to GCC patches whenever possible.<br />
+GCC wiki <a href="https://gcc.gnu.org/wiki/plugins">&ldquo;plugins&rdquo;</a> page described
+advantages in the &ldquo;Background&rdquo; section.</p>
+
+<p>In this guide, both methods will be covered.</p>
+
+<p>Useful links:</p>
+
+<ul>
+<li><a href="http://thinkingeek.com/2015/08/16/a-simple-plugin-for-gcc-part-1/">Simple GCC plugin</a> series of posts</li>
+<li><a href="https://gcc.gnu.org/onlinedocs/gccint/Plugins.html#Plugins">GCC plugins manual</a></li>
+</ul>
+
+<h2 id="gcc-rv32immac-plugin">GCC &ldquo;rv32imMac&rdquo; plugin</h2>
 
 <p><strong>TODO</strong></p>
 
