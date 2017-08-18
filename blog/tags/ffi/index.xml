@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Go on Quasilyte blog</title>
-    <link>https://quasilyte.github.io/blog/tags/go/</link>
-    <description>Recent content in Go on Quasilyte blog</description>
+    <title>Ffi on Quasilyte blog</title>
+    <link>https://quasilyte.github.io/blog/tags/ffi/</link>
+    <description>Recent content in Ffi on Quasilyte blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license.</copyright>
     <lastBuildDate>Fri, 18 Aug 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://quasilyte.github.io/blog/tags/go/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://quasilyte.github.io/blog/tags/ffi/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -20,16 +20,6 @@
       <guid>https://quasilyte.github.io/blog/post/cgo-funcall/</guid>
       <description>DWIM-style FFI CGo is a widely adopted way of calling C functions from Go: low level C FFI which does many things behind the scene, but exposes only minimal functionality that is required to interact with C.
 CGo does no implicit conversions or data copying during C functions call, even int and C.int are not compatible. Code that uses this mechanism without wrappers (bindings) will be polluted with explicit slice/array copies and type conversions.</description>
-    </item>
-    
-    <item>
-      <title>Dumbed-down Go interfaces</title>
-      <link>https://quasilyte.github.io/blog/post/dumbing-down-go-interfaces/</link>
-      <pubDate>Wed, 26 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/post/dumbing-down-go-interfaces/</guid>
-      <description>io.Writer If you write Go, odds are high that you familiar with io.Writer#Write signature well. Write returns both error and number of bytes written. Every time you call this method, error should be checked before you try to write to that writer again.
-This interface is inconvenient to use when you want to call Write multiple times and get total number of bytes pushed during these invocations. You also do not want to loose error if it ever occurs.</description>
     </item>
     
   </channel>

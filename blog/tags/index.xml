@@ -22,6 +22,15 @@
     </item>
     
     <item>
+      <title>Cgo</title>
+      <link>https://quasilyte.github.io/blog/tags/cgo/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/cgo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Compilers</title>
       <link>https://quasilyte.github.io/blog/tags/compilers/</link>
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
@@ -49,6 +58,15 @@
     </item>
     
     <item>
+      <title>Ffi</title>
+      <link>https://quasilyte.github.io/blog/tags/ffi/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/ffi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Gcc</title>
       <link>https://quasilyte.github.io/blog/tags/gcc/</link>
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
@@ -69,7 +87,7 @@
     <item>
       <title>Go</title>
       <link>https://quasilyte.github.io/blog/tags/go/</link>
-      <pubDate>Wed, 26 Apr 2017 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/go/</guid>
       <description></description>
@@ -126,6 +144,15 @@
       <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/rants/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reflection</title>
+      <link>https://quasilyte.github.io/blog/tags/reflection/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/reflection/</guid>
       <description></description>
     </item>
     

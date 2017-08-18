@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>CGo funcall &middot; Quasilyte blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.20.5" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.github.io/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle"><strong>defun</strong> and <strong>define</strong> live here in harmony</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">CGo funcall</h1>
+        <div class="post-meta">
+            <time datetime="18 August 2017">
+                18 August 2017
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#dwim-style-ffi">DWIM-style FFI</a></li><br>
+<li><a href="#universal-go-c-value-mapping">Universal {Go}-&gt;{C} value mapping</a></li><br>
+<li><a href="#cgo-function-metadata">CGo function metadata</a></li><br>
+<li><a href="#implementation-overview">Implementation overview</a></li><br>
+<li><a href="#warnings-and-closing-notes">Warnings and closing notes</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<h2 id="dwim-style-ffi">DWIM-style FFI</h2>
+
+<p><a href="https://golang.org/cmd/cgo/">CGo</a> is a widely adopted way of calling C functions from Go:
+low level <a href="https://en.wikipedia.org/wiki/Foreign_function_interface">C FFI</a> which
+does many things behind the scene, but exposes only minimal functionality
+that is required to interact with C.</p>
+
+<p>CGo does no implicit conversions or data copying during C functions call,
+even <code>int</code> and <code>C.int</code> are not compatible.
+Code that uses this mechanism without wrappers (<a href="https://en.wikipedia.org/wiki/Language_binding">bindings</a>) will be polluted with
+explicit slice/array copies and type conversions.</p>
+
+<p>That is perfectly fine for default behavior and FFI foundation,
+but sometimes we do not require this amount of control.
+In this cases, we want the programming environment to <a href="https://en.wikipedia.org/wiki/DWIM">do what we mean</a>.</p>
+
+<p>Imagine we have this C code:</p>
+
+<pre><code class="language-c">// Let's assume this function is very important.
+int sum(int *xs, int xs_len) {
+    int ret = 0;
+    for (int i = 0; i &lt; xs_len; ++i) {
+        ret += xs[i];
+    }
+    return ret;
+}
+</code></pre>
+
+<p>And you wish to call it from Go.
+There is <code>[]int</code> of valuable payload which must be
+aggregated with <code>sum</code> function.</p>
+
+<pre><code class="language-go">xs := []int{1, 2, 3} // Payload
+// a. This is how you may want to call that function:
+sum := cffi.Func(C.sum)
+sum(xs)
+// b. This is how you actually can call that function:
+ys := append([]int{}, xs...) // Make a copy (for safety)
+C.sum(unsafe.Pointer(&amp;ys[0]), C.int(len(ys)))
+</code></pre>
+
+<p>This article aims tries to reach <strong>a</strong>-like API,
+as close as possible.</p>
+
+<blockquote>
+<p>Note that it is not always a desired behavior to
+pass slice as 2 separate {data, len} arguments,
+but I have selected this strategy to show something
+worthwhile in the final section of this post.</p>
+</blockquote>
+
+<h2 id="universal-go-c-value-mapping">Universal {Go}-&gt;{C} value mapping</h2>
+
+<p>If type mapping is the most boilerplate-full part, let&rsquo;s
+write a simple library that does it for us.</p>
+
+<p>Almost all primitive types have obvious C counterparts.
+For other types we can define conversion rules and apply
+them consistently.</p>
+
+<p>For starters, <code>Go2C</code> function should handle 1 type: integers.
+It takes arbitrary Go type as <code>interface{}</code> and
+returns inferred C type boxed into <code>interface{}</code>.</p>
+
+<pre><code class="language-go">package cffi
+import &quot;C&quot;
+func Go2C(x interface{}) interface{} {
+    switch x := x.(type) {
+    case int:
+        return C.int(x)
+    default:
+        panic(&quot;todo: implement more types&quot;)
+    }
+}
+</code></pre>
+
+<p>So long it looks fine.
+Try to use it via client package and you may be surprised.</p>
+
+<pre><code class="language-go">package main
+import &quot;C&quot;
+import &quot;cffi&quot;
+func main() {
+    x := int(10)      // Clearly, an int
+    y := cffi.Go2C(x) // Dynamic type=C.int
+    z := y.(C.int)    // Panics!
+    println(z)
+}
+</code></pre>
+
+<p>Exact error message may vary, but it reads like: &ldquo;panic: interface
+conversion: interface {} is cffi._Ctype_int, not main._Ctype_int&rdquo;.</p>
+
+<p>This is a <a href="https://github.com/golang/go/issues/13467">known issue</a>.
+Practically speaking, we can not implement <code>Go2C</code> this way properly.</p>
+
+<p>This also makes it impossible to match result types and
+do reversal, <code>C2Go</code> mapping.</p>
+
+<blockquote>
+<p>The only way to define a converter function is to
+delegate that task to the client code.
+Package that imports &ldquo;C&rdquo; does implement the conversion rules.</p>
+</blockquote>
+
+<h2 id="cgo-function-metadata">CGo function metadata</h2>
+
+<p>To define function like <code>func Call(fn &lt;?&gt;, args ...&lt;?&gt;) &lt;?&gt;</code> we need
+to have signature info of <code>fn</code> argument.</p>
+
+<p>How much information is provided by CGo?
+What kind of value <code>C.&lt;X&gt;</code> yields, given that <code>&lt;X&gt;</code> is a function?</p>
+
+<pre><code class="language-go">package main
+// int foo(void) { return 0; }
+import &quot;C&quot;
+import &quot;fmt&quot;
+func main() { fmt.Printf(&quot;%T\n&quot;, C.foo) }
+</code></pre>
+
+<p>The answer is <code>unsafe.Pointer</code>.
+Well, this is bad for two reasons:</p>
+
+<ol>
+<li>We can not wrap it into <code>reflect.Value</code>;</li>
+<li><code>unsafe.Pointer</code> gives zero type information;</li>
+</ol>
+
+<p>More experiments will reveal a cheesy way to get what we need.</p>
+
+<p><strong>Step1</strong>: discover CGo name mangling scheme.</p>
+
+<pre><code class="language-go">package main
+// void foo(void) {}
+import &quot;C&quot;
+func main() { C.foo(1, 2) }
+</code></pre>
+
+<p>Go will kindly reply that you called function with wrong number
+of arguments:</p>
+
+<pre><code class="language-text">main.go:6: too many arguments in call to _Cfunc_foo
+	have (number, number)
+	want ()
+</code></pre>
+
+<p>See that <code>_Cfunc_foo</code>? I think you get the pattern.</p>
+
+<p><strong>Step2</strong>: examine mangled symbol directly.</p>
+
+<pre><code class="language-go">package main
+// void foo(void) {}
+import &quot;C&quot;
+import &quot;fmt&quot;
+func main() { fmt.Printf(&quot;%#v\n&quot;, _Cfunc_foo) }
+</code></pre>
+
+<p>Go rejects your code: <code>main.go:5: undefined: _Cfunc_foo</code>.
+This is easy to fix.</p>
+
+<p><strong>Step3</strong>: figure out a fix to error above.</p>
+
+<pre><code class="language-go">package main
+// void foo(void) {}
+import &quot;C&quot;
+import &quot;fmt&quot;
+func main() { 
+    _ = C.foo() // Use &quot;foo&quot;
+    fmt.Printf(&quot;%#v\n&quot;, _Cfunc_foo) 
+}
+</code></pre>
+
+<p>This snippet actually gets us closer to the solution.
+Expression <code>_Cfunc_foo</code> is not equivalent to <code>C.foo</code> as it
+gives us <code>func() main._Ctype_void</code> type.</p>
+
+<h2 id="implementation-overview">Implementation overview</h2>
+
+<p>Implementation requirements:</p>
+
+<ol>
+<li>Function is callable via its symbol, like <code>f()</code>, where <code>f</code> is a symbol;</li>
+<li>Ingoing and outgoing arguments are automatically converted;</li>
+</ol>
+
+<p>First requirement can be fulfilled only by global (possibly dot-imported) function
+or closure variable.
+Second requirement, due to restrictions outlined above, is possible
+with a help of external state. This state can be global or captured (with closures).</p>
+
+<pre><code class="language-go">package main
+// int add1(int x) { return x + 1; }
+import &quot;C&quot;
+import &quot;cffi&quot;
+var add1 cffi.Func
+func init() {
+    _ = C.add1(0) // [I]
+
+    invoker := cffi.NewInvoker( // [II]
+        // Go -&gt; C
+        func(x interface{}) interface{} {
+            return C.int(x.(int))
+        },
+        // C -&gt; Go
+        func (x interface{}) interface{} {
+            return int(x.(C.int))
+        }
+    )
+
+    add1 = cffi.Wrap(invoker, _Cfunc_add1) // [III]
+}
+
+func main() {
+    println(add1(50)) // [IV]
+}
+</code></pre>
+
+<p><strong>(I)</strong> is needed if <code>add1</code> is never called via <code>C.add1</code> symbol.
+We will not get <code>_Cfunc_add1</code> without it.</p>
+
+<p><strong>(II)</strong> invoker instance should take care of values conversions
+and universal call evaluation.</p>
+
+<p><strong>(III)</strong> actual function pointer is wrapped into a closure
+that holds invoker.</p>
+
+<p><strong>(IV)</strong> prepared closure can be used in a desired way.</p>
+
+<p>Invoker can handle 1-&gt;N value mapping.
+For example, it can be legal to return <code>[]interface{}</code> for
+Go values that should be unwrapped into 2 C function arguments.
+Slices are such example (we ignore <code>cap</code> on purpose).</p>
+
+<pre><code class="language-go">func (x interface{}) interface{} {
+    switch x := x.(type) {
+    case []int:
+        y := make([]C.int, len(x))
+        for i := range x {
+            y[i] = C.int(x[i])
+        }
+        ptr := (*C.int)(unsafe.Pointer(&amp;y[0]))
+        return []interface{}{ptr, C.int(len(x))}
+
+    // ... handle other types
+    }
+}
+</code></pre>
+
+<p>If you want to see implementation sources, inspect <a href="https://github.com/Quasilyte/cffi">cffi</a> library.</p>
+
+<h2 id="warnings-and-closing-notes">Warnings and closing notes</h2>
+
+<p><strong>Performance</strong>.</p>
+
+<p><code>cffi</code> library solution involves many extra overhead compared to
+simple CGo call, which itself is far more expensive than normal Go
+function call.</p>
+
+<p><strong>Portability</strong>.</p>
+
+<p>Using CGo alone can hurt application portability.
+Granted, using CGo oddities like name mangled function
+objects slaughters program portability completely.
+It may break with newer Go1 releases.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/cgo">[cgo] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/ffi">[ffi] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/reflection">[reflection] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=CGo%20funcall&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fcgo-funcall%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fcgo-funcall%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fcgo-funcall%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2017 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.github.io/blog/jquery.min.js"></script>
+<script src="https://quasilyte.github.io/blog/js/index.js"></script>
+<script src="https://quasilyte.github.io/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.github.io/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
