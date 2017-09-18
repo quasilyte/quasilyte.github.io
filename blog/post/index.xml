@@ -80,5 +80,19 @@ It &amp;ldquo;evolves so slowly&amp;rdquo; because it is already quite complete.
  &amp;hellip;but in reallity it is impossible to achieve.</description>
     </item>
     
+    <item>
+      <title>FAQ</title>
+      <link>https://quasilyte.github.io/blog/post/faq/</link>
+      <pubDate>Mon, 01 Jan 1990 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/faq/</guid>
+      <description>Report an issue If you:
+ Found a typo; Think some material is inappropriate or incorrect; Want to propose a new article;  &amp;hellip; or you looking for a way to contact author,
+just fire an Github issue.
+Try to be polite and precise in your words, please.
+Subscribe Currently, the only way to &amp;ldquo;subscribe&amp;rdquo; for blog updates is to watch blog-src repository.
+Go to the linked repository and locate displayed button in the top-right part of the window.</description>
+    </item>
+    
   </channel>
 </rss>
