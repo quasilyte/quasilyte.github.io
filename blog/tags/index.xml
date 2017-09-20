@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license.</copyright>
-    <lastBuildDate>Fri, 18 Aug 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 20 Sep 2017 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://quasilyte.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Asm</title>
+      <link>https://quasilyte.github.io/blog/tags/asm/</link>
+      <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/asm/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>C</title>
@@ -96,7 +105,7 @@
     <item>
       <title>Go</title>
       <link>https://quasilyte.github.io/blog/tags/go/</link>
-      <pubDate>Mon, 18 Sep 2017 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/go/</guid>
       <description></description>
@@ -148,11 +157,29 @@
     </item>
     
     <item>
+      <title>Plan9</title>
+      <link>https://quasilyte.github.io/blog/tags/plan9/</link>
+      <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/plan9/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Rants</title>
       <link>https://quasilyte.github.io/blog/tags/rants/</link>
       <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/rants/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Reference</title>
+      <link>https://quasilyte.github.io/blog/tags/reference/</link>
+      <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/tags/reference/</guid>
       <description></description>
     </item>
     

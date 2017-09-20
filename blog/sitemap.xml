@@ -2,6 +2,11 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://quasilyte.github.io/blog/post/go-asm-complementary-reference/</loc>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/post/go-nested-functions-and-static-locals/</loc>
     <lastmod>2017-09-18T00:00:00+00:00</lastmod>
   </url>
@@ -34,6 +39,12 @@
   <url>
     <loc>https://quasilyte.github.io/blog/post/faq/</loc>
     <lastmod>1990-01-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.github.io/blog/tags/asm/</loc>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
   </url>
   
   <url>
@@ -97,7 +108,7 @@
   
   <url>
     <loc>https://quasilyte.github.io/blog/tags/go/</loc>
-    <lastmod>2017-09-18T00:00:00+00:00</lastmod>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -132,20 +143,32 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/tags/plan9/</loc>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/post/</loc>
-    <lastmod>2017-09-18T00:00:00+00:00</lastmod>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.github.io/blog/</loc>
-    <lastmod>2017-09-18T00:00:00+00:00</lastmod>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.github.io/blog/tags/rants/</loc>
     <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.github.io/blog/tags/reference/</loc>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -163,7 +186,7 @@
   
   <url>
     <loc>https://quasilyte.github.io/blog/tags/</loc>
-    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
