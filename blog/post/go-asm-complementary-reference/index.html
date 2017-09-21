@@ -82,6 +82,7 @@
 <ul>
 <li><a href="#third-flavour-of-x86-assembly-language">Third flavour of x86 assembly language</a></li><br>
 <li><a href="#operands-order">Operands order</a></li><br>
+<li><a href="#register-operand-rules">Register operand rules</a></li><br>
 <li><a href="#mnemonics">Mnemonics</a></li><br>
 <li><a href="#register-names">Register names</a></li><br>
 <li><a href="#forbidden-constructions">Forbidden constructions</a></li><br>
@@ -170,6 +171,33 @@ official manual{2}:</p>
 <p>&ldquo;The order of operands is from left to right in dataflow order,
 just as on the 68020 but not as in MIPS documentation.&rdquo;</p>
 </blockquote>
+
+<h2 id="register-operand-rules">Register operand rules</h2>
+
+<p>Before showing divergent instruction names, important part of
+official manual{2} should be quoted and explained.</p>
+
+<blockquote>
+<p>All registers are 64 bit, but instructions access low-order 8, 16 and 32 bits
+as described in the processor handbook.
+For example, MOVL to AX puts a value in the low-order 32 bits
+and clears the top 32 bits to zero.</p>
+</blockquote>
+
+<p>Little snippet below will demonstrate the idea:</p>
+
+<pre><code class="language-lisp">Go        | AT&amp;T
+================
+BSWAPW AX | BSWAP %ax
+BSWAPL AX | BSWAP %eax
+BSWAPQ AX | BSWAP %rax
+</code></pre>
+
+<p>When instruction supports multiple operand sizes,
+Plan9 assembly uses pseudo instructions like <code>BSWAP{W,L,Q}</code> above,
+that specify operand size.</p>
+
+<p>The next two sections should be easier to grasp with this knowledge.</p>
 
 <h2 id="mnemonics">Mnemonics</h2>
 
