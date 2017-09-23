@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Writing Emacs Lisp compiler intrinsics &middot; Quasilyte blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.20.5" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.github.io/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle"><strong>defun</strong> and <strong>define</strong> live here in harmony</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Writing Emacs Lisp compiler intrinsics</h1>
+        <div class="post-meta">
+            <time datetime="23 September 2017">
+                23 September 2017
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#the-problem">The problem</a></li><br>
+<li><a href="#quick-glance-at-cl-return">Quick glance at cl-return</a></li><br>
+<li><a href="#ways-to-control-byte-compilation">Ways to control byte compilation</a></li><br>
+<li><a href="#compiler-handler">Compiler handler</a></li><br>
+<li><a href="#trying-out-new-intrinsic">Trying out new intrinsic</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<h2 id="the-problem">The problem</h2>
+
+<p>Given a particular programming task in Emacs Lisp,
+you almost always should implement it with <code>function</code>.
+Sometimes, <code>macro</code> is a proper tool.<br />
+Even more rarely, <code>cl-define-compiler-macro</code> may be your choice.</p>
+
+<p>All these methods are safe to use.
+They almost certanly will not break with newer Emacs versions.</p>
+
+<p>One interesting task that can not be implemented
+efficiently with approaches that are outlined above is
+imperative <a href="https://en.wikipedia.org/wiki/Return_statement">return statement</a>.</p>
+
+<p>Emacs Lisp lacks this kind of flow control and
+this is a problem we are goind to attack today.</p>
+
+<p>All examples are done around Emacs Lisp <a href="https://rosettacode.org/wiki/Factorial#Emacs_Lisp">factorial</a>
+function that is re-written to use <code>return</code> form.</p>
+
+<p>At the end of this article, <code>%return</code> intrinsic will be
+developed, which takes a single expression and returns
+evaluated result from the called subroutine.</p>
+
+<h2 id="quick-glance-at-cl-return">Quick glance at cl-return</h2>
+
+<p>Builtin <code>cl-lib</code> package exports <code>cl-return</code> and <code>cl-return-from</code> macros
+that both doing the same thing. They use <code>throw</code> and expect
+<code>catch</code> to exist; this means that <code>cl-block</code> is mandatory.</p>
+
+<pre><code class="language-lisp">(defun factorial/if (x)            (defun factorial/cl (x)
+  (if (= x 1)                        (cl-block 'ret
+      1                                (when (= x 1)
+    (* x (factorial/if (1- x)))))        (cl-return-from 'ret 1))
+                                       (* x (factorial/cl (1- x)))))
+                                  
+(disassemble 'factorial/if)        (disassemble 'factorial/cl)
+;; 0       dup                     ;; 0       constant  --cl-block-\(quote\ ret\)--
+;; 1       constant  1             ;; 1       pushcatch 2
+;; 2       eqlsign                 ;; 4       dup  
+;; 3       goto-if-nil 1           ;; 5       constant  1
+;; 6       constant  1             ;; 6       eqlsign 
+;; 7       return                  ;; 7       goto-if-nil 1
+;; 8:1     dup                     ;; 10      constant  throw
+;; 9       constant  factorial/if  ;; 11      constant  --cl-block-\(quote\ ret\)--
+;; 10      stack-ref 2             ;; 12      constant  1
+;; 11      sub1                    ;; 13      call      2
+;; 12      call      1             ;; 14      discard   
+;; 13      mult                    ;; 15:1    dup 
+;; 14      return                  ;; 16      constant  factorial/cl
+;;                                 ;; 17      stack-ref 2
+;;                                 ;; 18      sub1      
+;;                                 ;; 19      call      1
+;;                                 ;; 20      mult      
+;;                                 ;; 21      pophandler 
+;;                                 ;; 22:2    return     
+</code></pre>
+
+<p>While visually looking acceptable,
+this solution does not satisfy performance requirements.<br />
+It <strong>is</strong> slower than idiomatic <code>if</code> solution.</p>
+
+<p>Did you noticed that compiled <code>factorial/if</code> has two return points?
+Return functionality is already there, we just have no any way to express it
+at the source code level.</p>
+
+<h2 id="ways-to-control-byte-compilation">Ways to control byte compilation</h2>
+
+<p>Our goal is to expand <code>(%return X)</code> into <code>X</code> evaluation plus
+<code>return</code> instruction that follows it.</p>
+
+<p>At least two ways exist:</p>
+
+<ol>
+<li><a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Advising-Functions.html">Advise</a> <code>byte-compile-form</code> function via <code>advice-add</code> (or <a href="https://www.gnu.org/software/emacs/manual/html_node/elisp/Porting-old-advice.html#Porting-old-advice">deprecated <code>defadvice</code></a>).</li>
+<li>Use <code>byte-defop-compiler</code> macro. Our choice.</li>
+</ol>
+
+<p>First approach is useful if your handler should be executed <strong>before</strong>
+<code>byte-compile-form</code>, and/or independently from it.</p>
+
+<p>With second approach, handler is executed only when matching form
+or instruction is being compiled.</p>
+
+<p>The main source of information about compiler internals is<br />
+<code>$EMACS/lisp/emacs-lisp/bytecomp.el</code>.<br />
+The most important functions have useful documentation.</p>
+
+<h2 id="compiler-handler">Compiler handler</h2>
+
+<p><code>(defmacro byte-defop-compiler (function &amp;optional compile-handler) ...)</code></p>
+
+<blockquote>
+<p>Add a compiler-form for FUNCTION.
+If function is a symbol, then the variable &ldquo;byte-SYMBOL&rdquo; must name
+the opcode to be used.  <strong>If function is a list</strong>, the <strong>first element
+is the function</strong> and the second element is the bytecode-symbol.
+<strong>The second element may be nil, meaning there is no opcode</strong>.
+<strong>COMPILE-HANDLER is the function to use to compile this byte-op</strong>.</p>
+</blockquote>
+
+<pre><code class="language-lisp">(byte-defop-compiler (%return nil) %byte-compile-return)
+;;                    ^       ^    ^
+;;                    |       |    |
+;;                    |       |    COMPILE-HANDLER: handler itself
+;;                    |       FUNCTION: second element - no opcode
+;;                    FUNCTION: first element - function to match
+
+;; The `byte-defop-compiler-1' can be used for convenience.
+;; It expands to the same form as above.
+(byte-defop-compiler-1 %return %byte-compile-return)
+</code></pre>
+
+<p>The <code>compile-handler</code> function receives one argument - a list
+that represents matched form.
+In other words, all invocations of <code>%return</code> function are
+passed into that handler.</p>
+
+<pre><code class="language-lisp">;; `form' argument may be `(%return X)' or
+;; any other list that has `%return' in head position.
+(defun %byte-compile-return (form)
+  ;; (1)
+  (unless byte-compile--for-effect
+    (error &quot;Should not use `%%return' result&quot;))
+  ;; (2)
+  (setq byte-compile--for-effect nil)
+  (pcase form
+    (`(%return ,v)
+     ;; Eval return argument and emit &quot;return&quot; instruction.
+     ;; Note that `%byte-compile-out' is used,
+     ;; not `byte-compile-out'; see (3).
+     (byte-compile-form v)
+     (%byte-compile-out 'byte-return))
+    (_ (error &quot;Invalid return form: %S&quot; form))))
+</code></pre>
+
+<p>(1) In Emacs Lisp, every form yields result, the return value.
+When result is not used, it is sayed that expression is evaluated
+for side-effects only. This detail is important for byte compiler,
+because it should emit <code>discard</code> instruction when result is ignored.</p>
+
+<pre><code class="language-lisp">;; Case 1: `aset' is used for side-effects only.
+(progn
+  (aset arr idx val)
+  :res)
+;; 0       varref    arr  | [arr]
+;; 1       varref    idx  | [arr idx]
+;; 2       varref    val  | [arr idx val]
+;; 3       aset           | [val]
+;; 4       discard        | []
+;; 5       constant  :res | [:res]
+;; 6       return         | :res returned
+
+;; Case 2: `aset' return value is used.
+(progn
+  (aset arr idx val))
+;; 0       varref    arr | [arr]
+;; 1       varref    idx | [arr idx]
+;; 2       varref    val | [arr idx val]
+;; 3       aset          | [val]
+;; 4       return        | val is returned
+</code></pre>
+
+<p>The <code>byte-compile--for-effect</code> is all about that.
+If it is non-nil, expression result is used in some way.
+We do not want <code>%return</code> to be used as an expression,
+this is why that guard clause exists.
+In particular, <code>(setq x (%return y))</code> is impossible, thanks
+to that compile-time check.</p>
+
+<p><code>byte-compile--for-effect</code> is dynamically scoped (special) variable.
+It is set inside <code>byte-compile-form</code> to the value of it&rsquo;s <code>for-effect</code> argument.</p>
+
+<p>(2) From <code>byte-compile-form</code> documentation:</p>
+
+<blockquote>
+<p>If for-effect is non-nil, byte-compile-form will output a byte-discard
+before terminating (ie no value will be left on the stack).
+A byte-compile handler may, when byte-compile&ndash;for-effect is non-nil, choose
+output code which does not leave a value on the stack, and then set
+byte-compile&ndash;for-effect to nil (to prevent byte-compile-form from
+outputting the byte-discard).</p>
+</blockquote>
+
+<p>It describes the reason why <code>%byte-compile-return</code> sets
+<code>byte-compile--for-effect</code> to <code>nil</code>.
+We do not want extra <code>discard</code> after <code>%return</code>,
+it will never be executed anyway.</p>
+
+<p>(3) Look at the <code>byte-compile-out</code> closely:</p>
+
+<pre><code class="language-lisp">(defun byte-compile-out (op &amp;optional operand)
+  (push (cons op operand) byte-compile-output)
+  (if (eq op 'byte-return)
+      ;; This is actually an unnecessary case, because there should be no
+      ;; more ops behind byte-return.
+      (setq byte-compile-depth nil)
+    (setq byte-compile-depth
+	  (+ byte-compile-depth (byte-compile-stack-adjustment op operand)))
+    (setq byte-compile-maxdepth (max byte-compile-depth byte-compile-maxdepth))))
+</code></pre>
+
+<p>It <strong>specifically</strong> checks for <code>byte-return</code> that we wish to emit.
+<code>%byte-compile-out</code> is essentialy a copy of <code>byte-compile-out</code>, but without
+unwanted check:</p>
+
+<pre><code class="language-lisp">(defun %byte-compile-out (op &amp;optional arg)
+  (push (cons op arg) byte-compile-output)
+  (setq byte-compile-depth
+        (+ byte-compile-depth (byte-compile-stack-adjustment op arg)))
+  (setq byte-compile-maxdepth (max byte-compile-depth byte-compile-maxdepth)))
+</code></pre>
+
+<h2 id="trying-out-new-intrinsic">Trying out new intrinsic</h2>
+
+<pre><code class="language-lisp">(defun factorial/if (x)            (defun factorial/ret (x)
+  (if (= x 1)                        (when (= x 1)
+      1                                (%return 1))
+    (* x (factorial/if (1- x)))))    (* x (factorial/ret (1- x))))                
+                                 
+(disassemble 'factorial/if)        (disassemble 'factorial/ret)     
+;; 0       dup                     ;; 0       dup       
+;; 1       constant  1             ;; 1       constant  1
+;; 2       eqlsign                 ;; 2       eqlsign   
+;; 3       goto-if-nil 1           ;; 3       goto-if-nil 1
+;; 6       constant  1             ;; 6       constant  1
+;; 7       return                  ;; 7       return    
+;; 8:1     dup                     ;; 8:1     dup       
+;; 9       constant  factorial/if  ;; 9       constant  factorial/ret
+;; 10      stack-ref 2             ;; 10      stack-ref 2
+;; 11      sub1                    ;; 11      sub1      
+;; 12      call      1             ;; 12      call      1
+;; 13      mult                    ;; 13      mult      
+;; 14      return                  ;; 14      return    
+</code></pre>
+
+<p>In the end, we get exactly the same byte code output.
+This would not be possible without compiler tweaking.</p>
+
+<p>Strictly speaking, you can not use <code>defun</code> and get <code>%return</code> like that,
+a function must be <strong>compiled</strong> in order to trigger compiler handler,
+otherwise you will get <code>Symbol’s function definition is void: %return</code> error.</p>
+
+<p>You can define a dedicated <code>%defun</code> macro that always does byte compilation.
+The simplified version can look like this:</p>
+
+<pre><code class="language-lisp">(defmacro %defun (name params &amp;rest body)
+  (declare (indent defun))
+  `(defalias ',name
+     (byte-compile
+      (lambda ,params
+        ,@body))))
+</code></pre>
+
+<p>With such <code>%defun</code>, users can get <code>%return</code> transparently,
+no explicit compilation is needed.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/emacs-lisp">[emacs lisp] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/compilers">[compilers] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Writing%20Emacs%20Lisp%20compiler%20intrinsics&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fwriting-emacs-lisp-compiler-intrinsics%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fwriting-emacs-lisp-compiler-intrinsics%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fwriting-emacs-lisp-compiler-intrinsics%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2017 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.github.io/blog/jquery.min.js"></script>
+<script src="https://quasilyte.github.io/blog/js/index.js"></script>
+<script src="https://quasilyte.github.io/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.github.io/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
