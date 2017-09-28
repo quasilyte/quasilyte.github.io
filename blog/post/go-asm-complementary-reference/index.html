@@ -521,6 +521,9 @@ You can control that with <code>GOARCH</code>{3} environment variable.</p>
 
 <li><p>Immediate operands are typed. They can be either signed or unsigned. You can not use negative constant arguments for instruction if it has &ldquo;unsigned&rdquo; immediate restriction.<br />
 <a href="https://github.com/golang/go/issues/21528">Proposal 21528</a> has discussion on related subject.</p></li>
+
+<li><p>Pseudo register <code>IZ</code> (<code>%riz</code>, <code>%eiz</code>) does not exist.<br />
+<a href="https://github.com/golang/go/issues/18792">Issue 18792</a>, although indirectly, confirms that.</p></li>
 </ol>
 
 <h2 id="expect-even-more-differences-in-the-future">Expect even more differences in the future</h2>
