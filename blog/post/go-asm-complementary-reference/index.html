@@ -82,12 +82,12 @@
 <li>
 <ul>
 <li><a href="#third-flavour-of-x86-assembly-language">Third flavour of x86 assembly language</a></li><br>
+<li><a href="#how-to-use-this">How to use this</a></li><br>
 <li><a href="#operands-order">Operands order</a></li><br>
 <li><a href="#register-operand-rules">Register operand rules</a></li><br>
 <li><a href="#mnemonics">Mnemonics</a></li><br>
 <li><a href="#register-names">Register names</a></li><br>
 <li><a href="#forbidden-constructions">Forbidden constructions</a></li><br>
-<li><a href="#expect-even-more-differences-in-the-future">Expect even more differences in the future</a></li><br>
 <li><a href="#external-resources">External resources</a></li><br>
 </ul></li><br>
 </ul>
@@ -117,6 +117,14 @@ kind of assembly language. It will not accept anything else.</p>
 
 <p>Check <a href="#external-resources">external resources</a> for information
 that is missing here.</p>
+
+<h2 id="how-to-use-this">How to use this</h2>
+
+<p>Most information is presented in table-like format.<br />
+It&rsquo;s optimized for <code>ctrl+f</code> search over the page.</p>
+
+<p>When you see {n} inside the text &ndash; look into <a href="#external-resources">external resources</a>
+section.</p>
 
 <h2 id="operands-order">Operands order</h2>
 
@@ -206,6 +214,8 @@ that specify operand size.</p>
 
 <p>With the exception of <code>RETFW/RETFL/RETFQ</code> (far ret),
 instruction names differ in suffixes only.</p>
+
+<p>AVX instructions all have Intel names. That is, we have <code>VADDPD</code> rather than <code>VADDPL</code>.</p>
 
 <blockquote>
 <p>The names of conditions in all conditional instructions (J, SET)
@@ -368,58 +378,31 @@ PUNPCKLLQ  | PUNPCKLDQ  | xmm2/m128, xmm1
 PUNPCKLWL  | PUNPCKLWD  | mm2/m32, mm1
 PUNPCKLWL  | PUNPCKLWD  | xmm2/m128, xmm1
 SETHI      | SETA       | r/m8
-SETHI      | SETA       | r/m8
-SETCC      | SETAE      | r/m8
 SETCC      | SETAE      | r/m8
 SETCS      | SETB       | r/m8
-SETCS      | SETB       | r/m8
-SETLS      | SETBE      | r/m8
 SETLS      | SETBE      | r/m8
 SETCS      | SETC       | r/m8
-SETCS      | SETC       | r/m8
-SETEQ      | SETE       | r/m8
 SETEQ      | SETE       | r/m8
 SETGT      | SETG       | r/m8
-SETGT      | SETG       | r/m8
-SETLT      | SETL       | r/m8
 SETLT      | SETL       | r/m8
 SETLS      | SETNA      | r/m8
-SETLS      | SETNA      | r/m8
-SETCS      | SETNAE     | r/m8
 SETCS      | SETNAE     | r/m8
 SETCC      | SETNB      | r/m8
-SETCC      | SETNB      | r/m8
-SETHI      | SETNBE     | r/m8
 SETHI      | SETNBE     | r/m8
 SETCC      | SETNC      | r/m8
-SETCC      | SETNC      | r/m8
-SETLE      | SETNG      | r/m8
 SETLE      | SETNG      | r/m8
 SETLT      | SETNGE     | r/m8
-SETLT      | SETNGE     | r/m8
-SETGE      | SETNL      | r/m8
 SETGE      | SETNL      | r/m8
 SETGT      | SETNLE     | r/m8
-SETGT      | SETNLE     | r/m8
-SETOC      | SETNO      | r/m8
 SETOC      | SETNO      | r/m8
 SETPC      | SETNP      | r/m8
-SETPC      | SETNP      | r/m8
-SETPL      | SETNS      | r/m8
 SETPL      | SETNS      | r/m8
 SETNE      | SETNZ      | r/m8
-SETNE      | SETNZ      | r/m8
-SETOS      | SETO       | r/m8
 SETOS      | SETO       | r/m8
 SETPS      | SETP       | r/m8
-SETPS      | SETP       | r/m8
-SETPS      | SETPE      | r/m8
 SETPS      | SETPE      | r/m8
 SETPC      | SETPO      | r/m8
-SETPC      | SETPO      | r/m8
 SETMI      | SETS       | r/m8
-SETMI      | SETS       | r/m8
-SETEQ      | SETZ       | r/m8
 SETEQ      | SETZ       | r/m8
 SHLW       | SHLDW      | CL, r16, r/m16
 SHLW       | SHLDW      | imm8, r16, r/m16
@@ -475,8 +458,11 @@ instructions[&quot;MOVD&quot;] = x86.AMOVQ
 %spl       &lt;=&gt; SPB
 %r8b-%r15b &lt;=&gt; R8B-R15B
 
-%xmm0-%xmm15 &lt;=&gt; X0-X15
-%ymm0-%ymm15 &lt;=&gt; Y0-Y15
+%xmm0-%xmm31 &lt;=&gt; X0-X31
+%ymm0-%ymm31 &lt;=&gt; Y0-Y31
+%zmm0-%zmm31 &lt;=&gt; Z0-Z31
+
+%k0-%k7 &lt;=&gt; K0-K7
 
 %st0-%st7 &lt;=&gt; F0-F7
 %mm0-%mm7 &lt;=&gt; M0-M7
@@ -494,15 +480,16 @@ instructions[&quot;MOVD&quot;] = x86.AMOVQ
 <p>Notes:</p>
 
 <ul>
-<li>No AVX512, only 16 <code>xmm</code> and <code>ymm</code> registers; no <code>zmm</code> registers;</li>
+<li>High 16 <code>xmm</code>/<code>ymm</code>, all <code>zmm</code> and <code>k</code> registers are enabled in AVX512{4}</li>
 <li>The exact count of defined <code>CR</code>, <code>DR</code> and <code>TR</code> register may vary (up to 16);</li>
 </ul>
 
-<p><strong>32-bit</strong> and <strong>64-bit</strong> GPR depend on the compilation mode.
-You can control that with <code>GOARCH</code>{3} environment variable.</p>
+<p>In <strong>64-bit</strong> mode you can not use instructions with <code>Q</code> suffix.
+Effectively, this means that you can not treat registers like <code>AX</code> as 64-bit wide.
+Read about <code>GOARCH</code>{3} for more information.</p>
 
-<pre><code class="language-lisp">32-bit    | 64-bit   
-==================
+<pre><code class="language-lisp">32-bit    | 64-bit only 
+=======================
 %eax      | %rax     &lt;=&gt; AX
 %ecx      | %rcx     &lt;=&gt; CX
 %edx      | %rdc     &lt;=&gt; DX
@@ -524,15 +511,8 @@ You can control that with <code>GOARCH</code>{3} environment variable.</p>
 <a href="https://github.com/golang/go/issues/21528">Proposal 21528</a> has discussion on related subject.</p></li>
 
 <li><p>Pseudo register <code>IZ</code> (<code>%riz</code>, <code>%eiz</code>) does not exist.<br />
-<a href="https://github.com/golang/go/issues/18792">Issue 18792</a>, although indirectly, confirms that.</p></li>
+<a href="https://github.com/golang/go/issues/18792">Issue 18792</a>, although indirectly, confirms that.ss</p></li>
 </ol>
-
-<h2 id="expect-even-more-differences-in-the-future">Expect even more differences in the future</h2>
-
-<p>Go (1.9) assembler does not support AVX512 yet.
-There is no syntax support for masking registers.
-This can be another nuance you should keep in mind,
-because it is <em>unlikely</em> that the result will look as in AT&amp;T.</p>
 
 <h2 id="external-resources">External resources</h2>
 
@@ -544,6 +524,7 @@ because it is <em>unlikely</em> that the result will look as in AT&amp;T.</p>
 <li>[2] <a href="https://9p.io/sys/doc/asm.html">Manual for the Plan 9 assembler</a> by Rob Pike.</li>
 <li><a href="https://golang.org/doc/asm">Quick Guide to Go&rsquo;s Assembler</a> from go docs.</li>
 <li>[3] <a href="https://golang.org/doc/install/source#environment">Go build docs: environment variables</a>.</li>
+<li>[4] <a href="https://github.com/golang/go/issues/22779#issuecomment-345435884">AVX512 design</a>.</li>
 </ul>
 
     </section>
@@ -619,7 +600,7 @@ because it is <em>unlikely</em> that the result will look as in AT&amp;T.</p>
       
   </section>
 
-		<section class="copyright">&copy; 2017 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+		<section class="copyright">&copy; 2018 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
 	</div>
 </footer>
 
