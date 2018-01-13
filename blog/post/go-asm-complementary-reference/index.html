@@ -217,6 +217,17 @@ instruction names differ in suffixes only.</p>
 
 <p>AVX instructions all have Intel names. That is, we have <code>VADDPD</code> rather than <code>VADDPL</code>.</p>
 
+<p>Instructions that have <code>CC</code> (condition) part in them historically have
+different spelling in Go:</p>
+
+<blockquote>
+<p>The GNU form is CMOV{cond}{size} but the form added for Go is CMOV{size}{cond}.
+So GNU&rsquo;s cmovleq is cmov-le-q while Go&rsquo;s CMOVLEQ is CMOV-L-EQ</p>
+</blockquote>
+
+<p>There is an <a href="https://github.com/golang/go/issues/20173">open issue</a> for <code>CMOVLEQ</code> instruction.
+This may lead to <code>CMOVL.EQ</code> syntax in future.</p>
+
 <blockquote>
 <p>The names of conditions in all conditional instructions (J, SET)
 follow the conventions of the 68020 instead of those of the Intel assembler</p>
