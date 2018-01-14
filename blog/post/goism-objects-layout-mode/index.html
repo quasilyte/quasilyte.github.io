@@ -180,7 +180,7 @@ We never care about <code>cdr</code> part; it&rsquo;s value is undefined on purp
 
 <h2 id="pointers-reference-types">Pointers: reference types</h2>
 
-<p>For reference types, the single level of indirection is the object itself.<br />
+<p>For reference types (ref types for short), the single level of indirection is the object itself.<br />
 This means that <code>*T</code> has the same run-time representation as <code>T</code>.</p>
 
 <p>When object has non-pointer struct type, all assignments use <code>copy-sequence</code>.
@@ -215,7 +215,7 @@ y := &amp;pt.y        // y = (nthcdr 1 pt) = (cdr pt)
 
 <h2 id="pointers-non-reference-types">Pointers: non-reference types</h2>
 
-<p>In Emacs Lisp, there are non-reference types; they are not mutable.<br />
+<p>In Emacs Lisp, there are non-ref types; they are not mutable.<br />
 The solution to this is <a href="https://ricardomartins.cc/2016/06/08/interior-mutability">inferior mutability</a>.</p>
 
 <p>We apply boxing for all such values when they are not part of the struct
@@ -250,8 +250,8 @@ of the same static type.</p>
 <p>Proposed solution:</p>
 
 <ul>
-<li>It is easy to return a pointer to reference type value. Permit this operation;</li>
-<li>Forbid taking element address of non-reference types;</li>
+<li>It is easy to return a pointer to ref type value. Permit this operation;</li>
+<li>Forbid taking element address of non-ref types;</li>
 </ul>
 
 <p>This is a trade-off between performance and Go spec compliance.<br />
@@ -273,7 +273,7 @@ y := &amp;ys[1] // Invalid. Compile-time error.
 It&rsquo;s aim is to find data that is never used in a way that forces us to
 generate less efficient code.</p>
 
-<p>For example, if address operator is never applied to local non-reference type
+<p>For example, if address operator is never applied to local non-ref type
 variable, there is no need to box it.</p>
 
 <p>Go structures that have particular layout can be optimized if
