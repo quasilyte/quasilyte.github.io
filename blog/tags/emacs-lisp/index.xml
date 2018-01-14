@@ -7,10 +7,24 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>Released under the MIT license.</copyright>
-    <lastBuildDate>Sat, 23 Sep 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 14 Jan 2018 00:00:00 +0000</lastBuildDate>
     
 	<atom:link href="https://quasilyte.github.io/blog/tags/emacs-lisp/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Goism objects layout model</title>
+      <link>https://quasilyte.github.io/blog/post/goism-objects-layout-mode/</link>
+      <pubDate>Sun, 14 Jan 2018 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/goism-objects-layout-mode/</guid>
+      <description>Introduction Goism project requires Go pointers emulation inside Emacs Lisp code.
+This document describes how to achive (almost) full functionality with potential to have optimizations that eliminate some of the emulation-related overhead.
+The actual implementation can diverge. Only initial design is outlined.
+Struct representation Go structures represented by lists.
+Empty struct run-time value is unspecified, but it satisfies Go spec requirements.
+type a1 struct { f1 int } // a1{1} // (list 1) type a2 struct { f1, f2, f3, f4 int } // a2{1, 2, 3, 4} // (list 1 2 3 4)  For the very small (1-3 fields) objects lists are a better choice than vectors, but generally, vectors are more memory-efficient and provide faster random access.</description>
+    </item>
     
     <item>
       <title>Writing Emacs Lisp compiler intrinsics</title>

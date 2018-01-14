@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Goism objects layout model &middot; Quasilyte blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.20.5" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.github.io/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle"><strong>defun</strong> and <strong>define</strong> live here in harmony</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Goism objects layout model</h1>
+        <div class="post-meta">
+            <time datetime="14 January 2018">
+                14 January 2018
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#introduction">Introduction</a></li><br>
+<li><a href="#struct-representation">Struct representation</a></li><br>
+<li><a href="#arrays-strings-and-slices">Arrays, strings and slices</a></li><br>
+<li><a href="#general-boxing">General boxing</a></li><br>
+<li><a href="#pointers-reference-types">Pointers: reference types</a></li><br>
+<li><a href="#pointers-non-reference-types">Pointers: non-reference types</a></li><br>
+<li><a href="#pointers-array-slice-element-address">Pointers: array/slice element address</a></li><br>
+<li><a href="#escape-analysis">Escape analysis</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<h2 id="introduction">Introduction</h2>
+
+<p><a href="https://github.com/Quasilyte/goism">Goism</a> project requires Go pointers
+emulation inside Emacs Lisp code.</p>
+
+<p>This document describes how to achive (almost) full functionality with
+potential to have optimizations that eliminate some of the
+emulation-related overhead.</p>
+
+<p>The actual implementation can diverge.
+Only initial design is outlined.</p>
+
+<h2 id="struct-representation">Struct representation</h2>
+
+<p>Go structures represented by <strong>lists</strong>.<br />
+Empty struct run-time value is unspecified, but it satisfies Go spec requirements.</p>
+
+<pre><code class="language-go">type a1 struct { f1 int }
+// a1{1}
+// (list 1)
+
+type a2 struct { f1, f2, f3, f4 int }
+// a2{1, 2, 3, 4}
+// (list 1 2 3 4)
+</code></pre>
+
+<p>For the very small (1-3 fields) objects lists are a better choice than vectors,
+but generally, vectors are more memory-efficient and provide faster random access.</p>
+
+<p><a href="#pointers">Pointers</a> section explains why lists were selected over the vectors
+as default representation.</p>
+
+<p>For unexported struct types, optimizer is permitted to use &ldquo;best fit&rdquo; data type
+for run-time values.
+This is the reason why it is important to forbid usage of unexported types inside
+Emacs Lisp domain.</p>
+
+<h2 id="arrays-strings-and-slices">Arrays, strings and slices</h2>
+
+<p>Arrays represented by Emacs Lisp <strong>vectors</strong>.</p>
+
+<p>Strings are Emacs Lisp <strong>unibyte strings</strong>. Literals are UTF-8 encoded.<br />
+Strings created by Go code considered immutable.<br />
+Immutability is not enforced during the execution.</p>
+
+<p>Slices are implemented by a struct of <code>length</code>, <code>capacity</code>, <code>offset</code> and <code>data</code> fields.
+The purpose of first two fields is self-explanatory.
+The <code>offset</code> is used during index calculations; needed for re-sliced slices.
+<code>data</code> is the underlying vector.
+Field order described here is not mandatory.</p>
+
+<pre><code class="language-go">[3]int{1, 2, 3}       // [1 2 3]
+[]int{1, 2, 3}        // (3 3 0 [1 2 3])
+([3]int{1, 2, 3})[1:] // (2 2 1 [1 2 3])
+&quot;abc&quot;                 // &quot;abc&quot;
+&quot;π&quot;                   // &quot;\317\200&quot;
+</code></pre>
+
+<p>Arrays, strings and slices are reference types in Emacs Lisp.</p>
+
+<h2 id="general-boxing">General boxing</h2>
+
+<p><strong>Box</strong> term is used when referring to thin wrapper that exist to enable
+pointer-like semantics.</p>
+
+<p>The boxed value required to support <code>car</code> and <code>setcar</code> operations.
+<code>car</code> is for dereference, <code>setcar</code> is for writes/updates.</p>
+
+<p>The main purpose of boxing is to implement arbitrary pointer indirection.<br />
+We never care about <code>cdr</code> part; it&rsquo;s value is undefined on purpose.</p>
+
+<pre><code class="language-lisp">  *T (cons T.value ?)
+ **T (cons (cons T.value ?) ?)
+***T (cons (cons (cons T.value ?) ?) ?)
+;; ... and so on
+</code></pre>
+
+<pre><code class="language-go">x := new(int) // x = (cons 0 ?)
+*x            // (car x)
+*x = 10       // (setcar x 10)
+</code></pre>
+
+<h2 id="pointers-reference-types">Pointers: reference types</h2>
+
+<p>For reference types, the single level of indirection is the object itself.<br />
+This means that <code>*T</code> has the same run-time representation as <code>T</code>.</p>
+
+<p>When object has non-pointer struct type, all assignments use <code>copy-sequence</code>.
+Arrays are assigned via copying, too.</p>
+
+<p>Higher order indirection uses <a href="#general-boxing">general boxing</a>.</p>
+
+<pre><code class="language-go">x1 := Point{x: 1, y: 2}  // x1 = (list 1 2)
+x2 := x1                 // x2 = (copy-sequence x1)
+
+y1 := &amp;Point{x: 1, y: 2} // y1 = (list 1 2)
+y2 := y1                 // y2 = y1
+y3 := *y2                // y3 = (copy-sequence y2)
+
+z := new(*Point)         // z = (cons (list 0 0) ?)
+*z = y2                  // (setcar z y2)
+</code></pre>
+
+<p>Pointer to n-th struct member is it&rsquo;s <code>nthcdr</code>.<br />
+This is why lists are default struct representation - it makes
+member address operation possible (and allocation-free).</p>
+
+<pre><code class="language-go">pt := Point{1, 2} // pt = (list 1 2)
+x := &amp;pt.x        // x = (nthcdr 0 pt) = pt
+y := &amp;pt.y        // y = (nthcdr 1 pt) = (cdr pt)
+*x = 10           // (setcar x 10)
+*y = 20           // (setcar y 20)
+// pt fields are updated as expected.
+</code></pre>
+
+<p>Because <code>cdr</code> pointer part is always ignored, <code>(x y z)</code> is a valid pointer for <code>x</code>.</p>
+
+<h2 id="pointers-non-reference-types">Pointers: non-reference types</h2>
+
+<p>In Emacs Lisp, there are non-reference types; they are not mutable.<br />
+The solution to this is <a href="https://ricardomartins.cc/2016/06/08/interior-mutability">inferior mutability</a>.</p>
+
+<p>We apply boxing for all such values when they are not part of the struct
+or other container.
+Temporary values that are used for stores are not boxed, too.</p>
+
+<pre><code class="language-go">x := 10   // Boxed as (list 10)
+y := 10.5 // Boxed as (list 10.5)
+
+pt.x = 777 // 777 is not boxed here
+pt.y = y   // Unboxing is required: (car y)
+
+passVal(x)  // Possibilities: (copy-sequence x), (car x) or just x
+passPtr(&amp;x) // Always boxed x; makes x optimizations impossible
+</code></pre>
+
+<p>The negative impact on performance is addressed by <a href="#escape-analysis">escape analysis</a>.</p>
+
+<h2 id="pointers-array-slice-element-address">Pointers: array/slice element address</h2>
+
+<p>Situation with arrays and slices is more complicated.</p>
+
+<ul>
+<li>Arrays and slices can be very large, which makes lists impractical;</li>
+<li>Speculative layout optimization which is used for structs is not applicable (see below);</li>
+</ul>
+
+<p>Even if it is possible to determine that particular array never gives element address away,
+turning it into &ldquo;real vector&rdquo; will not work as it becomes incompatible with unoptimized arrays
+of the same static type.</p>
+
+<p>Proposed solution:</p>
+
+<ul>
+<li>It is easy to return a pointer to reference type value. Permit this operation;</li>
+<li>Forbid taking element address of non-reference types;</li>
+</ul>
+
+<p>This is a trade-off between performance and Go spec compliance.<br />
+Enabling this feature without constraints will make arrays (and slices)
+very inefficient.</p>
+
+<pre><code class="language-go">xs := [2]Point{}
+x := &amp;xs[1] // Valid.
+
+ys := [2]int{}
+y := &amp;ys[1] // Invalid. Compile-time error.
+</code></pre>
+
+<h2 id="escape-analysis">Escape analysis</h2>
+
+<p>If pointers never existed in Go, we could avoid many complications described above.</p>
+
+<p>Escape analysis is performed as the last part of optimizations.
+It&rsquo;s aim is to find data that is never used in a way that forces us to
+generate less efficient code.</p>
+
+<p>For example, if address operator is never applied to local non-reference type
+variable, there is no need to box it.</p>
+
+<p>Go structures that have particular layout can be optimized if
+member field address never taken from any of it&rsquo;s instances.
+This analysis can be sound for unexported types.</p>
+
+<p>If needed, special annotation can select particular struct run-time
+representation.<br />
+Compiler will reject code that uses such types in
+non-compatible ways.
+This feature should only be used when particular layout is very important.</p>
+
+<pre><code class="language-go">//goism:repr=vector
+type Foo struct {
+    A, B int
+    C Bar
+}
+
+// Instances of Foo are represented as Emacs Lisp vectors.
+// It is compile-time error to take address of A and B fields.
+// It is OK to take C field address.
+</code></pre>
+
+<p>Possible representations:</p>
+
+<ul>
+<li><code>list</code> - nil-terminated cons pairs. Can take address of any field.</li>
+<li><code>list*</code> - improper list. Like lists, but last element address only works for ref types.</li>
+<li><code>vector</code> - same as for arrays. Can take address of any ref type field.</li>
+<li><code>string</code> - all fields must fit into 16bit ints. Can&rsquo;t take field address.</li>
+<li><code>bool-vector</code> - all fields must be booleans. Can&rsquo;t take field address.</li>
+<li><code>atom</code> - unboxed value. Valid only for unit (single field) structs. Can&rsquo;t take address.</li>
+</ul>
+
+<p>Some representations not only have restricted field address operation, but also
+member types/count constraints.</p>
+
+<p>The upside is the benefits of particular data type.<br />
+For example, strings are much cheaper to allocate, but a little slower at
+random access, than vectors.<br />
+Improper lists are only a slight improvement over proper lists, but add nearly
+no additional restrictions. They also work like a charm for 2 field objects.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/emacs-lisp">[emacs lisp] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/goism-project">[goism project] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Goism%20objects%20layout%20model&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgoism-objects-layout-mode%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgoism-objects-layout-mode%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgoism-objects-layout-mode%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2018 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.github.io/blog/jquery.min.js"></script>
+<script src="https://quasilyte.github.io/blog/js/index.js"></script>
+<script src="https://quasilyte.github.io/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.github.io/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
