@@ -133,14 +133,14 @@ It is not overly complex, but in order to define it,
 programmer also introduced <code>hasVowel</code> helper function,
 which requires <code>vowels</code> global variable.
 <code>describeString</code> has to check a string against
-regular expression, so it was assigned to <code>rxGolang</code>,
+regular expression, so it was assigned to <code>golangRE</code>,
 this removes a need to compile regexp during each function call.</p>
 
 <pre><code class="language-go">var vowels = map[rune]bool{
     'a': true, 'e': true, 'i': true,
     'o': true, 'u': true, 'y': true,
 }
-var rxGolang = regexp.MustCompile(`[Gg]o|[Gg]golang`)
+var golangRE = regexp.MustCompile(`\b[Gg]o(?:lang)?\b`)
 func hasVowel(s string) bool {
     for _, c := range s {
         if vowels[c] {
@@ -154,7 +154,7 @@ func describeString(s string) string {
     if hasVowel(s) {
         attrs = append(attrs, &quot;has vowel letter&quot;)
     }
-    if rxGolang.MatchString(s) {
+    if golangRE.MatchString(s) {
         attrs = append(attrs, &quot;may be about Go language&quot;)
     }
     attrs = append(attrs, fmt.Sprintf(&quot;has length of %d&quot;, len(s)))
@@ -170,7 +170,7 @@ With closures and IIFE we can reduce this number to <strong>1</strong>.</p>
         'a': true, 'e': true, 'i': true,
         'o': true, 'u': true, 'y': true,
     }
-    rxGolang := regexp.MustCompile(`[Gg]o|[Gg]golang`)
+    golangRE := regexp.MustCompile(`\b[Gg]o(?:lang)?\b`)
     hasVowel := func(s string) bool {
         for _, c := range s {
             if vowels[c] {
@@ -185,7 +185,7 @@ With closures and IIFE we can reduce this number to <strong>1</strong>.</p>
         if hasVowel(s) {
             attrs = append(attrs, &quot;has vowel letter&quot;)
         }
-        if rxGolang.MatchString(s) {
+        if golangRE.MatchString(s) {
             attrs = append(attrs, &quot;may be about Go language&quot;)
         }
         attrs = append(attrs, fmt.Sprintf(&quot;has length of %d&quot;, len(s)))
