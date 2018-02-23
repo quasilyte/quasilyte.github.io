@@ -98,16 +98,6 @@ Naive solution cl-lib implements cl-values in terms of list. This approach is na
     </item>
     
     <item>
-      <title>Dumbed-down Go interfaces</title>
-      <link>https://quasilyte.github.io/blog/post/dumbing-down-go-interfaces/</link>
-      <pubDate>Wed, 26 Apr 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/post/dumbing-down-go-interfaces/</guid>
-      <description>io.Writer If you write Go, odds are high that you familiar with io.Writer#Write signature well. Write returns both error and number of bytes written. Every time you call this method, error should be checked before you try to write to that writer again.
-This interface is inconvenient to use when you want to call Write multiple times and get total number of bytes pushed during these invocations. You also do not want to loose error if it ever occurs.</description>
-    </item>
-    
-    <item>
       <title>C broken defaults</title>
       <link>https://quasilyte.github.io/blog/post/c-broken-defaults/</link>
       <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
