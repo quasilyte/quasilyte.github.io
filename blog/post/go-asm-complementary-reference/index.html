@@ -87,6 +87,7 @@
 <li><a href="#register-operand-rules">Register operand rules</a></li><br>
 <li><a href="#mnemonics">Mnemonics</a></li><br>
 <li><a href="#register-names">Register names</a></li><br>
+<li><a href="#syntax-oddities">Syntax oddities</a></li><br>
 <li><a href="#forbidden-constructions">Forbidden constructions</a></li><br>
 <li><a href="#external-resources">External resources</a></li><br>
 </ul></li><br>
@@ -511,6 +512,17 @@ Read about <code>GOARCH</code>{3} for more information.</p>
 %edi      | %rdi     &lt;=&gt; DI
 %r8d-r15d | %r8-%r15 &lt;=&gt; R8-R15
 </code></pre>
+
+<h2 id="syntax-oddities">Syntax oddities</h2>
+
+<ol>
+<li><p>The <code>REG0:REG1</code> syntax expands into 2 register operands, in reverse order.<br />
+So, <code>MOVL AX:DX</code> becomes <code>MOVL DX, AX</code>.<br />
+The latter syntax is recommended.</p></li>
+
+<li><p>It&rsquo;s almost always OK to add <code>*</code> in front of register.<br />
+<code>MOVL *DX, *AX</code> is the same as <code>MOVL DX, AX</code>.</p></li>
+</ol>
 
 <h2 id="forbidden-constructions">Forbidden constructions</h2>
 
