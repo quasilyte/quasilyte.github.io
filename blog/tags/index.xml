@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on Quasilyte blog</title>
+    <title>Tags on Iskander Sharipov technical blog</title>
     <link>https://quasilyte.github.io/blog/tags/</link>
-    <description>Recent content in Tags on Quasilyte blog</description>
+    <description>Recent content in Tags on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Released under the MIT license.</copyright>
-    <lastBuildDate>Wed, 20 Sep 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 31 May 2018 01:39:59 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -15,7 +14,7 @@
     <item>
       <title>Asm</title>
       <link>https://quasilyte.github.io/blog/tags/asm/</link>
-      <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 31 May 2018 01:39:59 +0300</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/asm/</guid>
       <description></description>
@@ -96,7 +95,7 @@
     <item>
       <title>Go</title>
       <link>https://quasilyte.github.io/blog/tags/go/</link>
-      <pubDate>Sun, 14 Jan 2018 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 31 May 2018 01:39:59 +0300</pubDate>
       
       <guid>https://quasilyte.github.io/blog/tags/go/</guid>
       <description></description>

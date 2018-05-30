@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Quasilyte blog</title>
+    <title>Iskander Sharipov technical blog</title>
     <link>https://quasilyte.github.io/blog/</link>
-    <description>Recent content on Quasilyte blog</description>
+    <description>Recent content on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <copyright>Released under the MIT license.</copyright>
-    <lastBuildDate>Sun, 14 Jan 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 31 May 2018 01:39:59 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Dispatch tables in Go asm</title>
+      <link>https://quasilyte.github.io/blog/post/go-asm-dispatch-tables/</link>
+      <pubDate>Thu, 31 May 2018 01:39:59 +0300</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/go-asm-dispatch-tables/</guid>
+      <description>Dispatch tables When you want to execute particular code path depending on some kind of tag/opcode or other integer value that can be easily mapped into index, dispatch tables can speed things up compared to the sequence of comparisons and conditional jumps.
+In interpreters, this technique is often used as an alternative to switch-based dispatch.
+It&amp;rsquo;s called direct threading in that domain. Each opcode corresponds to table index that contains machine code address that can execute operation specified by the opcode.</description>
+    </item>
     
     <item>
       <title>Goism objects layout model</title>

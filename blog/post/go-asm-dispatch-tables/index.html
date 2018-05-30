@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Dispatch tables in Go asm &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.40.3" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.github.io/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">100% technical. 0% emotional.</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Dispatch tables in Go asm</h1>
+        <div class="post-meta">
+            <time datetime="31 May 2018">
+                31 May 2018
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#dispatch-tables">Dispatch tables</a></li><br>
+<li><a href="#threaded-code-in-intel-syntax">Threaded code in Intel syntax</a></li><br>
+<li><a href="#go-implementation">Go implementation</a></li><br>
+<li><a href="#calling-eval-from-go">Calling eval from Go</a></li><br>
+<li><a href="#why-additional-movq-in-next-op">Why additional MOVQ in next_op?</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<h2 id="dispatch-tables">Dispatch tables</h2>
+
+<p>When you want to execute particular code path depending on some kind
+of tag/opcode or other integer value that can be easily mapped into index,
+dispatch tables can speed things up compared to the sequence of
+comparisons and conditional jumps.</p>
+
+<p>In interpreters, this technique is often used as an alternative to switch-based dispatch.<br />
+It&rsquo;s called direct threading in that domain. Each opcode corresponds to table index that contains machine
+code address that can execute operation specified by the opcode.</p>
+
+<h2 id="threaded-code-in-intel-syntax">Threaded code in Intel syntax</h2>
+
+<p>Suppose we&rsquo;re implementing some virtual machine for a toy programming language.</p>
+
+<p>All our VM can do is to add and substract from <code>AX</code> (<code>rax</code>) register.<br />
+Suppose <code>CX</code> (<code>rcx</code>) always points to opcode stream, it&rsquo;s our program counter.</p>
+
+<p>With <a href="https://www.nasm.us/">nasm</a> and Intel syntax, our code could look like this:</p>
+
+<pre><code class="language-x86asm">$op_labels:
+  dq op_exit ;; Stop the evaluation
+  dq op_add1 ;; Add 1 to RAX
+  dq op_sub1 ;; Sub 1 from RAX
+
+%macro next_op 0
+  movzx rdx, byte [rcx]        ;; Fetch opcode
+  add rcx, 1                   ;; Advance PC (inc instruction is OK here too)
+  jmp [$op_labels + (rdx * 8)] ;; Execute the operation
+%endmacro
+
+eval:
+  next_op
+
+op_exit:
+  ret
+
+op_add1:
+  add rax, 1
+  next_op
+
+op_sub1:
+  sub rax, 1
+  next_op
+</code></pre>
+
+<p>Now, the question is: how to do exactly the same thing in Go assembly?</p>
+
+<h2 id="go-implementation">Go implementation</h2>
+
+<p>In Go assembly, it&rsquo;s not possible to have global labels.
+It&rsquo;s also not possible to store label address into anything.
+<code>TEXT</code> blocks are our replacements here.</p>
+
+<pre><code class="language-x86asm">//; The $sym syntax is required to get symbol address, &quot;literal value&quot;.
+//; op_exit, op_add1 and op_sub1 are declared as TEXT blocks, like normal functions.
+DATA op_labels&lt;&gt;+0(SB)/8, $op_exit(SB)
+DATA op_labels&lt;&gt;+8(SB)/8, $op_add1(SB)
+DATA op_labels&lt;&gt;+16(SB)/8, $op_sub1(SB)
+GLOBL op_labels&lt;&gt;(SB), RODATA|NOPTR, $24
+</code></pre>
+
+<p>Macros are akin to C.<br />
+Multiline macros require newline escapes.</p>
+
+<pre><code class="language-x86asm">#define next_op \
+  MOVBQZX (CX), DX \
+  ADDQ $1, CX \
+  MOVQ $op_labels&lt;&gt;(SB), DI \
+  JMP (DI)(DX*8)
+</code></pre>
+
+<p>You may notice that there is one excessive <code>MOVQ</code> there.<br />
+There is an explanation <a href="#why-additional-movq-in-next-op">in the end of the article</a>.</p>
+
+<pre><code class="language-x86asm">//; We are going to go one step further and return AX value to the caller.
+TEXT op_exit(SB), NOSPLIT, $0-0
+  MOVQ AX, ret+8(FP)
+  RET
+
+TEXT op_add1(SB), NOSPLIT, $0-0
+  ADDQ $1, AX
+  next_op
+
+TEXT op_sub1(SB), NOSPLIT, $0-0
+  SUBQ $1, AX
+  next_op
+</code></pre>
+
+<p>Note that all routines defined above have zero size frame and parameters space.
+This is to emphasise that those functions are not <code>CALL</code>&lsquo;ed but rather <code>JMP</code>&lsquo;ed into.</p>
+
+<p>The last thing is entry point, <code>eval</code> function.
+It&rsquo;s signature in Go would look like this:</p>
+
+<pre><code class="language-go">func eval(opbytes *byte) int64
+</code></pre>
+
+<p>For asm, it&rsquo;s important to consider stack frame size and parameters width.
+These are shared among all opcode executing routines.
+We don&rsquo;t need stack frame, 16 bytes for input pointer and output int64.
+(Our code is for 64-bit platform only, but you can make it more portable.)</p>
+
+<pre><code class="language-x86asm">TEXT ·eval(SB), NOSPLIT, $0-16
+  MOVQ opbytes+0(FP), CX //; Set up program counter (PC)
+  XORQ AX, AX            //; Accumulator always starts with 0
+  next_op                //; Start the evaluation
+</code></pre>
+
+<p>See <a href="/blog/code/eval_amd64.s">eval_amd64.s</a> for complete asm code.</p>
+
+<h2 id="calling-eval-from-go">Calling eval from Go</h2>
+
+<p>Main function can look like this:</p>
+
+<pre><code class="language-go">func main() {
+	const (
+		opExit = iota
+		opAdd1
+		opSub1
+	)
+	prog := []byte{
+		opAdd1,
+		opAdd1,
+		opSub1,
+		opAdd1,
+		opExit,
+	}
+	fmt.Println(eval(&amp;prog[0]))
+}
+</code></pre>
+
+<p>Constants defined purely for convenience reasons.
+It is important to keep definitions in sync with asm implementation.
+Code generation can help here.</p>
+
+<p>See <a href="/blog/code/eval.go">eval.go</a> for complete Go code.</p>
+
+<p>If you put <code>eval.go</code> and <code>eval_amd64.s</code> in one directory, running<br />
+<code>$ go build -o eval.exe . &amp;&amp; ./eval.exe</code> should be enough to execute the program.</p>
+
+<h2 id="why-additional-movq-in-next-op">Why additional MOVQ in next_op?</h2>
+
+<p>Direct translation of <code>next_op</code> would be:</p>
+
+<pre><code class="language-x86asm">#define next_op \
+  MOVBQZX (CX), DX \
+  ADDQ $1, CX \
+  JMP $op_labels&lt;&gt;(SB)(DX*8)
+</code></pre>
+
+<p>This way, it would fully match nasm implementation.</p>
+
+<p>But unfortunately, this is not a valid Go asm syntax.</p>
+
+<p>You can&rsquo;t use index expressions while using pseudo register.<br />
+And you can&rsquo;t access global data without <code>SB</code> pseudo register.</p>
+
+<p>This could be fixed in future, although the probability is pretty low.<br />
+Weird syntax is derived from plan9 asm and is shared among multiple architectures.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/asm">[asm] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Dispatch%20tables%20in%20Go%20asm&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgo-asm-dispatch-tables%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgo-asm-dispatch-tables%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgo-asm-dispatch-tables%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2018 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.github.io/blog/jquery.min.js"></script>
+<script src="https://quasilyte.github.io/blog/js/index.js"></script>
+<script src="https://quasilyte.github.io/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.github.io/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
