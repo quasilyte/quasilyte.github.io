@@ -230,7 +230,7 @@ We don&rsquo;t need stack frame, only 16 bytes for input pointer and output int6
   next_op                //; Start the evaluation
 </code></pre>
 
-<p>See <a href="/blog/code/eval_amd64.s">eval_amd64.s</a> for complete asm code.</p>
+<p>See <a href="/blog/code/eval/eval_amd64.s">eval_amd64.s</a> for complete asm code.</p>
 
 <h2 id="calling-eval-from-go">Calling eval from Go</h2>
 
@@ -259,7 +259,7 @@ We don&rsquo;t need stack frame, only 16 bytes for input pointer and output int6
 It is important to keep definitions in sync with asm implementation.
 Code generation can help here.</p>
 
-<p>See <a href="/blog/code/eval.go">eval.go</a> for complete Go code.</p>
+<p>See <a href="/blog/code/eval/eval.go">eval.go</a> for complete Go code.</p>
 
 <p>Put <code>eval.go</code> and <code>eval_amd64.s</code> in a new directory and run it:</p>
 
