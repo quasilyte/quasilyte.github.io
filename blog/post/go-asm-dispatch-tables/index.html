@@ -85,6 +85,7 @@
 <li><a href="#threaded-code-in-intel-syntax">Threaded code in Intel syntax</a></li><br>
 <li><a href="#go-implementation">Go implementation</a></li><br>
 <li><a href="#calling-eval-from-go">Calling eval from Go</a></li><br>
+<li><a href="#pure-go-solution">Pure Go solution</a></li><br>
 <li><a href="#why-additional-movq-in-next-op">Why additional MOVQ in next_op?</a></li><br>
 </ul></li><br>
 </ul>
@@ -265,6 +266,45 @@ Code generation can help here.</p>
 <pre><code class="language-bash">$ go build -o eval.exe . &amp;&amp; ./eval.exe
 2
 </code></pre>
+
+<h2 id="pure-go-solution">Pure Go solution</h2>
+
+<p>Without assembly, dispatching would require loop+switch:</p>
+
+<pre><code class="language-go">func eval(opbytes []byte) int64 {
+	acc := int64(0)
+	pc := 0
+	// It's not always the case that instruction consume exactly 1 byte.
+	// Some instructions may expect immediate bytes right after the opcode.
+	// This is why we're maintaining pc manually instead of using range over
+	// the opbytes. If you have fixed-length instructions, range loop
+	// will be more efficient because it may eliminate all boundary
+	// checks into opbytes.
+	for {
+		switch opbytes[pc] {
+		case opExit:
+			return acc
+		case opAdd1:
+			acc++
+			pc++
+		case opSub1:
+			acc--
+			pc++
+		case opZero:
+			acc = 0
+			pc++
+		}
+	}
+	return 0
+}
+</code></pre>
+
+<p>This is not direct threading anymore.</p>
+
+<p>If number of opcodes is high enough, table dispatch will be consistently faster on most machines.
+The recomendation is, as usual: measure before making final decisions.</p>
+
+<p>There is also indirect threading, but it&rsquo;s usually measurably slower due to function calls.</p>
 
 <h2 id="why-additional-movq-in-next-op">Why additional MOVQ in next_op?</h2>
 
