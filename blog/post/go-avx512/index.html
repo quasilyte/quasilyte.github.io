@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <title>Avx 512 &middot; Iskander Sharipov technical blog</title>
+    <title>Go AVX-512 support &middot; Iskander Sharipov technical blog</title>
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about programming and related topics">
     
@@ -15,11 +15,6 @@
     <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
 
     <!-- RSS autodiscovery -->
-    
-        <link href="https://quasilyte.github.io/blog/tags/avx-512/index.xml" rel="alternate" type="application/rss+xml"
-            title="Iskander Sharipov technical blog" />
-        <link href="https://quasilyte.github.io/blog/tags/avx-512/index.xml" rel="feed" type="application/rss+xml"
-            title="Iskander Sharipov technical blog" />
     
 
     <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
@@ -71,51 +66,99 @@
     
     <main class="content" role="main">
     
-	
-    
-        <article class="preview">
+<article class="post">
     <header>
-        <h1 class="post-title"><a href="https://quasilyte.github.io/blog/post/go-avx512/">Go AVX-512 support</a></h1>
+        <h1 class="post-title">Go AVX-512 support</h1>
+        <div class="post-meta">
+            <time datetime="08 June 2018">
+                08 June 2018
+            </time>
+        </div>
     </header>
-    <section class="post-excerpt">
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#about-this-document">About this document</a></li><br>
+<li><a href="#documentation">Documentation</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
         
-            Your guide in Go AVX-512 world. Links to docs, articles and so on.
-        
+
+<h2 id="about-this-document">About this document</h2>
+
+<p>This article is going to be up-to-date source of AVX-512 information in Go context.<br />
+It references other posts, official documentation and other useful resources.</p>
+
+<p>It&rsquo;s short. By purpose.<br />
+Only English content is referenced (original + translated).</p>
+
+<h2 id="documentation">Documentation</h2>
+
+<ul>
+<li><p><a href="https://software.intel.com/en-us/articles/avx-512-support-in-go-assembler">AVX-512 support in Go assembler</a>:
+short reference that focuses on Go-specific implementation of AVX-512.
+It describes how to use all AVX-512 special features in Go assembly syntax as well as some encoder details.
+Contains some examples.</p></li>
+
+<li><p><a href="/post/disassembling-go-avx512">Disassembling Go AVX-512</a>:
+how to disassemble and inspect AVX-512 machine code (given that <code>go tool objdump</code> can&rsquo;t do it).</p></li>
+</ul>
+
     </section>
-    <div class="post-meta"><time datetime="08 June 2018">08 June 2018</time>
-         
-            [go] 
-         
-            [asm] 
-         
-            [avx-512] 
-        
-    </div>
-</article> 
+
     
-        <article class="preview">
-    <header>
-        <h1 class="post-title"><a href="https://quasilyte.github.io/blog/post/disassembling-go-avx512/">Disassembling Go AVX-512</a></h1>
-    </header>
-    <section class="post-excerpt">
-        
-            objdump that is distributed with Go can&rsquo;t handle AVX-512 yet. This article describes workarounds.
-        
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/asm">[asm] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/avx-512">[avx-512] </a>
+            
+        </div>
     </section>
-    <div class="post-meta"><time datetime="08 June 2018">08 June 2018</time>
-         
-            [go] 
-         
-            [asm] 
-         
-            [avx-512] 
-         
-            [Intel XED] 
-        
-    </div>
-</article> 
     
     
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Go%20AVX-512%20support&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgo-avx512%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgo-avx512%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fgo-avx512%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
 
     </main>
 
@@ -136,8 +179,6 @@
       
       
       
-      
-      <a href="https://quasilyte.github.io/blog/tags/avx-512/index.xml" target="_blank" title="RSS"><i class="fa fa-2x fa-fw fa-rss"></i> <span class="hidden">RSS</span></a>
       
   </section>
 
