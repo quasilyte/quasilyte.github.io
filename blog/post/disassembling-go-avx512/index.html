@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Disassembling Go AVX-512 &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.40.3" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.github.io/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">83% technical. NaN% emotional.</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Disassembling Go AVX-512</h1>
+        <div class="post-meta">
+            <time datetime="08 June 2018">
+                08 June 2018
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#the-problem">The problem</a></li><br>
+<li><a href="#1-system-objdump-over-binary">1. System objdump over binary</a></li><br>
+<li><a href="#2-system-objdump-over-shellcode">2. System objdump over shellcode</a></li><br>
+<li><a href="#3-intel-xed-cli">3. Intel XED CLI</a></li><br>
+<li><a href="#prefix-only-disassembling">Prefix-only disassembling</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<h2 id="the-problem">The problem</h2>
+
+<p>Go 1.11 got updated assembler that supports AVX-512, but disassembler is left unchanged.<br />
+In other words, <code>go tool asm</code> speaks AVX-512, <code>go tool objdump</code> does not.</p>
+
+<p>Suppose we have this <code>avx.s</code> file:</p>
+
+<pre><code class="language-x86asm">TEXT ·avxCheck(SB), 0, $0
+        VPOR X0, X1, X2             //; AVX1
+        VPOR Y0, Y1, Y2             //; AVX2
+        VPORD.BCST (DX), Z1, K2, Z2 //; AVX-512
+        RET
+</code></pre>
+
+<p>You will be surprised after assemble+disassemble attempt:</p>
+
+<pre><code class="language-bash">$ go tool asm avx.s
+$ go tool objdump avx.o
+
+TEXT ·avxCheck(SB) gofile..$GOROOT/avx.s
+  avx.s:2       0xb7            c5f1ebd0        JMP 0x8b
+  avx.s:3       0xbb            c5f5ebd0        JMP 0x8f
+  avx.s:4       0xbf            62              ?
+  avx.s:4       0xc0            f1              ICEBP
+  avx.s:4       0xc1            755a            JNE 0x11d
+  avx.s:4       0xc3            eb12            JMP 0xd7
+  avx.s:5       0xc5            c3              RET
+</code></pre>
+
+<p>Rest of this article described how to overcome this situation.</p>
+
+<h2 id="1-system-objdump-over-binary">1. System objdump over binary</h2>
+
+<p>System <a href="https://linux.die.net/man/1/objdump">objdump</a> can&rsquo;t handle Go object
+files as they are not ELF library files (<code>e_type=1</code>) but rather internal to Go wire format.</p>
+
+<pre><code class="language-bash">$ objdump -D avx.o
+
+objdump: avx.o: File format not recognized
+</code></pre>
+
+<p>We can make it work though.<br />
+To do so, we need to build executable that <code>objdump</code> can understand.</p>
+
+<p>First off, we add <code>main.go</code>:</p>
+
+<pre><code class="language-go">package main
+
+func avxCheck()
+
+func main() {
+    avxCheck()
+}
+</code></pre>
+
+<p>It&rsquo;s now possible to build <code>avxCheck</code> along with main package.</p>
+
+<pre><code class="language-bash">go build -o avxcheck .
+
+$ objdump -D avxcheck | sed '/&lt;main.avxCheck&gt;:/,/^$/!d'
+
+000000000044e580 &lt;main.avxCheck&gt;:
+  44e580:   c5 f1 eb d0             vpor   %xmm0,%xmm1,%xmm2
+  44e584:   c5 f5 eb d0             vpor   %ymm0,%ymm1,%ymm2
+  44e588:   62 f1 75 5a eb 12       vpord  (%rdx){1to16},%zmm1,%zmm2{%k2}
+  44e58e:   c3                      retq
+  44e58f:   cc                      int3
+</code></pre>
+
+<h2 id="2-system-objdump-over-shellcode">2. System objdump over shellcode</h2>
+
+<p>Assembling <code>avx.s</code> with <code>-S</code> flag almost yields wanted results:</p>
+
+<pre><code class="language-bash">$ go tool asm -S avx.s
+
+avxCheck STEXT nosplit size=15 args=0xffffffff80000000 locals=0x0
+    0x0000 00000 (avx.s:1)  TEXT    avxCheck(SB), NOSPLIT, $0
+    0x0000 00000 (avx.s:2)  VPOR    X0, X1, X2
+    0x0004 00004 (avx.s:3)  VPOR    Y0, Y1, Y2
+    0x0008 00008 (avx.s:4)  VPORD.BCST  (DX), Z1, K2, Z2
+    0x000e 00014 (avx.s:5)  RET
+    0x0000 c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3     ........b.uZ...
+go.info.avxCheck SDWARFINFO size=34
+    0x0000 02 61 76 78 43 68 65 63 6b 00 00 00 00 00 00 00  .avxCheck.......
+    0x0010 00 00 00 00 00 00 00 00 00 00 01 9c 00 00 00 00  ................
+    0x0020 01 00
+</code></pre>
+
+<p>Function body is <code>c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3</code>.</p>
+
+<p>These bytes definitely include 4 instructions from <code>avxCheck</code> function,
+but it&rsquo;s hard to associate octets with instructions they encode.
+The&rsquo;re all intermixed.</p>
+
+<p><code>objdump</code> does support raw shellcode input format.<br />
+All we need to do is to turn hex octets into that.</p>
+
+<pre><code class="language-bash">$ echo 'c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3' |
+    xxd -r -p &gt; code.bin
+$ objdump -b binary -m i386 -D code.bin
+
+Disassembly of section .data:
+
+00000000 &lt;.data&gt;:
+   0:   c5 f1 eb d0             vpor   %xmm0,%xmm1,%xmm2
+   4:   c5 f5 eb d0             vpor   %ymm0,%ymm1,%ymm2
+   8:   62 f1 75 5a eb 12       vpord  (%edx){1to16},%zmm1,%zmm2{%k2}
+   e:   c3                      ret
+</code></pre>
+
+<h2 id="3-intel-xed-cli">3. Intel XED CLI</h2>
+
+<p><a href="https://github.com/intelxed/xed">Intel XED</a> includes several useful <a href="https://intelxed.github.io/ref-manual/group__EXAMPLES.html">command-line tools</a>.</p>
+
+<p>One of them is called <code>xed</code>. It&rsquo;s capable of encoding and decoding x86 instructions.</p>
+
+<pre><code class="language-bash">$ echo 'c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3' &gt; code.txt
+$ xed -64 -A -ih code.txt
+
+00: LOGICAL  AVX         C5F1EBD0      vpor %xmm0, %xmm1, %xmm2
+04: LOGICAL  AVX2        C5F5EBD0      vpor %ymm0, %ymm1, %ymm2
+08: LOGICAL  AVX512EVEX  62F1755AEB12  vpordl  (%rdx){1to16}, %zmm1, %zmm2{%k2}
+0e: RET      BASE        C3            retq
+</code></pre>
+
+<p>Decoding single instruction is even simpler:</p>
+
+<pre><code class="language-bash">$ xed -64 -A -d '62 f1 75 5a eb 12'
+
+62F1755AEB12
+ICLASS: VPORD   CATEGORY: LOGICAL   EXTENSION: AVX512EVEX  IFORM: VPORD_ZMMu32_MASKmskw_ZMMu32_MEMu32_AVX512   ISA_SET: AVX512F_512
+SHORT: vpordl  (%rdx){1to16}, %zmm1, %zmm2{%k2}
+</code></pre>
+
+<p>Without <code>-A</code> flag, it will print instructions in Intel syntax:</p>
+
+<pre><code class="language-bash">$ xed -64 -d '62 f1 75 5a eb 12'
+
+62F1755AEB12
+ICLASS: VPORD   CATEGORY: LOGICAL   EXTENSION: AVX512EVEX  IFORM: VPORD_ZMMu32_MASKmskw_ZMMu32_MEMu32_AVX512   ISA_SET: AVX512F_512
+SHORT: vpord zmm2{k2}, zmm1, dword ptr [rdx]{1to16}
+</code></pre>
+
+<p>In addition, there is also <code>xed-ex4</code>, which prints many interesting details about instruction being decoded:</p>
+
+<pre><code class="language-bash">$ xed-ex4 -64 C5 F1 EB D0
+
+PARSING BYTES: c5 f1 eb d0
+  VPOR VPOR_XMMdq_XMMdq_XMMdq
+  EASZ:3,
+  EOSZ:2,
+  HAS_MODRM:1,
+  LZCNT,
+  MAP:1,
+  MAX_BYTES:4,
+  MOD:3,
+  MODE:2,
+  MODRM_BYTE:208,
+  NOMINAL_OPCODE:235,
+  OUTREG:XMM0,
+  P4,
+  POS_MODRM:3,
+  POS_NOMINAL_OPCODE:2,
+  REG:2,
+  REG0:XMM2,
+  REG1:XMM1,
+  REG2:XMM0,
+  SMODE:2,
+  TZCNT,
+  VEXDEST210:6,
+  VEXDEST3,
+  VEXVALID:1,
+  VEX_PREFIX:1
+0       REG0/W/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_R
+1       REG1/R/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_N
+2       REG2/R/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_B
+YDIS: vpor xmm2, xmm1, xmm0
+ATT syntax: vpor %xmm0, %xmm1, %xmm2
+INTEL syntax: vpor xmm2, xmm1, xmm0
+</code></pre>
+
+<p>Its output requires XED knowledge in order to be fully understood, but if you&rsquo;re
+excited, I&rsquo;m suggesting you to read the documentation and/or sources and achieve enlightenment.</p>
+
+<h2 id="prefix-only-disassembling">Prefix-only disassembling</h2>
+
+<p>If, for whatever reason, you only want to inspect prefix details, there is <a href="https://github.com/Quasilyte/tools/tree/master/src/vexdump">vexdump</a>
+utility which can be used to do just that.</p>
+
+<p>Dump single instruction prefix info:</p>
+
+<pre><code class="language-bash">$ vexdump 6272fd098ae8
+
+EVEX rxbR00mm Wvvvv1pp zLlbVaaa opcode modrm    fields
+62   01110010 11111101 00001001 8A     11101000 EVEX.128.66.0F38.W1
+</code></pre>
+
+<p>Dump multiple instructions (most probably for comparison):</p>
+
+<pre><code class="language-bash">$ vexdump 6272FD098AE8 '62 72 fd 09 8a c5'
+
+EVEX rxbR00mm Wvvvv1pp zLlbVaaa opcode modrm    fields
+62   01110010 11111101 00001001 8A     11101000 EVEX.128.66.0F38.W1
+62   01110010 11111101 00001001 8A     11000101 EVEX.128.66.0F38.W1
+</code></pre>
+
+<p>It can also dump mixed prefixes:</p>
+
+<pre><code class="language-bash">$ vexdump 6272fd098ae8 6272fd098ac5 c4e1315813 c5b15813 c5f877
+
+VEX2 rvvvvlpp opcode modrm    fields
+C5   10110001 58     00010011 VEX.128.66.0F.W0
+C5   11111000 77     00000000 VEX.128.0F.W0
+VEX3 rxbmmmmm Wvvvvlpp opcode modrm    fields
+C4   11100001 00110001 58     00010011 VEX.128.66.0F.W0
+EVEX rxbR00mm Wvvvv1pp zLlbVaaa opcode modrm    fields
+62   01110010 11111101 00001001 8A     11101000 EVEX.128.66.0F38.W1
+62   01110010 11111101 00001001 8A     11000101 EVEX.128.66.0F38.W1
+</code></pre>
+
+<p>That tool can be especially helpful for encoder validation.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/asm">[asm] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/avx-512">[avx-512] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/intel-xed">[Intel XED] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Disassembling%20Go%20AVX-512&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fdisassembling-go-avx512%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fdisassembling-go-avx512%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fdisassembling-go-avx512%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2018 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.github.io/blog/jquery.min.js"></script>
+<script src="https://quasilyte.github.io/blog/js/index.js"></script>
+<script src="https://quasilyte.github.io/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.github.io/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

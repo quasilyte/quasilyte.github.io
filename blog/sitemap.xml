@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://quasilyte.github.io/blog/post/disassembling-go-avx512/</loc>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/post/go-asm-dispatch-tables/</loc>
     <lastmod>2018-05-31T01:39:59+03:00</lastmod>
   </url>
@@ -54,7 +59,13 @@
   
   <url>
     <loc>https://quasilyte.github.io/blog/tags/asm/</loc>
-    <lastmod>2018-05-31T01:39:59+03:00</lastmod>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.github.io/blog/tags/avx-512/</loc>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -113,7 +124,7 @@
   
   <url>
     <loc>https://quasilyte.github.io/blog/tags/go/</loc>
-    <lastmod>2018-05-31T01:39:59+03:00</lastmod>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -130,8 +141,14 @@
   </url>
   
   <url>
+    <loc>https://quasilyte.github.io/blog/tags/intel-xed/</loc>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.github.io/blog/</loc>
-    <lastmod>2018-05-31T01:39:59+03:00</lastmod>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -155,7 +172,7 @@
   
   <url>
     <loc>https://quasilyte.github.io/blog/post/</loc>
-    <lastmod>2018-05-31T01:39:59+03:00</lastmod>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -185,7 +202,7 @@
   
   <url>
     <loc>https://quasilyte.github.io/blog/tags/</loc>
-    <lastmod>2018-05-31T01:39:59+03:00</lastmod>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
     <priority>0</priority>
   </url>
   
