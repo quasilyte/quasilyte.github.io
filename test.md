@@ -2,6 +2,11 @@
 func f() {}
 ```
 
+audio?
+
+<audio>
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+</audio>
 
 <table>
 
