@@ -4,11 +4,24 @@ func f() {}
 
 audio?
 
-<audio controls>
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
-</audio>
+
 
 <table>
+  
+<tr>
+  <td>
+  En audio
+  <audio controls>
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  </audio>
+  </td>
+  <td>
+    Ru audio
+  <audio controls>
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  </audio>
+  </td>
+</tr>
 
 
 <tr>
