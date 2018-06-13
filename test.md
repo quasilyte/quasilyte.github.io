@@ -6,22 +6,14 @@ audio?
 
 
 
+  <audio controls style="width: 200px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" srclang="en" label="En">
+  </audio>
+  <audio control style="width: 200px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" srclang="ru" label="Ru">
+  </audio>
+
 <table>
-  
-<tr>
-  <td>
-  <audio controls>
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
-  </audio>
-  </td>
-  <td>
-  <audio controls>
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
-  </audio>
-  </td>
-</tr>
-
-
 <tr>
 
 <td>
