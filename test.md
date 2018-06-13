@@ -1,20 +1,4 @@
 
-<table style="margin: 0">
-  <tr>
-    <td>
-  <audio controls style="min-width: 400px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" label="En">
-  </audio>
-    </td>
-  
-  <td>
-  <audio controls style="min-width: 400px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" label="Ru">
-  </audio>
-  </td>
-  </tr>
-</table>
-
 ```go
 // snippet 1
 func f() {}
@@ -28,12 +12,12 @@ func f() {}
 
 <details>
 <summary>En</summary>
-  
-<b>bold</b>
 
-<a href="">link</a>
+<audio controls style="min-width: 400px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  </audio>
 
-```go
+<code>
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
@@ -76,7 +60,7 @@ func f() {}
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-```
+</code>
 
 </details>
 
@@ -87,8 +71,12 @@ func f() {}
 
 <details>
 <summary>Ru</summary>
+  
+  <audio controls style="min-width: 400px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  </audio>
 
-```go
+<code>
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
@@ -131,28 +119,12 @@ func f() {}
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
-```
+</code>
 
 </details>
 
 </td>
 </tr>
-</table>
-
-<table style="margin: 0">
-  <tr>
-    <td>
-  <audio controls style="min-width: 400px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" label="En">
-  </audio>
-    </td>
-  
-  <td>
-  <audio controls style="min-width: 400px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" label="Ru">
-  </audio>
-  </td>
-  </tr>
 </table>
 
 ```go
@@ -173,6 +145,10 @@ func f() {}
 
 <a href="">link</a>
 
+<audio controls style="min-width: 400px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  </audio>
+
 ```go
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
@@ -227,6 +203,10 @@ func f() {}
 
 <details>
 <summary>Ru</summary>
+  
+  <audio controls style="min-width: 400px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  </audio>
 
 ```go
 // 1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
