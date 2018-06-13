@@ -2,20 +2,17 @@
 func f() {}
 ```
 
-audio?
-
-
-<table>
+<table style="margin: 0">
   <tr>
     <td>
   <audio controls style="min-width: 400px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" label="En">
   </audio>
     </td>
   
   <td>
   <audio controls style="min-width: 400px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" label="Ru">
   </audio>
   </td>
   </tr>
