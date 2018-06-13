@@ -6,11 +6,12 @@ audio?
 
 
 
-  <audio controls style="width: 200px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" srclang="en" label="En">
+  <audio controls style="width: 400px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
   </audio>
-  <audio control style="width: 200px">
-  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg" srclang="ru" label="Ru">
+  
+  <audio control style="width: 400px">
+  <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
   </audio>
 
 <table>
