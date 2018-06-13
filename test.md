@@ -5,14 +5,21 @@ func f() {}
 audio?
 
 
-
-  <audio controls style="width: 400px">
+<table>
+  <tr>
+    <td>
+  <audio controls style="min-width: 400px">
   <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
   </audio>
+    </td>
   
-  <audio control style="width: 400px">
+  <td>
+  <audio controls style="min-width: 400px">
   <source src="http://n3.radio-t.com/rtfiles/rt_podcast601.mp3" type="audio/mpeg">
   </audio>
+  </td>
+  </tr>
+</table>
 
 <table>
 <tr>
