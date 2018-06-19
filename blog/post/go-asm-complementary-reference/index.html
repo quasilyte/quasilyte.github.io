@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about programming and related topics">
     
-    <meta name="generator" content="Hugo 0.40.3" />
+    <meta name="generator" content="Hugo 0.42.1" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -86,6 +86,7 @@
 <li><a href="#operands-order">Operands order</a></li><br>
 <li><a href="#register-operand-rules">Register operand rules</a></li><br>
 <li><a href="#mnemonics">Mnemonics</a></li><br>
+<li><a href="#known-issues">Known issues</a></li><br>
 <li><a href="#register-names">Register names</a></li><br>
 <li><a href="#syntax-oddities">Syntax oddities</a></li><br>
 <li><a href="#forbidden-constructions">Forbidden constructions</a></li><br>
@@ -450,6 +451,19 @@ instructions[&quot;MOVD&quot;] = x86.AMOVQ
 
 <p><a href="/blog/files/go_x86_aliases.txt">Go 1.9 x86 alias list</a> file is provided for convenience.</p>
 
+<p>As of June 2018, x86.csv mentioned above does not provide correct syntax for some Go instructions.</p>
+
+<h2 id="known-issues">Known issues</h2>
+
+<p>List below is a hand-written collection of known issues:</p>
+
+<ul>
+<li><code>FIADD m16int</code> is <code>FADDW</code>, but disassembled as <code>FIADD</code></li>
+<li><code>FIADD m32int</code> is <code>FADDL</code>, but disassembled as <code>FIADD</code></li>
+<li><a href="https://github.com/golang/go/issues/20111">Issue 20111</a>: <code>CMOVLGE</code> and <code>CMOVQGE</code> as <code>CMOVGE</code></li>
+<li><a href="https://github.com/golang/go/issues/23386">Issue 23386</a>: <code>FSAVE</code> assembled into <code>FNSAVE</code>; Real <code>FSAVE</code> is not implemented</li>
+</ul>
+
 <h2 id="register-names">Register names</h2>
 
 <p>Tables below map AT&amp;T &lt;=&gt; Go register names.</p>
@@ -534,7 +548,7 @@ The latter syntax is recommended.</p></li>
 <a href="https://github.com/golang/go/issues/21528">Proposal 21528</a> has discussion on related subject.</p></li>
 
 <li><p>Pseudo register <code>IZ</code> (<code>%riz</code>, <code>%eiz</code>) does not exist.<br />
-<a href="https://github.com/golang/go/issues/18792">Issue 18792</a>, although indirectly, confirms that.ss</p></li>
+<a href="https://github.com/golang/go/issues/18792">Issue 18792</a>, although indirectly, confirms that.</p></li>
 </ol>
 
 <h2 id="external-resources">External resources</h2>
