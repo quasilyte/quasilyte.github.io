@@ -6,10 +6,22 @@
     <description>Recent content on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 08 Jun 2018 13:46:49 +0300</lastBuildDate>
+    <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Go compiler: SSA optimization rules description language</title>
+      <link>https://quasilyte.github.io/blog/post/go_ssa_rules/</link>
+      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/go_ssa_rules/</guid>
+      <description>Original (ru): https://habr.com/post/415771/.
+ Go compiler uses its own Lisp-like domain-specific language (DSL) for Static Single Assignment (SSA) optimization rules description.
+Lets dig into that language, its peculiarities and limitations. As an excercise, we&amp;rsquo;ll add a new optimization rule into Go compiler that would optimize expressions like a*b+c using new operations we&amp;rsquo;re going to implement along the way.
+This is the first article in the series about Go compiler SSA backend, this is why I&amp;rsquo;ve included some fundamental and architectural info besides DSL overview.</description>
+    </item>
     
     <item>
       <title>Go AVX-512 support</title>
