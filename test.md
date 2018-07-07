@@ -4,4 +4,8 @@ Test file with emoji.
 
 :nerd:
 
-:nerd_face:
+<table>
+  <tr>
+    </td> :nerd_face:</td>
+  </tr>
+</table>
