@@ -4,4 +4,4 @@ Test file with emoji.
 
 :nerd:
 
-:eyeglasses:
+:nerd_face:
