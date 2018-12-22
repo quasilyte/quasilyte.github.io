@@ -7,7 +7,11 @@
 * https://github.com/Quasilyte/go-consistent Go code style consistency linter
 * https://github.com/Quasilyte/go-namecheck Go naming style consistency linter
 * https://github.com/go-toolsmith a set of libraries for working with Go AST and types
+
+## Non-programming projects I maintain
+
 * https://github.com/Quasilyte/gopher-arts a collection of gopher pics and images
+* https://github.com/Quasilyte/alley-of-reading notes on various books I read
 
 ## Where I publish my posts
 
