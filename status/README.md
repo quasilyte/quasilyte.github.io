@@ -2,8 +2,8 @@
 
 ## Projects I actively maintain
 
-* https://github.com/go-critic/go-critic lintpack-compatible Go linter
-* https://github.com/go-lintpack/lintpack Go linter builder
+* https://github.com/go-critic lintpack-compatible Go linter
+* https://github.com/go-lintpack Go linter builder
 * https://github.com/Quasilyte/go-consistent Go code style consistency linter
 * https://github.com/Quasilyte/go-namecheck Go naming style consistency linter
 * https://github.com/go-toolsmith a set of libraries for working with Go AST and types
