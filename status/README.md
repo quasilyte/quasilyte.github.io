@@ -8,17 +8,18 @@
 * https://github.com/Quasilyte/go-namecheck Go naming style consistency linter
 * https://github.com/go-toolsmith a set of libraries for working with Go AST and types
 
-## Non-programming projects I maintain
-
-* https://github.com/Quasilyte/gopher-arts a collection of gopher pics and images
-* https://github.com/Quasilyte/alley-of-reading notes on various books I read
-
 ## Community-related projects I maintain
 
 * https://github.com/golang-events-nizhny Nizhny Novgorod Go community resources
 * https://github.com/golang-kazan Kazan Go community resources
 * https://github.com/speaking-clubs-nizhny curated list of speaking clubs in Nizhny Novgorod
 * https://github.com/speaking-clubs-kazan curated list of speaking clubs in Kazan
+
+## Non-programming projects I maintain
+
+* https://github.com/Quasilyte/gopher-arts a collection of gopher pics and images
+* https://github.com/Quasilyte/alley-of-reading notes on various books I read
+* https://github.com/Quasilyte/talks a collection of talks I gave
 
 ## Where I publish my posts
 
