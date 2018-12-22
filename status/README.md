@@ -7,6 +7,9 @@
 * https://github.com/Quasilyte/go-consistent Go code style consistency linter
 * https://github.com/Quasilyte/go-namecheck Go naming style consistency linter
 * https://github.com/go-toolsmith a set of libraries for working with Go AST and types
+* https://github.com/Quasilyte/inltest library for inlining testing
+* https://github.com/Quasilyte/go-police another lintpack-compatible Go linter
+* https://github.com/Quasilyte/go-audit another lintpack-compatible Go linter
 
 ## Community-related projects I maintain
 
