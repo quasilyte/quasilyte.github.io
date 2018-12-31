@@ -15,7 +15,7 @@
 ## Community-related projects I maintain
 
 * <https://github.com/golang-events-nizhny> Nizhny Novgorod Go community resources
-* <https://github.com/golang-kazan Kazan> Go community resources
+* <https://github.com/golang-kazan> Kazan Go community resources
 * <https://github.com/speaking-clubs-nizhny> curated list of speaking clubs in Nizhny Novgorod
 * <https://github.com/speaking-clubs-kazan> curated list of speaking clubs in Kazan
 
