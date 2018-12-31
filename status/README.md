@@ -10,6 +10,7 @@
 * <https://github.com/Quasilyte/inltest> library for inlining testing
 * <https://github.com/Quasilyte/go-police> another lintpack-compatible Go linter
 * <https://github.com/Quasilyte/go-audit> another lintpack-compatible Go linter
+* <https://github.com/Quasilyte/go-unexport> refactoring tool, helps to unexport symbols
 
 ## Community-related projects I maintain
 
