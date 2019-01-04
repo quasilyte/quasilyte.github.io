@@ -11,6 +11,7 @@
 * <https://github.com/Quasilyte/go-police> another lintpack-compatible Go linter
 * <https://github.com/Quasilyte/go-audit> another lintpack-compatible Go linter
 * <https://github.com/Quasilyte/go-unexport> refactoring tool, helps to unexport symbols
+* <https://github.com/Quasilyte/go-benchrun> tool for a more convenient benchmarking
 
 ## Community-related projects I maintain
 
