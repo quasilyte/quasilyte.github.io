@@ -2,8 +2,8 @@
 
 ## Where I publish my posts
 
-* <https://habr.com/users/quasilyte/posts/> (Russian)
-* <https://quasilyte.github.io/blog/> (English)
+* <https://habr.com/users/quasilyte/posts> (Russian)
+* <https://quasilyte.github.io/blog> (English)
 
 Note that the content is different.
 
@@ -19,7 +19,7 @@ I rarely do a translation into several languages, it's usually either English-on
 
 * <https://github.com/golang-kazan> Kazan Go community resources
   * <https://vk.com/golang_kazan> community group in vk social network
-  * <https://www.meetup.com/Golang-Kazan/>
+  * <https://www.meetup.com/Golang-Kazan>
 * <https://github.com/golang-events-nizhny> Nizhny Novgorod Go community resources
   * <https://vk.com/golang_nizhny> community group in vk social network
 * <https://github.com/speaking-clubs-nizhny> curated list of speaking clubs in Nizhny Novgorod
