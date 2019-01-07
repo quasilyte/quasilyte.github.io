@@ -6,10 +6,20 @@
     <description>Recent content in Posts on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0300</lastBuildDate>
+    <lastBuildDate>Tue, 08 Jan 2019 01:46:18 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.github.io/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>log.Fatal vs log.Panic</title>
+      <link>https://quasilyte.github.io/blog/post/log-fatal-vs-log-panic/</link>
+      <pubDate>Tue, 08 Jan 2019 01:46:18 +0300</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/log-fatal-vs-log-panic/</guid>
+      <description>I personally don&amp;rsquo;t like log.Fatal/Fatalf/Fatalln. I feel sad because of their ubiquity in Go examples as a form of reaction to an error. I personally prefer log.Panic.
+The log.Panic vs log.Fatal is essentially panic vs os.Exit(1). The latter will not let deferred calls to run. Most of the time, it&amp;rsquo;s not what you want. It also makes testing much harder. It&amp;rsquo;s quite simple to stop panic in test by the means of recover.</description>
+    </item>
     
     <item>
       <title>Go compiler: SSA optimization rules description language</title>
