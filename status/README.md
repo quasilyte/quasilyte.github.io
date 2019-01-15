@@ -1,5 +1,7 @@
 # Status report
 
+<img src="https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/intermediary/f/c7d894cb-8d37-4495-a454-89c868b12375/dcwhshf-506c73c7-55d6-402f-ae94-03f2d98ec36a.jpg" width="30%" height="30%">
+
 ## Where I publish my posts
 
 * <https://habr.com/users/quasilyte/posts> (Russian)
