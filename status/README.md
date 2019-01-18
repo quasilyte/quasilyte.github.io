@@ -20,9 +20,9 @@ I rarely do a translation into several languages, it's usually either English-on
 
 ## Community-related projects I maintain
 
-* <https://github.com/golang-kazan> Kazan Go community resources
-  * <https://vk.com/golang_kazan> community group in vk social network
-  * <https://www.meetup.com/Golang-Kazan>
+* <https://github.com/GolangKazan> Kazan Go community resources
+  * <https://vk.com/GolangKazan> community group in vk social network
+  * <https://www.meetup.com/GolangKazan>
 * <https://github.com/golang-events-nizhny> Nizhny Novgorod Go community resources
   * <https://vk.com/golang_nizhny> community group in vk social network
 * <https://github.com/speaking-clubs-nizhny> curated list of speaking clubs in Nizhny Novgorod
