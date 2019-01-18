@@ -42,3 +42,8 @@ I rarely do a translation into several languages, it's usually either English-on
 * <https://github.com/Quasilyte/go-audit> another lintpack-compatible Go linter
 * <https://github.com/Quasilyte/go-unexport> refactoring tool, helps to unexport symbols
 * <https://github.com/Quasilyte/go-benchrun> tool for a more convenient benchmarking
+
+## Contacts
+
+* [twitter](https://twitter.com/quasilyte)
+* [linkedin](https://www.linkedin.com/in/quasilyte)
