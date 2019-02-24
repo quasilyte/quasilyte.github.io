@@ -15,8 +15,9 @@ I rarely do a translation into several languages, it's usually either English-on
 
 * <https://github.com/Quasilyte/talks> a collection of talks I gave
 * <https://github.com/Quasilyte/gopher-arts> a collection of gopher pics and images
-* <https://github.com/Quasilyte/alley-of-reading> notes on various books I read
+* <https://vk.com/post_rock_arts> pencil illustrations for post-rock songs
 * <https://www.deviantart.com/quasilyte> account on deviantart (digital arts)
+* <https://github.com/Quasilyte/alley-of-reading> notes on various books I read
 
 ## Community-related projects I maintain
 
