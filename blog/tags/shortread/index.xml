@@ -6,10 +6,21 @@
     <description>Recent content in Shortread on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 08 Jan 2019 01:46:18 +0300</lastBuildDate>
+    <lastBuildDate>Wed, 27 Feb 2019 22:15:32 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.github.io/blog/tags/shortread/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Step driven evaluation</title>
+      <link>https://quasilyte.github.io/blog/post/step-pattern/</link>
+      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
+      
+      <guid>https://quasilyte.github.io/blog/post/step-pattern/</guid>
+      <description>If you heard about table driven tests, the idea described in this article will be easier to grasp, since it&amp;rsquo;s the same technique, but used outside of the tests.
+Suppose you have a function that executes a lot of other functions. This function probably does two main things:
+ It checks for all returned errors as they occur. It passes one function outputs as the inputs for another.  // process is an example pipeline-like function.</description>
+    </item>
     
     <item>
       <title>log.Fatal vs log.Panic</title>

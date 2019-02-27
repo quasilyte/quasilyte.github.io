@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Step driven evaluation &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.42.1" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.github.io/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">83% technical. NaN% emotional.</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Step driven evaluation</h1>
+        <div class="post-meta">
+            <time datetime="27 February 2019">
+                27 February 2019
+            </time>
+        </div>
+    </header>
+
+    
+    
+    
+    <section class="post-content">
+        <p>If you heard about <a href="https://github.com/golang/go/wiki/TableDrivenTests">table driven tests</a>, the idea described in this article will be easier to grasp, since it&rsquo;s the same technique, but used outside of the tests.</p>
+
+<p>Suppose you have a function that executes a lot of other functions. This function probably does two main things:</p>
+
+<ol>
+<li>It checks for all returned errors as they occur.</li>
+<li>It passes one function outputs as the inputs for another.</li>
+</ol>
+
+<pre><code class="language-go">// process is an example pipeline-like function.
+func queryFile(filename, queryText string) (string, error) {
+    data, err := readData(filename)
+    if err != nil {
+        return nil, errors.Errorf(&quot;read data: %v&quot;, err)
+    }
+    rows, err := splitData(data)
+    if err != nil {
+        return nil, errors.Errorf(&quot;split data: %v&quot;, err)
+    }
+    q, err := compileQuery(queryText)
+    if err != nil {
+        return nil, errors.Errorf(&quot;compile query: %v&quot;, err)
+    }
+    rows, err = filterRows(rows, q)
+    if err != nil {
+        return nil, errors.Errorf(&quot;filter rows: %v&quot;, err)
+    }
+    result, err := rowsToString(rows)
+    if err != nil {
+        return nil, errors.Errorf(&quot;rows to string: %v&quot;, err)
+    }
+    return result, nil
+}
+</code></pre>
+
+<p>This function consists of 5 steps. Five relevant calls, to be precise. Everything else is a distraction. The order of those calls matter, it&rsquo;s a sequence, the algorithm.</p>
+
+<p>Let&rsquo;s re-write code above using the step driven evaluation.</p>
+
+<pre><code class="language-go">func queryFile(filename, queryText string) ([]row, error) {
+    var ctx queryFileContext
+    steps := []struct{
+        name string
+        fn   func() error
+    }{
+        {&quot;read data&quot;, ctx.readData},
+        {&quot;split data&quot;, ctx.splitData},
+        {&quot;compile query&quot;, ctx.compileQuery},
+        {&quot;filter rows&quot;, ctx.filterRows},
+        {&quot;rows to string&quot;, ctx.rowsToString},
+    }
+    for _, step := range steps {
+        if err := step.fn(); err != nil {
+            return errors.Errorf(&quot;%s: %v&quot;, step.name, err)
+        }
+    }
+    return ctx.result
+}
+</code></pre>
+
+<p>The pipeline is now explicit, it&rsquo;s easier to adjust steps order and to insert or remove them. It is also trivial to add debug logging inside that loop, you need only one new statement as opposed to <code>N</code> statements near every function call.</p>
+
+<p>This approach shines with 4+ step, when the complexity of introducing a new type like <code>queryFileContext</code> is inferior to the benefits.</p>
+
+<pre><code class="language-go">// queryFileContext might look like the struct below.
+
+type queryFileContext struct {
+    data   []byte
+    rows   []row
+    q      *query
+    result string
+}
+</code></pre>
+
+<p>Methods like <code>queryFileContext.splitData</code> just call the same function while updating the <code>ctx</code> object state.</p>
+
+<pre><code class="language-go">func (ctx *queryFileContext) splitData() error {
+    var err error
+    ctx.rows, err = splitData(ctx.data)
+    return err
+}
+</code></pre>
+
+<p>This pattern works particularly well for <code>main</code> functions.</p>
+
+<pre><code class="language-go">// An example of how real-world main may look like with this pattern.
+
+func main() {
+  ctx := &amp;context{}
+
+  steps := []struct {
+    name string
+    fn   func() error
+  }{
+    {&quot;parse flags&quot;, ctx.parseFlags},
+    {&quot;read schema&quot;, ctx.readSchema},
+    {&quot;dump schema&quot;, ctx.dumpSchema}, // Before transformations
+    {&quot;remove builtin constructors&quot;, ctx.removeBuiltinConstructors},
+    {&quot;add adhoc constructors&quot;, ctx.addAdhocConstructors},
+    {&quot;validate schema&quot;, ctx.validateSchema},
+    {&quot;decompose arrays&quot;, ctx.decomposeArrays},
+    {&quot;replace arrays&quot;, ctx.replaceArrays},
+    {&quot;resolve generics&quot;, ctx.resolveGenerics},
+    {&quot;dump schema&quot;, ctx.dumpSchema}, // After transformations
+    {&quot;decode combinators&quot;, ctx.decodeCombinators},
+    {&quot;dump decoded combinators&quot;, ctx.dumpDecodedCombinators},
+    {&quot;codegen&quot;, ctx.codegen},
+  }
+
+  for _, step := range steps {
+    ctx.debugf(&quot;start %s step&quot;, step.name)
+    if err := step.fn(); err != nil {
+      log.Fatalf(&quot;%s: %v&quot;, step.name, err)
+    }
+  }
+}
+</code></pre>
+
+<p>An additional benefit is the ease of testing. Even though we use <code>log.Fatalf</code>, <a href="https://quasilyte.github.io/blog/post/log-fatal-vs-log-panic/">which is a bad thing</a>, it&rsquo;s trivial to re-create this pipeline inside a test and run a set of steps that fail a test instead of doing <code>os.Exit</code>.</p>
+
+<p>You can also omit some CLI-related steps inside tests, like <code>&quot;dump schema&quot;</code> or <code>&quot;codegen&quot;</code>. You can also inject test-specific steps into that list.</p>
+
+<p>There are few drawbacks, as always:</p>
+
+<ol>
+<li>You need to introduce a new type and probably a few methods for it.</li>
+<li>It&rsquo;s not always straightforward to figure out appropriate context object layout so
+it satisfies the needs of the entire pipeline without getting overly complex.</li>
+</ol>
+
+<p>Try using it, maybe you&rsquo;ll like it.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/shortread">[shortread] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/go">[go] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Step%20driven%20evaluation&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fstep-pattern%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fstep-pattern%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fstep-pattern%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2019 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.github.io/blog/jquery.min.js"></script>
+<script src="https://quasilyte.github.io/blog/js/index.js"></script>
+<script src="https://quasilyte.github.io/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.github.io/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
