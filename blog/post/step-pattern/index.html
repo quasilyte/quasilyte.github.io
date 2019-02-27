@@ -91,27 +91,27 @@
 
 <pre><code class="language-go">// process is an example pipeline-like function.
 func queryFile(filename, queryText string) (string, error) {
-    data, err := readData(filename)
-    if err != nil {
-        return nil, errors.Errorf(&quot;read data: %v&quot;, err)
-    }
-    rows, err := splitData(data)
-    if err != nil {
-        return nil, errors.Errorf(&quot;split data: %v&quot;, err)
-    }
-    q, err := compileQuery(queryText)
-    if err != nil {
-        return nil, errors.Errorf(&quot;compile query: %v&quot;, err)
-    }
-    rows, err = filterRows(rows, q)
-    if err != nil {
-        return nil, errors.Errorf(&quot;filter rows: %v&quot;, err)
-    }
-    result, err := rowsToString(rows)
-    if err != nil {
-        return nil, errors.Errorf(&quot;rows to string: %v&quot;, err)
-    }
-    return result, nil
+	data, err := readData(filename)
+	if err != nil {
+		return nil, errors.Errorf(&quot;read data: %v&quot;, err)
+	}
+	rows, err := splitData(data)
+	if err != nil {
+		return nil, errors.Errorf(&quot;split data: %v&quot;, err)
+	}
+	q, err := compileQuery(queryText)
+	if err != nil {
+		return nil, errors.Errorf(&quot;compile query: %v&quot;, err)
+	}
+	rows, err = filterRows(rows, q)
+	if err != nil {
+		return nil, errors.Errorf(&quot;filter rows: %v&quot;, err)
+	}
+	result, err := rowsToString(rows)
+	if err != nil {
+		return nil, errors.Errorf(&quot;rows to string: %v&quot;, err)
+	}
+	return result, nil
 }
 </code></pre>
 
@@ -120,23 +120,23 @@ func queryFile(filename, queryText string) (string, error) {
 <p>Let&rsquo;s re-write code above using the step driven evaluation.</p>
 
 <pre><code class="language-go">func queryFile(filename, queryText string) ([]row, error) {
-    var ctx queryFileContext
-    steps := []struct{
-        name string
-        fn   func() error
-    }{
-        {&quot;read data&quot;, ctx.readData},
-        {&quot;split data&quot;, ctx.splitData},
-        {&quot;compile query&quot;, ctx.compileQuery},
-        {&quot;filter rows&quot;, ctx.filterRows},
-        {&quot;rows to string&quot;, ctx.rowsToString},
-    }
-    for _, step := range steps {
-        if err := step.fn(); err != nil {
-            return errors.Errorf(&quot;%s: %v&quot;, step.name, err)
-        }
-    }
-    return ctx.result
+	var ctx queryFileContext
+	steps := []struct {
+		name string
+		fn   func() error
+	}{
+		{&quot;read data&quot;, ctx.readData},
+		{&quot;split data&quot;, ctx.splitData},
+		{&quot;compile query&quot;, ctx.compileQuery},
+		{&quot;filter rows&quot;, ctx.filterRows},
+		{&quot;rows to string&quot;, ctx.rowsToString},
+	}
+	for _, step := range steps {
+		if err := step.fn(); err != nil {
+			return errors.Errorf(&quot;%s: %v&quot;, step.name, err)
+		}
+	}
+	return ctx.result
 }
 </code></pre>
 
@@ -147,54 +147,52 @@ func queryFile(filename, queryText string) (string, error) {
 <pre><code class="language-go">// queryFileContext might look like the struct below.
 
 type queryFileContext struct {
-    data   []byte
-    rows   []row
-    q      *query
-    result string
+	data   []byte
+	rows   []row
+	q      *query
+	result string
 }
 </code></pre>
 
 <p>Methods like <code>queryFileContext.splitData</code> just call the same function while updating the <code>ctx</code> object state.</p>
 
 <pre><code class="language-go">func (ctx *queryFileContext) splitData() error {
-    var err error
-    ctx.rows, err = splitData(ctx.data)
-    return err
+	var err error
+	ctx.rows, err = splitData(ctx.data)
+	return err
 }
 </code></pre>
 
 <p>This pattern works particularly well for <code>main</code> functions.</p>
 
-<pre><code class="language-go">// An example of how real-world main may look like with this pattern.
+<pre><code class="language-go">func main() {
+	ctx := &amp;context{}
 
-func main() {
-  ctx := &amp;context{}
+	steps := []struct {
+		name string
+		fn   func() error
+	}{
+		{&quot;parse flags&quot;, ctx.parseFlags},
+		{&quot;read schema&quot;, ctx.readSchema},
+		{&quot;dump schema&quot;, ctx.dumpSchema}, // Before transformations
+		{&quot;remove builtin constructors&quot;, ctx.removeBuiltinConstructors},
+		{&quot;add adhoc constructors&quot;, ctx.addAdhocConstructors},
+		{&quot;validate schema&quot;, ctx.validateSchema},
+		{&quot;decompose arrays&quot;, ctx.decomposeArrays},
+		{&quot;replace arrays&quot;, ctx.replaceArrays},
+		{&quot;resolve generics&quot;, ctx.resolveGenerics},
+		{&quot;dump schema&quot;, ctx.dumpSchema}, // After transformations
+		{&quot;decode combinators&quot;, ctx.decodeCombinators},
+		{&quot;dump decoded combinators&quot;, ctx.dumpDecodedCombinators},
+		{&quot;codegen&quot;, ctx.codegen},
+	}
 
-  steps := []struct {
-    name string
-    fn   func() error
-  }{
-    {&quot;parse flags&quot;, ctx.parseFlags},
-    {&quot;read schema&quot;, ctx.readSchema},
-    {&quot;dump schema&quot;, ctx.dumpSchema}, // Before transformations
-    {&quot;remove builtin constructors&quot;, ctx.removeBuiltinConstructors},
-    {&quot;add adhoc constructors&quot;, ctx.addAdhocConstructors},
-    {&quot;validate schema&quot;, ctx.validateSchema},
-    {&quot;decompose arrays&quot;, ctx.decomposeArrays},
-    {&quot;replace arrays&quot;, ctx.replaceArrays},
-    {&quot;resolve generics&quot;, ctx.resolveGenerics},
-    {&quot;dump schema&quot;, ctx.dumpSchema}, // After transformations
-    {&quot;decode combinators&quot;, ctx.decodeCombinators},
-    {&quot;dump decoded combinators&quot;, ctx.dumpDecodedCombinators},
-    {&quot;codegen&quot;, ctx.codegen},
-  }
-
-  for _, step := range steps {
-    ctx.debugf(&quot;start %s step&quot;, step.name)
-    if err := step.fn(); err != nil {
-      log.Fatalf(&quot;%s: %v&quot;, step.name, err)
-    }
-  }
+	for _, step := range steps {
+		ctx.debugf(&quot;start %s step&quot;, step.name)
+		if err := step.fn(); err != nil {
+			log.Fatalf(&quot;%s: %v&quot;, step.name, err)
+		}
+	}
 }
 </code></pre>
 
