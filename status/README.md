@@ -34,7 +34,8 @@ I rarely do a translation into several languages, it's usually either English-on
 ## Projects I actively maintain
 
 * <https://github.com/go-critic> lintpack-compatible Go linter
-* <https://github.com/go-lintpack> Go linter builder
+* <https://github.com/quasilyte/go-parsefix> program that tries to fix Go file parsing errors
+* <https://github.com/go-lintpack> Go linters builder
 * <https://github.com/Quasilyte/go-consistent> Go code style consistency linter
 * <https://github.com/Quasilyte/go-namecheck> Go naming style consistency linter
 * <https://github.com/go-toolsmith> a set of libraries for working with Go AST and types
