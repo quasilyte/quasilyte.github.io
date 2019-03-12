@@ -1,0 +1,401 @@
+<style>
+* {
+    font-size: 13px;
+    color: #335d7b;
+    font-family: -apple-system,BlinkMacSystemFont,Roboto,Open Sans,Helvetica Neue,sans-serif;
+    font-weight: 400;
+}
+
+body {
+    background-color: #edeef0;
+}
+
+#gopher {
+    width: 490px;
+    height: 460px;
+    overflow: hidden;
+    position: relative;
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+}
+
+#tabs {
+    width: 360px;
+    height: 444px;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+    padding: 8px;
+}
+
+#tab-selection {
+    background-color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 0 #d7d8db, 0 0 0 1px #e3e4e8;
+}
+
+.image-layer {
+    position: absolute;
+}
+
+td {
+    padding: 0;
+}
+
+td a {
+    text-decoration: none;
+    display: block;
+    padding-left: 18px;
+    line-height: 31px;
+    width: 96px;
+}
+
+td a:hover {
+    background-color: #f0f2f5;
+}
+
+.option-link img:hover {
+    background-color: #f0f2f5;
+}
+
+.option-link img {
+    text-decoration: none;
+    width: 110px;
+    height: auto;
+    border-bottom: 1px solid #dfe2e8;
+    background-color: #fff;
+}
+
+.color-link img {
+    width: 110px;
+    height: auto;
+    border: 1px solid #dfe2e8;
+}
+
+.option-tab {
+    display: none;
+    overflow-y: scroll;
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+
+.option-selected {
+    background-color: #f0f2f5 !important;
+}
+
+.tab-selected {
+    background-color: #f0f2f5;
+    border-left: 2px solid #5181b8;
+    color: black;
+    font-weight: 500;
+    padding-left: 16px;
+}
+</style>
+
+<div style="width: 1100px; height: 490px">
+    <div style="position: relative; float: left">
+        <div id="gopher"></div>
+    </div>
+
+    <div id="tabs" style="float: left">
+        <div class="option-tab">
+            <a class="color-link" title="Sunglo #e17268"><img src="_assets.out/torso/0.normal.png"></a>
+            <a class="color-link" title="Copperfield #e18468"><img src="_assets.out/torso/5.normal.png"></a>
+            <a class="color-link" title="Di Serria #e19668"><img src="_assets.out/torso/10.normal.png"></a>
+            <a class="color-link" title="Equator #e1a968"><img src="_assets.out/torso/15.normal.png"></a>
+            <a class="color-link" title="Yellow Green #c0e168"><img src="_assets.out/torso/40.normal.png"></a>
+            <a class="color-link" title="Pastel Green #68e190"><img src="_assets.out/torso/75.normal.png"></a>
+            <a class="color-link" title="Pastel Green #68e1a2"><img src="_assets.out/torso/80.normal.png"></a>
+            <a class="color-link" title="Aquamarine Blue #68e1b5"><img src="_assets.out/torso/85.normal.png"></a>
+            <a class="color-link" title="Aquamarine Blue #68e1c6"><img src="_assets.out/torso/90.normal.png"></a>
+            <a class="color-link" title="Aquamarine Blue #68e1d8"><img src="_assets.out/torso/95.normal.png"></a>
+            <a class="color-link" title="Aquamarine Blue #68d8e1"><img src="_assets.out/torso/100.normal.png"></a>
+            <a class="color-link" title="Viking #68c6e1"><img src="_assets.out/torso/105.normal.png"></a>
+            <a class="color-link" title="Viking #68b5e1"><img src="_assets.out/torso/110.normal.png"></a>
+            <a class="color-link" title="Havelock Blue #68a3e1"><img src="_assets.out/torso/115.normal.png"></a>
+            <a class="color-link" title="Havelock Blue #687ee1"><img src="_assets.out/torso/125.normal.png"></a>
+            <a class="color-link" title="Medium Purple #9c68e1"><img src="_assets.out/torso/145.normal.png"></a>
+            <a class="color-link" title="Medium Purple #af68e1"><img src="_assets.out/torso/150.normal.png"></a>
+            <a class="color-link" title="Lavender #c068e1"><img src="_assets.out/torso/155.normal.png"></a>
+            <a class="color-link" title="Orchid #e168cc"><img src="_assets.out/torso/170.normal.png"></a>
+            <a class="color-link" title="Deep Blush #e168a9"><img src="_assets.out/torso/180.normal.png"></a>
+            <a class="color-link" title="Sunglo #e16872"><img src="_assets.out/torso/195.normal.png"></a>
+        </div>
+        
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img src="_assets.out/eyes/confused.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/different.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/different_mirrored.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/different_mirrored_eyebrow.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/distant_normal_left.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/killed.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/normal_up.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/normal_up_lashes.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/oval_center.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/oval_center_lashes.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/oval_crazy.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/oval_curious.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/oval_curious_empty.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/oval_down.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/oval_down_lashes.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/sceptical.png"></a>
+            <a class="option-link"><img src="_assets.out/eyes/small_center.png"></a>
+        </div>
+
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img src="_assets.out/pose/dunno.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/right_holding.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/right_holding.white_rose.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/right_holding.wrench.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/thinking.magnifier.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/thinking.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/timid.beads.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/timid.camera.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/timid.coffee.png"></a>
+            <a class="option-link"><img src="_assets.out/pose/timid.png"></a>
+        </div>
+
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img data-src="torso/cheeky.png"></a>
+            <a class="option-link"><img data-src="torso/curly.png"></a>
+            <a class="option-link"><img data-src="torso/normal.png"></a>
+            <a class="option-link"><img data-src="torso/shaggy.png"></a>
+            <a class="option-link"><img data-src="torso/wolf.png"></a>
+        </div>
+
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img data-src="ears/fluffy.png"></a>
+            <a class="option-link"><img data-src="ears/foxy.png"></a>
+            <a class="option-link"><img data-src="ears/normal.png"></a>
+            <a class="option-link"><img data-src="ears/wide.png"></a>
+        </div>
+    
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img src="_assets.out/nose/oval.png"></a>
+            <a class="option-link"><img src="_assets.out/nose/small.png"></a>
+        </div>
+    
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img src="_assets.out/undernose/normal.png"></a>
+            <a class="option-link"><img src="_assets.out/undernose/oval.png"></a>
+            <a class="option-link"><img src="_assets.out/undernose/small.png"></a>
+        </div>
+    
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img src="_assets.out/teeths/classical.png"></a>
+            <a class="option-link"><img src="_assets.out/teeths/edgy.png"></a>
+            <a class="option-link"><img src="_assets.out/teeths/fangs.png"></a>
+            <a class="option-link"><img src="_assets.out/teeths/fragile.png"></a>
+            <a class="option-link"><img src="_assets.out/teeths/funky.png"></a>
+            <a class="option-link"><img src="_assets.out/teeths/shy.png"></a>
+            <a class="option-link"><img src="_assets.out/teeths/soft.png"></a>
+        </div>
+    
+        <div style="float: left" class="option-tab">
+            <a class="option-link" title="None"><img src="_assets.out/accessory/none.png"></a>
+            <a class="option-link"><img src="_assets.out/accessory/glasses_cool.png"></a>
+            <a class="option-link"><img src="_assets.out/accessory/glasses_glam.png"></a>
+            <a class="option-link"><img src="_assets.out/accessory/glasses_nerd.png"></a>
+            <a class="option-link"><img src="_assets.out/accessory/glasses_square.png"></a>
+        </div>
+    
+        <div style="float: left" class="option-tab">
+            <a class="option-link" title="None"><img src="_assets.out/tattoo/none.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/apple.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/batman.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/github.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/invader.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/sekai.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/ubuntu.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/usb.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/x.png"></a>
+        </div>
+
+        <div style="float: left" class="option-tab">
+            <a class="option-link"><img src="_assets.out/tattoo/none.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/apple.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/batman.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/github.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/invader.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/sekai.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/ubuntu.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/usb.png"></a>
+            <a class="option-link"><img src="_assets.out/tattoo/x.png"></a>
+        </div>
+    </div>
+
+    <div style="margin-left: 8px; float: left">
+        <table cellspacing="0" id="tab-selection">
+            <tr><td><a>Body color</a></td></tr>
+            <tr><td><a>Eyes</a></td></tr>
+            <tr><td><a>Pose</a></td></tr>
+            <tr><td><a>Torso</a></td></tr>
+            <tr><td><a>Ears</a></td></tr>
+            <tr><td><a>Nose</a></td></tr>
+            <tr><td><a>Undernose</a></td></tr>
+            <tr><td><a>Teeths</a></td></tr>
+            <tr><td><a>Accessory</a></td></tr>
+            <tr><td><a>Tattoo</a></td></tr>
+        </table>
+    </div>
+</div>
+
+<script>
+function findTabSelector(index) {
+    var tabTable = document.getElementById("tab-selection");
+    var tbody = tabTable.children[0];
+    var tr = tbody.children[index];
+    var td = tr.children[0];
+    var anchor = td.children[0];
+    return anchor;
+}
+
+function displayTab(index) {
+    var tabs = document.getElementById("tabs");
+    tabs.children[index].style.display = "block";
+    var selector = findTabSelector(index);
+    selector.classList.add("tab-selected");
+}
+
+function createQuery(ctxt, newKey, newValue) {
+    var query = [];
+    for (k in ctxt.gopherParams) {
+        if (k == newKey) {
+            continue;
+        }
+        var v = ctxt.gopherParams[k];
+        if (v) {
+            query.push(k+"="+v);
+        }
+    }
+    query.push(newKey+"="+newValue);
+    if (newKey != "color") {
+        query.push("color="+ctxt.color);
+    }
+    if (newKey != "tab") {
+        query.push("tab="+ctxt.tabIndex);
+    }
+    return query.join("&");
+}
+
+function assetInfo(link) {
+    var parts = link.split("/");
+    var k = parts[parts.length-2];
+    var v = parts[parts.length-1].slice(0, -4); // Strip ".png"
+    return {key: k, val: v};
+}
+
+function initLinks(ctxt) {
+    var colors = document.getElementsByClassName("color-link");
+    for (var i in colors) {
+        if (!colors.hasOwnProperty(i)) {
+            continue;
+        }
+        var col = colors[i];
+        var img = col.children[0];
+        var hue = assetInfo(img.src).val.split(".")[0];
+        col.href = "?"+createQuery(ctxt, "color", hue);
+        if (ctxt.color == hue) {
+            img.classList.add('option-selected');
+        }
+    }
+
+    var opts = document.getElementsByClassName("option-link");
+    for (var i in opts) {
+        if (!opts.hasOwnProperty(i)) {
+            continue;
+        }
+        var opt = opts[i];
+        var img = opt.children[0];
+        var info = {};
+        if (img.dataset.src) {
+            info = assetInfo(img.dataset.src);
+            img.src = "_assets.out/"+info.key+"/"+ctxt.color+"."+info.val+".png";
+        } else {
+            info = assetInfo(img.src);
+        }
+        opt.href = "?"+createQuery(ctxt, info.key, info.val);
+        if (ctxt.gopherParams[info.key] == info.val) {
+            img.classList.add('option-selected');
+        }
+    }
+
+    var tabTable = document.getElementById("tab-selection");
+    var tbody = tabTable.children[0];
+    for (var i in tbody.children) {
+        if (!tbody.children.hasOwnProperty(i)) {
+            continue;
+        }
+        var tr = tbody.children[i];
+        var td = tr.children[0];
+        var anchor = td.children[0];
+        anchor.href = "?"+createQuery(ctxt, "tab", i);
+    }
+}
+
+function initGopher(ctxt) {
+    var layers = [];
+
+    drawOrder = [
+        {key: "torso"},
+        {key: "ears"},
+        {key: "eyes"},
+        {key: "teeths"},
+        {key: "undernose"},
+        {key: "nose"},
+        {key: "pose"},
+        {key: "accessory"},
+        {key: "tattoo"},
+    ];
+    for (var i in drawOrder) {
+        var o = drawOrder[i];
+        var v = ctxt.gopherParams[o.key];
+        if (!v) {
+            continue;
+        }
+        if (o.key == "torso" || o.key == "ears") {
+            v = ctxt.color + "." + v; // Add a color
+        }
+        var src = "./_assets.out/" + o.key + "/" + v + ".png";
+        layers.push("<img class='image-layer' src='"+src+"'>");
+    }
+
+    gopher = document.getElementById("gopher");
+    gopher.innerHTML = layers.join("");
+}
+
+function initPage() {
+    var gopherParams = {
+        accessory: "",
+        ears: "normal",
+        eyes: "normal_up",
+        nose: "oval",
+        pose: "dunno",
+        tattoo: "",
+        teeths: "classical",
+        torso: "normal",
+        undernose: "normal",
+    };
+
+    var query = new URLSearchParams(window.location.search);
+    for (k in gopherParams) {
+        var v = query.get(k);
+        if (v) {
+            gopherParams[k] = v;
+        }
+    }
+
+    var context = {
+        gopherParams: gopherParams,
+        color: query.get("color") || "100",
+        tabIndex: query.get("tab") || 0,
+    }
+
+    initLinks(context);
+    initGopher(context);
+    displayTab(context.tabIndex);
+}
+
+window.onload = initPage;
+</script>
