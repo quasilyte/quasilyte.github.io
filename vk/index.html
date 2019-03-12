@@ -299,7 +299,7 @@ function initLinks(ctxt) {
         var hue = assetInfo(img.src).val.split(".")[0];
         col.href = "?"+createQuery(ctxt, "color", hue);
         if (ctxt.color == hue) {
-            img.classList.add('option-selected');
+            img.classList.add("option-selected");
         }
     }
 
@@ -319,7 +319,7 @@ function initLinks(ctxt) {
         }
         opt.href = "?"+createQuery(ctxt, info.key, info.val);
         if (ctxt.gopherParams[info.key] == info.val) {
-            img.classList.add('option-selected');
+            img.classList.add("option-selected");
         }
     }
 
