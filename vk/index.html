@@ -7,6 +7,7 @@
 }
 
 body {
+    display: none;
     background-color: #edeef0;
 }
 
@@ -276,6 +277,7 @@ function createQuery(ctxt, newKey, newValue) {
     if (newKey != "tab") {
         query.push("tab="+ctxt.tabIndex);
     }
+    query.push("password=please"); // TODO: remove later
     return query.join("&");
 }
 
@@ -385,6 +387,12 @@ function initPage() {
             gopherParams[k] = v;
         }
     }
+
+    // Simple measure to avoid extra attention until this thing is ready.
+    if (query.get("password") != "please") {
+        return;
+    }
+    document.body.style.display = "block";
 
     var context = {
         gopherParams: gopherParams,

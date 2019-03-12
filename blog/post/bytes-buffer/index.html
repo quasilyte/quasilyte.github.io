@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>The mysteries of bytes.Buffer performance &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.42.1" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.github.io/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.github.io/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.github.io/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.github.io/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">83% technical. NaN% emotional.</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">The mysteries of bytes.Buffer performance</h1>
+        <div class="post-meta">
+            <time datetime="06 September 2018">
+                06 September 2018
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#usage-hints">Usage hints</a></li><br>
+<li><a href="#old-bytes-buffer-problem">Old bytes.Buffer problem</a></li><br>
+<li><a href="#the-roots-of-the-problem">The roots of the problem</a></li><br>
+<li><a href="#bytebuf-library">bytebuf library</a></li><br>
+<li><a href="#simpler-and-faster">Simpler and faster</a></li><br>
+<li><a href="#conclusion">Conclusion</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<h2 id="usage-hints">Usage hints</h2>
+
+<p>Just to make sure you don&rsquo;t stop reading until reaching the most important parts, I&rsquo;ll start from the useful tricks.
+Note that these are useful only for Go1.12 and above. For details and explanations read the rest of the article.</p>
+
+<blockquote>
+<p>If you have scoped <a href="https://golang.org/pkg/bytes/#Buffer">bytes.Buffer</a> that does not escape, it might be a good idea to use <a href="https://golang.org/pkg/bytes/#NewBuffer">bytes.NewBuffer</a> with a slice that has a capacity that serves as a size hint. If in doubdts, use 64 as a capacity value (size of the old bootstrap array).</p>
+</blockquote>
+
+<pre><code class="language-go">// If b does not escape from the scope it's defined in,
+// you'll get stack-allocated buffer. Exactly what you've always wanted.
+//
+// Slice length should be 0.
+// Slice capacity can be pretty much arbitrary. As long as it's not
+// really big, you'll still get 0 heap allocations.
+b := bytes.NewBuffer(make([]byte, 0, 128))
+</code></pre>
+
+<p>Using zero value <code>bytes.Buffer</code> is OK, but expect there to be at least one heap allocation if non-zero length writes are performed.</p>
+
+<p>Important differences from the pre-Go1.12 <code>bytes.Buffer</code>:</p>
+
+<ul>
+<li>Zero value <code>bytes.Buffer</code> performs better than before</li>
+<li>You can have trully stack-allocated buffer, and it&rsquo;s not even limited to 64 bytes</li>
+<li>The <code>unsafe.Sizeof(bytes.Buffer{})</code> is reduced significantly</li>
+<li>Empty writes don&rsquo;t cause allocations</li>
+</ul>
+
+<p>There were no big reasons to use <code>bytes.NewBuffer</code> before. Now there are.</p>
+
+<h2 id="old-bytes-buffer-problem">Old bytes.Buffer problem</h2>
+
+<ul>
+<li>optimization that does not work</li>
+<li>optimization that does it worse</li>
+</ul>
+
+<h2 id="the-roots-of-the-problem">The roots of the problem</h2>
+
+<ul>
+<li>array self-assign causes receiver to leak</li>
+<li>can&rsquo;t inline <code>grow</code> and/ro <code>write</code> methods</li>
+<li>leaked receiver causes buffer to escape</li>
+</ul>
+
+<h2 id="bytebuf-library">bytebuf library</h2>
+
+<ul>
+<li>compiler patch</li>
+<li>change array member to a pointer</li>
+<li>few changes, big wins</li>
+<li>new() for bootstrap array can be proven as non-escaping =&gt; profit</li>
+</ul>
+
+<h2 id="simpler-and-faster">Simpler and faster</h2>
+
+<ul>
+<li>came to this idea after thinking about new() that does not escape</li>
+<li>more flexible, arbitrary bootstrap</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>To avoid such interesting situations, one should verify that clever optimization actually works. For Go, small buffer optimizations are quite a delicate topic right now as they usually make things worse and make escape analysis angry. Sometimes to make things more optimized, you need to remove some optimizations, I guess.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.github.io/blog/tags/performance">[performance] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=The%20mysteries%20of%20bytes.Buffer%20performance&url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fbytes-buffer%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fbytes-buffer%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.github.io%2fblog%2fpost%2fbytes-buffer%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.github.io/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2018 <a href="https://quasilyte.github.io/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.github.io/blog/jquery.min.js"></script>
+<script src="https://quasilyte.github.io/blog/js/index.js"></script>
+<script src="https://quasilyte.github.io/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.github.io/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
