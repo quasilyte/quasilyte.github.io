@@ -139,10 +139,12 @@ td a:hover {
 <script>
 var app = (function() {
     function decodeWord(s) {
+        s = ""+s; // Ensure it's string.
         return parseInt(s, 16);
     }
 
     function encodeWord(num) {
+        num = num|0; // Ensure it's number.
         s = num.toString(16);
         if (s.length == 2) {
             return s;
@@ -371,6 +373,7 @@ var app = (function() {
                         return encodeWord(i);
                     }                    
                 }
+                console.error("%s not found", x.key);
                 return encodeWord(0);
             },
             dec: function(s) { return list[decodeWord(s)]; },
@@ -460,7 +463,7 @@ app.initOptionTabSelector = function() {
     var tabSelection = app.state.tabSelection;
     for (var i in tabSelection) {
         var href = "";
-        var label = tabSelection[i].label
+        var label = tabSelection[i].label;
         var href = "?state=" + app.stateString({tab: tabSelection[i]});
         if (tabInfo == tabSelection[i]) {
             parts.push("<tr><td><a class='tab-selected' href='"+href+"'>"+label+"</a></td></tr>")
