@@ -115,9 +115,7 @@ td a:hover {
 <div class="back"><a href="">Gopher Konstructor</a></div>
 
 <div style="width: 1100px; height: 490px; margin-left: 16px">
-    <div style="position: relative; float: left">
-        <div id="gopher"></div>
-    </div>
+    <canvas width=490 height=460 style="position: relative; float: left" id="gopher"></canvas>
 
     <div id="option-tabs" style="float: left">
         <div id="colorOptionTab" class="option-tab"></div>
@@ -478,6 +476,15 @@ app.spriteURL = function(url) {
     return url + "/" + suffix;
 };
 
+app.drawImages = function(images) {
+    var canvas = document.getElementById("gopher");
+    var ctx = canvas.getContext("2d");
+    for (i in images) {
+        var img = images[i];
+        ctx.drawImage(img, 0, 0);
+    }
+};
+
 app.renderGopher = function() {
     var drawOrder = [
         "earsOptionTab",
@@ -491,17 +498,25 @@ app.renderGopher = function() {
         "tattooOptionTab",
     ];
 
-    var layers = [];
+    var images = [];
+    var toLoad = drawOrder.length; // For sync.
     for (var i in drawOrder) {
         var tabKey = drawOrder[i];
         var imgURL = app.spriteURL(app.state[tabKey]);
         if (!imgURL) {
+            toLoad--;
             continue;
         }
-        layers.push("<img class='image-layer' src='"+imgURL+"'>");
+        var img = new Image();
+        images.push(img); // Order is preserved.
+        img.src = imgURL;
+        img.onload = function() {
+            toLoad--;
+            if (toLoad == 0) {
+                app.drawImages(images);
+            }
+        };
     }
-    gopher = document.getElementById("gopher");
-    gopher.innerHTML = layers.join("");
 };
 
 app.main = function() {
