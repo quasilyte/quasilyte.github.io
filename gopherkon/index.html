@@ -1,4 +1,4 @@
-<meta charset="utf-8">
+g<meta charset="utf-8">
 
 <style>
 * {
@@ -126,6 +126,7 @@ td a:hover {
         <div id="noseOptionTab" class="option-tab"></div>
         <div id="undernoseOptionTab" class="option-tab"></div>
         <div id="teethsOptionTab" class="option-tab"></div>    
+        <div id="mouthOptionTab" class="option-tab"></div>    
         <div id="accessoryOptionTab" class="option-tab"></div>
         <div id="tattooOptionTab" class="option-tab"></div>
     </div>
@@ -154,6 +155,7 @@ var app = (function() {
     }
 
     var gopherTeethsList = [
+        "sprites/none.png",
         "sprites/teeths/classical.png",
         "sprites/teeths/edgy.png",
         "sprites/teeths/fangs.png",
@@ -161,6 +163,13 @@ var app = (function() {
         "sprites/teeths/funky.png",
         "sprites/teeths/shy.png",
         "sprites/teeths/soft.png",
+    ];
+
+    var gopherMouthList = [
+        "sprites/none.png",
+        "sprites/mouth/grin.png",
+        "sprites/mouth/lol.png",
+        "sprites/mouth/surprised.png",
     ];
 
     var gopherColorsList = [
@@ -328,6 +337,11 @@ var app = (function() {
             label: "Teeths",
         },
         {
+            key: "mouthOptionTab",
+            options: gopherMouthList,
+            label: "Mouth",
+        },
+        {
             key: "undernoseOptionTab",
             options: gopherUndernoseList,
             label: "Undernose",    
@@ -383,6 +397,7 @@ var app = (function() {
             torsoOptionTab: "sprites/torso/normal",
             earsOptionTab: "sprites/ears/normal",
             teethsOptionTab: "sprites/teeths/classical.png",
+            mouthOptionTab: "sprites/none.png",
             undernoseOptionTab: "sprites/undernose/normal.png",
             noseOptionTab: "sprites/nose/oval.png",
             accessoryOptionTab: "sprites/none.png",
@@ -397,6 +412,7 @@ var app = (function() {
             {name: "torsoOptionTab", fmt: stringListFmt(gopherTorsoList)},
             {name: "earsOptionTab", fmt: stringListFmt(gopherEarsList)},
             {name: "teethsOptionTab", fmt: stringListFmt(gopherTeethsList)},
+            {name: "mouthOptionTab", fmt: stringListFmt(gopherMouthList)},
             {name: "undernoseOptionTab", fmt: stringListFmt(gopherUndernoseList)},
             {name: "noseOptionTab", fmt: stringListFmt(gopherNoseList)},
             {name: "accessoryOptionTab", fmt: stringListFmt(gopherAccessoryList)},
@@ -500,6 +516,7 @@ app.renderGopher = function() {
         "earsOptionTab",
         "torsoOptionTab",
         "eyesOptionTab",
+        "mouthOptionTab",
         "teethsOptionTab",
         "undernoseOptionTab",
         "noseOptionTab",
