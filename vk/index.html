@@ -190,6 +190,7 @@ var app = (function() {
     ];
 
     var gopherEarsList = [
+        "sprites/none.png",
         "sprites/ears/fancy",
         "sprites/ears/fluffy",
         "sprites/ears/foxy",
@@ -201,6 +202,7 @@ var app = (function() {
     ];
 
     var gopherTorsoList = [
+        "sprites/none.png",
         "sprites/torso/cheeky",
         "sprites/torso/curly",
         "sprites/torso/normal",
@@ -209,7 +211,7 @@ var app = (function() {
     ];
 
     var gopherPoseList = [
-        "sprites/pose/none.png",
+        "sprites/none.png",
         "sprites/pose/dunno.png",
         "sprites/pose/right_holding.png",
         "sprites/pose/right_holding.white_rose.png",
@@ -228,7 +230,7 @@ var app = (function() {
     ];
 
     var gopherAccessoryList = [
-        "sprites/accessory/none.png",
+        "sprites/none.png",
         "sprites/accessory/censored_black.png",
         "sprites/accessory/censored_red.png",
         "sprites/accessory/glasses_cool.png",
@@ -273,7 +275,7 @@ var app = (function() {
     ];
 
     var gopherTattooList = [
-        "sprites/tattoo/none.png",
+        "sprites/none.png",
         "sprites/tattoo/apple.png",
         "sprites/tattoo/batman.png",
         "sprites/tattoo/digital_resistance1.png",
@@ -375,8 +377,8 @@ var app = (function() {
             teethsOptionTab: "sprites/teeths/classical.png",
             undernoseOptionTab: "sprites/undernose/normal.png",
             noseOptionTab: "sprites/nose/oval.png",
-            accessoryOptionTab: "sprites/accessory/none.png",
-            tattooOptionTab: "sprites/tattoo/none.png",
+            accessoryOptionTab: "sprites/none.png",
+            tattooOptionTab: "sprites/none.png",
         },
 
         stateScheme: [
@@ -454,7 +456,7 @@ app.initOptionTab = function() {
     var parts = [];
     var tabKey = app.state.tab.key;
     for (var i in tabInfo.options) {
-        var imgURL = app.spriteURL(tabKey, tabInfo.options[i]);
+        var imgURL = app.spriteURL(tabInfo.options[i]);
         var delta = {};
         delta[tabKey] = tabInfo.options[i];
         var href = "?state=" + app.stateString(delta);
@@ -467,8 +469,8 @@ app.initOptionTab = function() {
     optionTab.innerHTML = parts.join("");
 };
 
-app.spriteURL = function(tabKey, url) {
-    if (tabKey != "torsoOptionTab" && tabKey != "earsOptionTab") {
+app.spriteURL = function(url) {
+    if (url.endsWith(".png")) {
         return url;
     }
     var parts = app.state.colorOptionTab.split("/");
@@ -492,7 +494,7 @@ app.renderGopher = function() {
     var layers = [];
     for (var i in drawOrder) {
         var tabKey = drawOrder[i];
-        var imgURL = app.spriteURL(tabKey, app.state[tabKey]);
+        var imgURL = app.spriteURL(app.state[tabKey]);
         if (!imgURL) {
             continue;
         }
