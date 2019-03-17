@@ -128,6 +128,7 @@ td a:hover {
         <div id="teethsOptionTab" class="option-tab"></div>    
         <div id="mouthOptionTab" class="option-tab"></div>    
         <div id="accessoryOptionTab" class="option-tab"></div>
+        <div id="extrasOptionTab" class="option-tab"></div>
         <div id="tattooOptionTab" class="option-tab"></div>
     </div>
 
@@ -155,6 +156,11 @@ var app = (function() {
         console.error("bad num: %d", num);
         return "0";
     }
+
+    var gopherExtrasList = [
+        "sprites/none.png",
+        "sprites/extras/bowtie.png",
+    ];
 
     var gopherTeethsList = [
         "sprites/none.png",
@@ -372,6 +378,11 @@ var app = (function() {
             options: gopherTattooList,
             label: "Tattoo",
         },
+        {
+            key: "extrasOptionTab",
+            options: gopherExtrasList,
+            label: "Extras",
+        },
     ];
 
     function objectListFmt(list) {
@@ -414,6 +425,7 @@ var app = (function() {
             noseOptionTab: "sprites/nose/oval.png",
             accessoryOptionTab: "sprites/none.png",
             tattooOptionTab: "sprites/none.png",
+            extrasOptionTab: "sprites/none.png",
         },
 
         stateScheme: [
@@ -429,6 +441,7 @@ var app = (function() {
             {name: "noseOptionTab", fmt: stringListFmt(gopherNoseList)},
             {name: "accessoryOptionTab", fmt: stringListFmt(gopherAccessoryList)},
             {name: "tattooOptionTab", fmt: stringListFmt(gopherTattooList)},
+            {name: "extrasOptionTab", fmt: stringListFmt(gopherExtrasList)},
         ],
     };
     return app;
@@ -527,6 +540,7 @@ app.renderGopher = function() {
     var drawOrder = [
         "earsOptionTab",
         "torsoOptionTab",
+        "extrasOptionTab",
         "eyesOptionTab",
         "mouthOptionTab",
         "teethsOptionTab",
