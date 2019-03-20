@@ -13,6 +13,7 @@ I rarely do a translation into several languages, it's usually either English-on
 
 ## My non-programming projects
 
+* <http://quasilyte.dev/gopherkon/> gopher constructor
 * <https://github.com/Quasilyte/talks> a collection of talks I gave
 * <https://github.com/Quasilyte/gopher-arts> a collection of gopher pics and images
 * <https://vk.com/post_rock_arts> pencil illustrations for post-rock songs
