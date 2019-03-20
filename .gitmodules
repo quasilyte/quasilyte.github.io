@@ -1,0 +1,3 @@
+[submodule "gopherkon"]
+	path = gopherkon
+	url = https://github.com/quasilyte/gopherkon.git
