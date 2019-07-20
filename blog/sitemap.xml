@@ -3,250 +3,250 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/step-pattern/</loc>
+    <loc>https://quasilyte.dev/blog/</loc>
+    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/</loc>
+    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/step-pattern/</loc>
     <lastmod>2019-02-27T22:15:32+03:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/log-fatal-vs-log-panic/</loc>
+    <loc>https://quasilyte.dev/blog/tags/</loc>
+    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/go/</loc>
+    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/shortread/</loc>
+    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/log-fatal-vs-log-panic/</loc>
     <lastmod>2019-01-08T01:46:18+03:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/go_ssa_rules/</loc>
+    <loc>https://quasilyte.dev/blog/post/go_ssa_rules/</loc>
     <lastmod>2018-06-30T18:53:25+03:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/go-avx512/</loc>
+    <loc>https://quasilyte.dev/blog/tags/asm/</loc>
+    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/compilers/</loc>
+    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/habr-translation/</loc>
+    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/ssa/</loc>
+    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/go-avx512/</loc>
     <lastmod>2018-06-08T13:46:49+03:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/disassembling-go-avx512/</loc>
+    <loc>https://quasilyte.dev/blog/tags/avx-512/</loc>
+    <lastmod>2018-06-08T13:46:49+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/disassembling-go-avx512/</loc>
     <lastmod>2018-06-08T13:29:13+03:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/go-asm-dispatch-tables/</loc>
+    <loc>https://quasilyte.dev/blog/tags/intel-xed/</loc>
+    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/go-asm-dispatch-tables/</loc>
     <lastmod>2018-05-31T01:39:59+03:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/goism-objects-layout-mode/</loc>
+    <loc>https://quasilyte.dev/blog/post/goism-objects-layout-mode/</loc>
     <lastmod>2018-01-14T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/writing-emacs-lisp-compiler-intrinsics/</loc>
+    <loc>https://quasilyte.dev/blog/tags/emacs-lisp/</loc>
+    <lastmod>2018-01-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/goism-project/</loc>
+    <lastmod>2018-01-14T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/writing-emacs-lisp-compiler-intrinsics/</loc>
     <lastmod>2017-09-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/go-asm-complementary-reference/</loc>
+    <loc>https://quasilyte.dev/blog/post/go-asm-complementary-reference/</loc>
     <lastmod>2017-09-20T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/go-nested-functions-and-static-locals/</loc>
+    <loc>https://quasilyte.dev/blog/tags/plan9/</loc>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/reference/</loc>
+    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/go-nested-functions-and-static-locals/</loc>
     <lastmod>2017-09-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/cgo-funcall/</loc>
+    <loc>https://quasilyte.dev/blog/tags/closure/</loc>
+    <lastmod>2017-09-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/cgo-funcall/</loc>
     <lastmod>2017-08-18T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/riscv32-custom-instruction-and-its-simulation/</loc>
+    <loc>https://quasilyte.dev/blog/tags/c/</loc>
+    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/cgo/</loc>
+    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/ffi/</loc>
+    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/reflection/</loc>
+    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/riscv32-custom-instruction-and-its-simulation/</loc>
     <lastmod>2017-06-21T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/elisp-multi-return-values/</loc>
+    <loc>https://quasilyte.dev/blog/tags/gcc-plugin/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/gcc/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/hardcore/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/risc-v/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/tutorial/</loc>
+    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/elisp-multi-return-values/</loc>
     <lastmod>2017-05-19T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/c-broken-defaults/</loc>
+    <loc>https://quasilyte.dev/blog/tags/performance/</loc>
+    <lastmod>2017-05-19T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/c-broken-defaults/</loc>
     <lastmod>2016-12-26T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/post/faq/</loc>
+    <loc>https://quasilyte.dev/blog/tags/language-design/</loc>
+    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/rants/</loc>
+    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/faq/</loc>
     <lastmod>2016-12-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>https://quasilyte.github.io/blog/tags/asm/</loc>
-    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/avx-512/</loc>
-    <lastmod>2018-06-08T13:46:49+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/c/</loc>
-    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/cgo/</loc>
-    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/closure/</loc>
-    <lastmod>2017-09-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/compilers/</loc>
-    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/emacs-lisp/</loc>
-    <lastmod>2018-01-14T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/ffi/</loc>
-    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/gcc/</loc>
-    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/gcc-plugin/</loc>
-    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/go/</loc>
-    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/goism-project/</loc>
-    <lastmod>2018-01-14T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/habr-translation/</loc>
-    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/hardcore/</loc>
-    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/intel-xed/</loc>
-    <lastmod>2018-06-08T13:29:13+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/</loc>
-    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/language-design/</loc>
-    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/performance/</loc>
-    <lastmod>2017-05-19T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/plan9/</loc>
-    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/post/</loc>
-    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/rants/</loc>
-    <lastmod>2016-12-26T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/reference/</loc>
-    <lastmod>2017-09-20T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/reflection/</loc>
-    <lastmod>2017-08-18T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/risc-v/</loc>
-    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/shortread/</loc>
-    <lastmod>2019-02-27T22:15:32+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/ssa/</loc>
-    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/</loc>
-    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.github.io/blog/tags/tutorial/</loc>
-    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
+    <loc>https://quasilyte.dev/blog/categories/</loc>
     <priority>0</priority>
   </url>
   

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Asm on Iskander Sharipov technical blog</title>
-    <link>https://quasilyte.github.io/blog/tags/asm/</link>
-    <description>Recent content in Asm on Iskander Sharipov technical blog</description>
+    <title>[asm] on Iskander Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/asm/</link>
+    <description>Recent content in [asm] on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0300</lastBuildDate>
     
-	<atom:link href="https://quasilyte.github.io/blog/tags/asm/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://quasilyte.dev/blog/tags/asm/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Go compiler: SSA optimization rules description language</title>
-      <link>https://quasilyte.github.io/blog/post/go_ssa_rules/</link>
+      <link>https://quasilyte.dev/blog/post/go_ssa_rules/</link>
       <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/go_ssa_rules/</guid>
+      <guid>https://quasilyte.dev/blog/post/go_ssa_rules/</guid>
       <description>Original (ru): https://habr.com/post/415771/.
  Go compiler uses its own Lisp-like domain-specific language (DSL) for Static Single Assignment (SSA) optimization rules description.
 Lets dig into that language, its peculiarities and limitations. As an excercise, we&amp;rsquo;ll add a new optimization rule into Go compiler that would optimize expressions like a*b+c using new operations we&amp;rsquo;re going to implement along the way.
@@ -25,10 +25,10 @@ This is the first article in the series about Go compiler SSA backend, this is w
     
     <item>
       <title>Go AVX-512 support</title>
-      <link>https://quasilyte.github.io/blog/post/go-avx512/</link>
+      <link>https://quasilyte.dev/blog/post/go-avx512/</link>
       <pubDate>Fri, 08 Jun 2018 13:46:49 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/go-avx512/</guid>
+      <guid>https://quasilyte.dev/blog/post/go-avx512/</guid>
       <description>About this document This article is going to be up-to-date source of AVX-512 information in Go context.
 It references other posts, official documentation and other useful resources.
 It&amp;rsquo;s short. By purpose.
@@ -38,10 +38,10 @@ Documentation  AVX-512 support in Go assembler: short reference that focuses on 
     
     <item>
       <title>Disassembling Go AVX-512</title>
-      <link>https://quasilyte.github.io/blog/post/disassembling-go-avx512/</link>
+      <link>https://quasilyte.dev/blog/post/disassembling-go-avx512/</link>
       <pubDate>Fri, 08 Jun 2018 13:29:13 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/disassembling-go-avx512/</guid>
+      <guid>https://quasilyte.dev/blog/post/disassembling-go-avx512/</guid>
       <description>The problem Go 1.11 got updated assembler that supports AVX-512, but disassembler is left unchanged.
 In other words, go tool asm speaks AVX-512, go tool objdump does not.
 Suppose we have this avx.s file:
@@ -51,10 +51,10 @@ $ go tool asm avx.</description>
     
     <item>
       <title>Dispatch tables in Go asm</title>
-      <link>https://quasilyte.github.io/blog/post/go-asm-dispatch-tables/</link>
+      <link>https://quasilyte.dev/blog/post/go-asm-dispatch-tables/</link>
       <pubDate>Thu, 31 May 2018 01:39:59 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/go-asm-dispatch-tables/</guid>
+      <guid>https://quasilyte.dev/blog/post/go-asm-dispatch-tables/</guid>
       <description>Dispatch tables When you want to execute particular code path depending on some kind of tag/opcode or other integer value that can be easily mapped into index, dispatch tables can speed things up compared to the sequence of comparisons and conditional jumps.
 In interpreters, this technique is often used as an alternative to switch-based dispatch.
 It&amp;rsquo;s called direct threading in that domain. Each opcode corresponds to table index that contains machine code address that can execute operation specified by the opcode.</description>
@@ -62,10 +62,10 @@ It&amp;rsquo;s called direct threading in that domain. Each opcode corresponds t
     
     <item>
       <title>Go assembly language complementary reference</title>
-      <link>https://quasilyte.github.io/blog/post/go-asm-complementary-reference/</link>
+      <link>https://quasilyte.dev/blog/post/go-asm-complementary-reference/</link>
       <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/go-asm-complementary-reference/</guid>
+      <guid>https://quasilyte.dev/blog/post/go-asm-complementary-reference/</guid>
       <description>Third flavour of x86 assembly language This article is heavily inspired by AT&amp;amp;T VS Intel/Microsoft assembly syntax comparison page. It helped me very much in the past.
 Many tools understand both AT&amp;amp;T and Intel style assembly. Go derived Plan9 toolchain, so you should learn third kind of assembly language. It will not accept anything else.
 In this document:

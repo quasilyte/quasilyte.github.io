@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Ssa on Iskander Sharipov technical blog</title>
-    <link>https://quasilyte.github.io/blog/tags/ssa/</link>
-    <description>Recent content in Ssa on Iskander Sharipov technical blog</description>
+    <title>[ssa] on Iskander Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/ssa/</link>
+    <description>Recent content in [ssa] on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0300</lastBuildDate>
     
-	<atom:link href="https://quasilyte.github.io/blog/tags/ssa/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://quasilyte.dev/blog/tags/ssa/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Go compiler: SSA optimization rules description language</title>
-      <link>https://quasilyte.github.io/blog/post/go_ssa_rules/</link>
+      <link>https://quasilyte.dev/blog/post/go_ssa_rules/</link>
       <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/go_ssa_rules/</guid>
+      <guid>https://quasilyte.dev/blog/post/go_ssa_rules/</guid>
       <description>Original (ru): https://habr.com/post/415771/.
  Go compiler uses its own Lisp-like domain-specific language (DSL) for Static Single Assignment (SSA) optimization rules description.
 Lets dig into that language, its peculiarities and limitations. As an excercise, we&amp;rsquo;ll add a new optimization rule into Go compiler that would optimize expressions like a*b+c using new operations we&amp;rsquo;re going to implement along the way.
