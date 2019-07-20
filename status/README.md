@@ -5,7 +5,7 @@
 ## Where I publish my posts
 
 * <https://habr.com/users/quasilyte/posts> (Russian)
-* <https://quasilyte.github.io/blog> (English)
+* <https://quasilyte.dev/blog> (English)
 
 Note that the content is different.
 
