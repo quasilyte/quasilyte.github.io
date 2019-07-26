@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Compilers on Iskander Sharipov technical blog</title>
-    <link>https://quasilyte.github.io/blog/tags/compilers/</link>
-    <description>Recent content in Compilers on Iskander Sharipov technical blog</description>
+    <title>[compilers] on Iskander Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/compilers/</link>
+    <description>Recent content in [compilers] on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0300</lastBuildDate>
     
-	<atom:link href="https://quasilyte.github.io/blog/tags/compilers/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://quasilyte.dev/blog/tags/compilers/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Go compiler: SSA optimization rules description language</title>
-      <link>https://quasilyte.github.io/blog/post/go_ssa_rules/</link>
+      <link>https://quasilyte.dev/blog/post/go_ssa_rules/</link>
       <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/go_ssa_rules/</guid>
+      <guid>https://quasilyte.dev/blog/post/go_ssa_rules/</guid>
       <description>Original (ru): https://habr.com/post/415771/.
  Go compiler uses its own Lisp-like domain-specific language (DSL) for Static Single Assignment (SSA) optimization rules description.
 Lets dig into that language, its peculiarities and limitations. As an excercise, we&amp;rsquo;ll add a new optimization rule into Go compiler that would optimize expressions like a*b+c using new operations we&amp;rsquo;re going to implement along the way.
@@ -25,10 +25,10 @@ This is the first article in the series about Go compiler SSA backend, this is w
     
     <item>
       <title>Writing Emacs Lisp compiler intrinsics</title>
-      <link>https://quasilyte.github.io/blog/post/writing-emacs-lisp-compiler-intrinsics/</link>
+      <link>https://quasilyte.dev/blog/post/writing-emacs-lisp-compiler-intrinsics/</link>
       <pubDate>Sat, 23 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/writing-emacs-lisp-compiler-intrinsics/</guid>
+      <guid>https://quasilyte.dev/blog/post/writing-emacs-lisp-compiler-intrinsics/</guid>
       <description>The problem Given a particular programming task in Emacs Lisp, you almost always should implement it with function. Sometimes, macro is a proper tool.
 Even more rarely, cl-define-compiler-macro may be your choice.
 All these methods are safe to use. They almost certanly will not break with newer Emacs versions.
@@ -38,10 +38,10 @@ Emacs Lisp lacks this kind of flow control and this is a problem we are goind to
     
     <item>
       <title>RISC-V: custom instruction and its simulation</title>
-      <link>https://quasilyte.github.io/blog/post/riscv32-custom-instruction-and-its-simulation/</link>
+      <link>https://quasilyte.dev/blog/post/riscv32-custom-instruction-and-its-simulation/</link>
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/riscv32-custom-instruction-and-its-simulation/</guid>
+      <guid>https://quasilyte.dev/blog/post/riscv32-custom-instruction-and-its-simulation/</guid>
       <description>Agenda This article shows how to add a new instruction to RISC-V and simulate it.
 These topics are covered along the way:
  Whole GNU riscv toolchain installation; Implementation of a new instruction for spike RISC-V ISA simulator; Manual instruction encoding in C/C++; Custom instruction simulation (with visible output); [riscv32-]GCC plugin development;  You may find associated repository useful.

@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Goism Project on Iskander Sharipov technical blog</title>
-    <link>https://quasilyte.github.io/blog/tags/goism-project/</link>
-    <description>Recent content in Goism Project on Iskander Sharipov technical blog</description>
+    <title>[goism project] on Iskander Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/goism-project/</link>
+    <description>Recent content in [goism project] on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 14 Jan 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://quasilyte.github.io/blog/tags/goism-project/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://quasilyte.dev/blog/tags/goism-project/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Goism objects layout model</title>
-      <link>https://quasilyte.github.io/blog/post/goism-objects-layout-mode/</link>
+      <link>https://quasilyte.dev/blog/post/goism-objects-layout-mode/</link>
       <pubDate>Sun, 14 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/goism-objects-layout-mode/</guid>
+      <guid>https://quasilyte.dev/blog/post/goism-objects-layout-mode/</guid>
       <description>Introduction Goism project requires Go pointers emulation inside Emacs Lisp code.
 This document describes how to achive (almost) full functionality with potential to have optimizations that eliminate some of the emulation-related overhead.
 The actual implementation can diverge. Only initial design is outlined.
@@ -27,10 +27,10 @@ type a1 struct { f1 int } // a1{1} // (list 1) type a2 struct { f1, f2, f3, f4 i
     
     <item>
       <title>Emacs Lisp multi return values</title>
-      <link>https://quasilyte.github.io/blog/post/elisp-multi-return-values/</link>
+      <link>https://quasilyte.dev/blog/post/elisp-multi-return-values/</link>
       <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/elisp-multi-return-values/</guid>
+      <guid>https://quasilyte.dev/blog/post/elisp-multi-return-values/</guid>
       <description>The missing feature Did you ever wrote a function in Emacs Lisp which should return more than one result?
 Emacs Lisp has no native support for multiple return values, but provides cl-lib that emulates it in a Common Lisp style.
 In this article I will show that cl-values is suboptimal and can be replaced without any sacrifices to the convenience.

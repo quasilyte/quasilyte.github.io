@@ -2,237 +2,237 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on Iskander Sharipov technical blog</title>
-    <link>https://quasilyte.github.io/blog/tags/</link>
+    <link>https://quasilyte.dev/blog/tags/</link>
     <description>Recent content in Tags on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0300</lastBuildDate>
+    <lastBuildDate>Wed, 27 Feb 2019 22:15:32 +0300</lastBuildDate>
     
-	<atom:link href="https://quasilyte.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://quasilyte.dev/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Asm</title>
-      <link>https://quasilyte.github.io/blog/tags/asm/</link>
-      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      <title>[go]</title>
+      <link>https://quasilyte.dev/blog/tags/go/</link>
+      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/asm/</guid>
+      <guid>https://quasilyte.dev/blog/tags/go/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Avx 512</title>
-      <link>https://quasilyte.github.io/blog/tags/avx-512/</link>
+      <title>[shortread]</title>
+      <link>https://quasilyte.dev/blog/tags/shortread/</link>
+      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/shortread/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[asm]</title>
+      <link>https://quasilyte.dev/blog/tags/asm/</link>
+      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/asm/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[compilers]</title>
+      <link>https://quasilyte.dev/blog/tags/compilers/</link>
+      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/compilers/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[habr-translation]</title>
+      <link>https://quasilyte.dev/blog/tags/habr-translation/</link>
+      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/habr-translation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[ssa]</title>
+      <link>https://quasilyte.dev/blog/tags/ssa/</link>
+      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/ssa/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[avx-512]</title>
+      <link>https://quasilyte.dev/blog/tags/avx-512/</link>
       <pubDate>Fri, 08 Jun 2018 13:46:49 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/avx-512/</guid>
+      <guid>https://quasilyte.dev/blog/tags/avx-512/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>C</title>
-      <link>https://quasilyte.github.io/blog/tags/c/</link>
-      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/c/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Cgo</title>
-      <link>https://quasilyte.github.io/blog/tags/cgo/</link>
-      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/cgo/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Closure</title>
-      <link>https://quasilyte.github.io/blog/tags/closure/</link>
-      <pubDate>Mon, 18 Sep 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/closure/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Compilers</title>
-      <link>https://quasilyte.github.io/blog/tags/compilers/</link>
-      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/compilers/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Emacs Lisp</title>
-      <link>https://quasilyte.github.io/blog/tags/emacs-lisp/</link>
-      <pubDate>Sun, 14 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/emacs-lisp/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ffi</title>
-      <link>https://quasilyte.github.io/blog/tags/ffi/</link>
-      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/ffi/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gcc</title>
-      <link>https://quasilyte.github.io/blog/tags/gcc/</link>
-      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/gcc/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Gcc Plugin</title>
-      <link>https://quasilyte.github.io/blog/tags/gcc-plugin/</link>
-      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/gcc-plugin/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Go</title>
-      <link>https://quasilyte.github.io/blog/tags/go/</link>
-      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/go/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Goism Project</title>
-      <link>https://quasilyte.github.io/blog/tags/goism-project/</link>
-      <pubDate>Sun, 14 Jan 2018 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/goism-project/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Habr Translation</title>
-      <link>https://quasilyte.github.io/blog/tags/habr-translation/</link>
-      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/habr-translation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hardcore</title>
-      <link>https://quasilyte.github.io/blog/tags/hardcore/</link>
-      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/hardcore/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Intel Xed</title>
-      <link>https://quasilyte.github.io/blog/tags/intel-xed/</link>
+      <title>[Intel XED]</title>
+      <link>https://quasilyte.dev/blog/tags/intel-xed/</link>
       <pubDate>Fri, 08 Jun 2018 13:29:13 +0300</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/intel-xed/</guid>
+      <guid>https://quasilyte.dev/blog/tags/intel-xed/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Language Design</title>
-      <link>https://quasilyte.github.io/blog/tags/language-design/</link>
-      <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
+      <title>[emacs lisp]</title>
+      <link>https://quasilyte.dev/blog/tags/emacs-lisp/</link>
+      <pubDate>Sun, 14 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/language-design/</guid>
+      <guid>https://quasilyte.dev/blog/tags/emacs-lisp/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Performance</title>
-      <link>https://quasilyte.github.io/blog/tags/performance/</link>
-      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
+      <title>[goism project]</title>
+      <link>https://quasilyte.dev/blog/tags/goism-project/</link>
+      <pubDate>Sun, 14 Jan 2018 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/performance/</guid>
+      <guid>https://quasilyte.dev/blog/tags/goism-project/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Plan9</title>
-      <link>https://quasilyte.github.io/blog/tags/plan9/</link>
+      <title>[plan9]</title>
+      <link>https://quasilyte.dev/blog/tags/plan9/</link>
       <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/plan9/</guid>
+      <guid>https://quasilyte.dev/blog/tags/plan9/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Rants</title>
-      <link>https://quasilyte.github.io/blog/tags/rants/</link>
-      <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/rants/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Reference</title>
-      <link>https://quasilyte.github.io/blog/tags/reference/</link>
+      <title>[reference]</title>
+      <link>https://quasilyte.dev/blog/tags/reference/</link>
       <pubDate>Wed, 20 Sep 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/reference/</guid>
+      <guid>https://quasilyte.dev/blog/tags/reference/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Reflection</title>
-      <link>https://quasilyte.github.io/blog/tags/reflection/</link>
+      <title>[closure]</title>
+      <link>https://quasilyte.dev/blog/tags/closure/</link>
+      <pubDate>Mon, 18 Sep 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/closure/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[c]</title>
+      <link>https://quasilyte.dev/blog/tags/c/</link>
       <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/reflection/</guid>
+      <guid>https://quasilyte.dev/blog/tags/c/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Risc V</title>
-      <link>https://quasilyte.github.io/blog/tags/risc-v/</link>
+      <title>[cgo]</title>
+      <link>https://quasilyte.dev/blog/tags/cgo/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/cgo/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[ffi]</title>
+      <link>https://quasilyte.dev/blog/tags/ffi/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/ffi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[reflection]</title>
+      <link>https://quasilyte.dev/blog/tags/reflection/</link>
+      <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/reflection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[gcc plugin]</title>
+      <link>https://quasilyte.dev/blog/tags/gcc-plugin/</link>
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/risc-v/</guid>
+      <guid>https://quasilyte.dev/blog/tags/gcc-plugin/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>Shortread</title>
-      <link>https://quasilyte.github.io/blog/tags/shortread/</link>
-      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/shortread/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Ssa</title>
-      <link>https://quasilyte.github.io/blog/tags/ssa/</link>
-      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
-      
-      <guid>https://quasilyte.github.io/blog/tags/ssa/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Tutorial</title>
-      <link>https://quasilyte.github.io/blog/tags/tutorial/</link>
+      <title>[gcc]</title>
+      <link>https://quasilyte.dev/blog/tags/gcc/</link>
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/tags/tutorial/</guid>
+      <guid>https://quasilyte.dev/blog/tags/gcc/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[hardcore]</title>
+      <link>https://quasilyte.dev/blog/tags/hardcore/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/hardcore/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[risc-v]</title>
+      <link>https://quasilyte.dev/blog/tags/risc-v/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/risc-v/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[tutorial]</title>
+      <link>https://quasilyte.dev/blog/tags/tutorial/</link>
+      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/tutorial/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[performance]</title>
+      <link>https://quasilyte.dev/blog/tags/performance/</link>
+      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/performance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[language design]</title>
+      <link>https://quasilyte.dev/blog/tags/language-design/</link>
+      <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/language-design/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[rants]</title>
+      <link>https://quasilyte.dev/blog/tags/rants/</link>
+      <pubDate>Mon, 26 Dec 2016 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/rants/</guid>
       <description></description>
     </item>
     

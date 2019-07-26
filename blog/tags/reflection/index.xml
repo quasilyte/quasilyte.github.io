@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Reflection on Iskander Sharipov technical blog</title>
-    <link>https://quasilyte.github.io/blog/tags/reflection/</link>
-    <description>Recent content in Reflection on Iskander Sharipov technical blog</description>
+    <title>[reflection] on Iskander Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/reflection/</link>
+    <description>Recent content in [reflection] on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 18 Aug 2017 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="https://quasilyte.github.io/blog/tags/reflection/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://quasilyte.dev/blog/tags/reflection/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Path to convenient C FFI in Go</title>
-      <link>https://quasilyte.github.io/blog/post/cgo-funcall/</link>
+      <link>https://quasilyte.dev/blog/post/cgo-funcall/</link>
       <pubDate>Fri, 18 Aug 2017 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.github.io/blog/post/cgo-funcall/</guid>
+      <guid>https://quasilyte.dev/blog/post/cgo-funcall/</guid>
       <description>DWIM-style FFI CGo is a widely adopted way of calling C functions from Go: low level C FFI which does many things behind the scene, but exposes only minimal functionality that is required to interact with C.
 CGo does no implicit conversions or data copying during C functions call, even int and C.int are not compatible. Code that uses this mechanism without wrappers (bindings) will be polluted with explicit slice/array copies and type conversions.</description>
     </item>
