@@ -22,28 +22,19 @@ I rarely do a translation into several languages, it's usually either English-on
 
 ## Community-related projects I maintain
 
-* <https://github.com/GolangKazan> Kazan Go community resources
-  * <https://vk.com/GolangKazan> community group in vk social network
-  * <https://www.meetup.com/GolangKazan>
-* <https://github.com/golang-events-nizhny> Nizhny Novgorod Go community resources
-  * <https://vk.com/golang_nizhny> community group in vk social network
-* <https://github.com/speaking-clubs-nizhny> curated list of speaking clubs in Nizhny Novgorod
-  * <https://vk.com/speaking_clubs_nizhny> community group in vk social network
-* <https://github.com/speaking-clubs-kazan> curated list of speaking clubs in Kazan
-  * <https://vk.com/speaking_clubs_kazan> community group in vk social network
+* <https://golangkazan.github.io> Kazan Go community resources
+* <https://golang-events-nizhny.github.io> Nizhny Novgorod Go community resources
 
 ## Projects I actively maintain
 
-* <https://github.com/quasilyte/phpgrep> syntax-aware code search for PHP
 * <https://github.com/go-critic> lintpack-compatible Go linter
+* <https://github.com/quasilyte/phpgrep> syntax-aware code search for PHP
 * <https://github.com/quasilyte/go-parsefix> program that tries to fix Go file parsing errors
 * <https://github.com/go-lintpack> Go linters builder
 * <https://github.com/quasilyte/go-consistent> Go code style consistency linter
 * <https://github.com/quasilyte/go-namecheck> Go naming style consistency linter
 * <https://github.com/go-toolsmith> a set of libraries for working with Go AST and types
 * <https://github.com/quasilyte/inltest> library for inlining testing
-* <https://github.com/quasilyte/go-police> another lintpack-compatible Go linter
-* <https://github.com/quasilyte/go-audit> another lintpack-compatible Go linter
 * <https://github.com/quasilyte/go-unexport> refactoring tool, helps to unexport symbols
 * <https://github.com/quasilyte/go-benchrun> tool for a more convenient benchmarking
 
@@ -52,3 +43,14 @@ I rarely do a translation into several languages, it's usually either English-on
 * [twitter](https://twitter.com/quasilyte)
 * [linkedin](https://www.linkedin.com/in/quasilyte)
 * [github](https://github.com/quasilyte)
+
+<hr><hr>
+
+## My dead/abandoned projects
+
+* <https://github.com/speaking-clubs-nizhny> curated list of speaking clubs in Nizhny Novgorod
+  * <https://vk.com/speaking_clubs_nizhny> community group in vk social network
+* <https://github.com/speaking-clubs-kazan> curated list of speaking clubs in Kazan
+  * <https://vk.com/speaking_clubs_kazan> community group in vk social network
+
+
