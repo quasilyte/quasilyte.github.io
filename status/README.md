@@ -27,6 +27,7 @@ I rarely do a translation into several languages, it's usually either English-on
 
 ## Projects I actively maintain
 
+* <https://github.com/quasilyte/go-ruleguard> dynamic AST rules based Go linter
 * <https://github.com/go-critic> lintpack-compatible Go linter
 * <https://github.com/quasilyte/phpgrep> syntax-aware code search for PHP
 * <https://github.com/quasilyte/go-parsefix> program that tries to fix Go file parsing errors
