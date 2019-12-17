@@ -25,14 +25,19 @@ I rarely do a translation into several languages, it's usually either English-on
 * <https://golangkazan.github.io> Kazan Go community resources
 * <https://golang-events-nizhny.github.io> Nizhny Novgorod Go community resources
 
-## Projects I actively maintain
+## Projects I maintain
+
+Development + maintenance:
 
 * <https://github.com/quasilyte/go-ruleguard> dynamic AST rules based Go linter
 * <https://github.com/go-critic> lintpack-compatible Go linter
 * <https://github.com/quasilyte/phpgrep> syntax-aware code search for PHP
 * <https://github.com/quasilyte/go-parsefix> program that tries to fix Go file parsing errors
-* <https://github.com/go-lintpack> Go linters builder
 * <https://github.com/quasilyte/go-consistent> Go code style consistency linter
+
+Mostly maintenance:
+
+* <https://github.com/go-lintpack> Go linters builder
 * <https://github.com/quasilyte/go-namecheck> Go naming style consistency linter
 * <https://github.com/go-toolsmith> a set of libraries for working with Go AST and types
 * <https://github.com/quasilyte/inltest> library for inlining testing
