@@ -16,7 +16,6 @@ I rarely do a translation into several languages, it's usually either English-on
 * <http://quasilyte.dev/gopherkon/> gopher constructor
 * <https://github.com/quasilyte/talks> a collection of talks I gave
 * <https://github.com/quasilyte/gopher-arts> a collection of gopher pics and images
-* <https://vk.com/post_rock_arts> pencil illustrations for post-rock songs
 * <https://www.deviantart.com/quasilyte> account on deviantart (digital arts)
 * <https://github.com/quasilyte/alley-of-reading> notes on various books I read
 
