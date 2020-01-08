@@ -6,7 +6,7 @@
     <description>Recent content in Tags on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 27 Feb 2019 22:15:32 +0300</lastBuildDate>
+    <lastBuildDate>Wed, 08 Jan 2020 21:54:02 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
@@ -14,9 +14,27 @@
     <item>
       <title>[go]</title>
       <link>https://quasilyte.dev/blog/tags/go/</link>
-      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
+      <pubDate>Wed, 08 Jan 2020 21:54:02 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[habr-translation]</title>
+      <link>https://quasilyte.dev/blog/tags/habr-translation/</link>
+      <pubDate>Wed, 08 Jan 2020 21:54:02 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/habr-translation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[static-analysis]</title>
+      <link>https://quasilyte.dev/blog/tags/static-analysis/</link>
+      <pubDate>Wed, 08 Jan 2020 21:54:02 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/static-analysis/</guid>
       <description></description>
     </item>
     
@@ -44,15 +62,6 @@
       <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/compilers/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[habr-translation]</title>
-      <link>https://quasilyte.dev/blog/tags/habr-translation/</link>
-      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/habr-translation/</guid>
       <description></description>
     </item>
     

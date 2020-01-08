@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>ruleguard: dynamic inspection rules for Go &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">83% technical. NaN% emotional.</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">ruleguard: dynamic inspection rules for Go</h1>
+        <div class="post-meta">
+            <time datetime="08 January 2020">
+                08 January 2020
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#static-analysis-extensibility">Static analysis extensibility</a></li><br>
+<li><a href="#ruleguard-created-to-be-extended">ruleguard - created to be extended</a></li><br>
+<li><a href="#ruleguard-vs-revive">ruleguard VS revive</a></li><br>
+<li><a href="#quickstart">Quickstart</a></li><br>
+<li><a href="#multi-rule-function-example">Multi-rule function example</a></li><br>
+<li><a href="#quickfix-actions">quickfix actions</a></li><br>
+<li><a href="#closing-words">Closing words</a></li><br>
+<li><a href="#useful-links-and-resources">Useful links and resources</a></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<p><center>If you found a typo or a misspelling, please <a href="https://github.com/quasilyte/blog-src/issues/new">file an issue</a> or send a PR that fixes it.</center></p>
+
+<p><img src="https://habrastorage.org/webt/b5/p-/sq/b5p-sqgr-9b1e5mimtxaftmryau.png" alt="" /></p>
+
+<blockquote>
+<p>Original (ru): <a href="https://habr.com/post/481696/">https://habr.com/post/481696/</a>.</p>
+</blockquote>
+
+<p>This article introduces a new static analysis library (and CLI utility) <a href="https://github.com/quasilyte/go-ruleguard">go-ruleguard</a>. It&rsquo;s like a <a href="https://github.com/mvdan/gogrep">gogrep</a> that is adapted for the use inside your <a href="https://en.wikipedia.org/wiki/Continuous_integration">CI</a> pipeline.</p>
+
+<p>You describe static analysis rules in terms of a special Go-like DSL. During the startup, <code>ruleguard</code> turns these definitions into a set of inspections to be executed.</p>
+
+<p>As a bonus, we&rsquo;ll also talk about <a href="https://godoc.org/golang.org/x/tools/go/analysis">go/analysis</a> and it&rsquo;s <a href="https://github.com/go-lintpack/lintpack">predecessors</a>.</p>
+
+<h1 id="static-analysis-extensibility">Static analysis extensibility</h1>
+
+<p>There is <a href="https://github.com/golangci/awesome-go-linters">a lot</a> of Go linters, but only a few of them can be extended. Usually, you need to write a Go code that uses a special linter API to add new inspections for it.</p>
+
+<p>Two main options are <a href="https://golang.org/pkg/plugin/">Go plugins</a> and monolith. The monolith implies that all inspections (including your own) are available during the compilation.</p>
+
+<p><a href="https://github.com/mgechev/revive">revive</a> follows the monolith path as you&rsquo;re expected to include the new checks into the linter core to integrate them. <a href="https://github.com/go-critic/go-critic">go-critic</a> supports plugins model that makes it possible to build analyzer extensions independently from the go-critic code. Either way, in the end, you&rsquo;re going to work with <a href="https://golang.org/pkg/go/ast/">go/ast</a> and <a href="https://golang.org/pkg/go/types/">go/types</a> plus some linter plugin API to implement the inspection itself. Even the simplest checks can require a <a href="https://github.com/mgechev/revive/blob/master/rule/call-to-gc.go">significant amount of boilerplate code</a>.</p>
+
+<p><a href="https://godoc.org/golang.org/x/tools/go/analysis">go/analysis</a> will simplify this picture since it provides a framework that can be used by the different static analysis tools, so we get rid of the custom linter API part at least partially. However, it doesn&rsquo;t simplify the inspection implementation itself.</p>
+
+<p><details><summary>About <code>go/loader</code> and <code>go/packages</code></summary><blockquote></p>
+
+<p>When you&rsquo;re implementing a Go static analyzer, you want to inspect an AST or SSA form of a target Go program. Before you can do that, source code needs to be properly &ldquo;loaded&rdquo;. Simply speaking, loading procedure includes <a href="https://golang.org/pkg/go/parser/">parsing</a>, type checking and <a href="https://golang.org/pkg/go/importer/">dependencies importing</a>.</p>
+
+<p>Every linter has to do all these loading steps in order to perform any meaningful work. <a href="https://godoc.org/golang.org/x/tools/go/loader">loader</a> package was one of the first attempts to make this process less tiresome. With <code>loader</code> it was possible to &ldquo;load&rdquo; all you need with a couple of function calls. <code>loader</code> became deprecated before it could stop being experimental. <a href="https://godoc.org/golang.org/x/tools/go/packages">packages</a> was a new way to do source code loading: it has an improved API and works with Go modules.</p>
+
+<p>Some time ago I created <a href="https://github.com/go-lintpack/lintpack">lintpack</a> - a linters framework that was used inside <a href="https://github.com/go-critic/go-critic">go-critic</a>. It could build a linter executable that includes different inspections providers. Now it&rsquo;s deprecated as well because we have <a href="https://godoc.org/golang.org/x/tools/go/analysis">analysis</a> framework from the Go team.</p>
+
+<p>Nowadays you&rsquo;re encouraged to use the above-mentioned analysis framework to create a static analysis tool without using Go parser of <code>go/packages</code> directly. The analysis package gives you a paradigm, a structure that you have to follow. You get a lot of good features and utilities in return. For instance, it greatly simplifies <a href="https://godoc.org/golang.org/x/tools/go/analysis/analysistest">analyzer testing</a>. If you wonder, lintpack also had <a href="https://github.com/go-lintpack/lintpack/tree/master/linttest">linttest</a> package that does the same, only the magic comment syntax is different.</p>
+
+<p></blockquote></details></p>
+
+<h1 id="ruleguard-created-to-be-extended">ruleguard - created to be extended</h1>
+
+<p><img src="https://habrastorage.org/webt/zp/ym/rj/zpymrjjb8zkqa_c069ccd-yf3xg.png" alt="" /></p>
+
+<p><a href="https://github.com/quasilyte/go-ruleguard"><code>go-ruleguard</code></a> is a static analysis tool that includes <strong>zero</strong> inspections by default.</p>
+
+<p>Rule definitions are loaded during the start from a special <code>gorules</code> file which describes bad code patterns in a declarative way. For every such pattern, there is an associated message to be printed if the pattern would match. That file is an extension point and is intended to be edited by the users.</p>
+
+<p>You don&rsquo;t need to re-compile the linter driver (main) program just to register new checks. This is why we can call these rules <a href="https://medium.com/@vktech/noverify-dynamic-rules-for-static-analysis-8f42859e9253">dynamic</a>.</p>
+
+<p><code>ruleguard</code> driver program looks like this:</p>
+
+<pre><code class="language-go">package main
+
+import (
+	&quot;github.com/quasilyte/go-ruleguard/analyzer&quot;
+	&quot;golang.org/x/tools/go/analysis/singlechecker&quot;
+)
+
+func main() {
+	singlechecker.Main(analyzer.Analyzer)
+}
+</code></pre>
+
+<p><code>analyzer</code> is implemented via <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/ruleguard">ruleguard</a> package. If you want to use <code>ruleguard</code> as a library, this is the right package to use.</p>
+
+<h1 id="ruleguard-vs-revive">ruleguard VS revive</h1>
+
+<p>Let&rsquo;s take a simple yet real code example. Imagine that we want to bad <a href="https://golang.org/pkg/runtime/#GC">runtime.GC()</a> calls in our programs. Revive has a <code>call-to-gc</code> diagnostic for that.</p>
+
+<p><code>call-to-gc</code> implementation (70 lines of code):</p>
+
+<pre><code class="language-go">package rule
+
+import (
+	&quot;go/ast&quot;
+
+	&quot;github.com/mgechev/revive/lint&quot;
+)
+
+// CallToGCRule lints calls to the garbage collector.
+type CallToGCRule struct{}
+
+// Apply applies the rule to given file.
+func (r *CallToGCRule) Apply(file *lint.File, _ lint.Arguments) []lint.Failure {
+	var failures []lint.Failure
+	onFailure := func(failure lint.Failure) {
+		failures = append(failures, failure)
+	}
+
+	var gcTriggeringFunctions = map[string]map[string]bool{
+		&quot;runtime&quot;: map[string]bool{&quot;GC&quot;: true},
+	}
+
+	w := lintCallToGC{onFailure, gcTriggeringFunctions}
+	ast.Walk(w, file.AST)
+
+	return failures
+}
+
+// Name returns the rule name.
+func (r *CallToGCRule) Name() string {
+	return &quot;call-to-gc&quot;
+}
+
+type lintCallToGC struct {
+	onFailure             func(lint.Failure)
+	gcTriggeringFunctions map[string]map[string]bool
+}
+
+func (w lintCallToGC) Visit(node ast.Node) ast.Visitor {
+	ce, ok := node.(*ast.CallExpr)
+	if !ok {
+		return w // nothing to do, the node is not a call
+	}
+
+	fc, ok := ce.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return nil // nothing to do, the call is not of the form pkg.func(...)
+	}
+
+	id, ok := fc.X.(*ast.Ident)
+
+	if !ok {
+		return nil // in case X is not an id (it should be!)
+	}
+
+	fn := fc.Sel.Name
+	pkg := id.Name
+	if !w.gcTriggeringFunctions[pkg][fn] {
+		return nil // it isn't a call to a GC triggering function
+	}
+
+	w.onFailure(lint.Failure{
+		Confidence: 1,
+		Node:       node,
+		Category:   &quot;bad practice&quot;,
+		Failure:    &quot;explicit call to the garbage collector&quot;,
+	})
+
+	return w
+}
+</code></pre>
+
+<p></details></p>
+
+<p>This is how it&rsquo;s done in <code>ruleguard</code>:</p>
+
+<pre><code class="language-go">package gorules
+
+import &quot;github.com/quasilyte/go-ruleguard/dsl/fluent&quot;
+
+func callToGC(m fluent.Matcher) {
+	m.Match(`runtime.GC()`).Report(`explicit call to the garbage collector`)
+}
+</code></pre>
+
+<p>In my opinion, this approach is almost as terse as we can get without sacrificing the Go syntax which is useful for us to get tooling support when editing <code>gorules</code>.</p>
+
+<p>We&rsquo;ll get to the more exciting examples now, but you should already see the difference.</p>
+
+<h1 id="quickstart">Quickstart</h1>
+
+<p>There is a <a href="https://go-critic.github.io/overview#rangeExprCopy-ref">rangeExprCopy</a> checker in <code>go-critic</code> linter. It finds potentially unwanted array copying.</p>
+
+<p>Вот этот код итерируется по <strong>копии</strong> массива:</p>
+
+<pre><code class="language-go">var xs [2048]byte
+for _, x := range xs { // Copies 2048 bytes
+	// Loop body.
+}
+</code></pre>
+
+<p>Since every iteration does element copy as well, we copy 2 times more bytes than we might expect.</p>
+
+<p>A fix is quite simple, it requires only 1 character addition:</p>
+
+<pre><code class="language-diff">  var xs [2048]byte
+- for _, x := range xs {  // Copies 2048 bytes
++ for _, x := range &amp;xs { // No copy
+  	// Loop body.
+  }
+</code></pre>
+
+<p>Most likely, you don&rsquo;t need that excessive array value copy. Fixed code performance is almost always superior, especially for a bigger array size. You can either wait until the Go compiler is better or you can find such code patterns and fix them today.</p>
+
+<p>This inspection can be implemented in terms of <code>ruleguard</code> DSL:</p>
+
+<pre><code class="language-go">package gorules
+
+import &quot;github.com/quasilyte/go-ruleguard/dsl/fluent&quot;
+
+func _(m fluent.Matcher) {
+    m.Match(`for $_, $_ := range $x { $*_ }`,
+            `for $_, $_ = range $x { $*_ }`).
+            Where(m[&quot;x&quot;].Addressable &amp;&amp; m[&quot;x&quot;].Type.Size &gt;= 128).
+            Report(`$x copy can be avoided with &amp;$x`).
+            At(m[&quot;x&quot;]).
+            Suggest(`&amp;$x`)
+}
+</code></pre>
+
+<p>This rule finds all <code>for-range</code> loops which uses both loop variables (only this case leads to unwanted copy). <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Where">Where()</a> requires that iterated expression <code>$x</code> is <a href="https://golang.org/ref/spec#Address_operators">addressable</a> and its size should be at least 128 bytes.</p>
+
+<p><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Report">Report()</a> defines an associated message that should be given to the user if the pattern is matched. <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Suggest">Suggest()</a> specifies a <code>quickfix</code> pattern that can be used by your editor through <a href="https://github.com/golang/tools/tree/master/gopls">gopls</a> (or other Go LSP) or via command-line API if you use <code>-fix</code> parameter (we&rsquo;ll discuss that later in more detail). <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.At">At()</a> binds the warning <strong>and</strong> <code>quickfix</code> location to the specific part of the match. We need that location specification so we rewrite <code>$x</code> to <code>&amp;$x</code> instead of replacing the entire for loop with that.</p>
+
+<p>Both <code>Report()</code> and <code>Suggest()</code> accept a template-like string that can reference pattern submatches. Predefined variable <code>$$</code> refers to the entire match, like <code>$0</code> in the regular expressions.</p>
+
+<p>To try it out, let&rsquo;s create a <code>rangecopy.go</code> file:</p>
+
+<pre><code class="language-go">package example
+
+// sizeof(builtins[...]) = 240 on x86-64
+var builtins = [...]string{
+	&quot;append&quot;, &quot;cap&quot;, &quot;close&quot;, &quot;complex&quot;, &quot;copy&quot;,
+	&quot;delete&quot;, &quot;imag&quot;, &quot;len&quot;, &quot;make&quot;, &quot;new&quot;, &quot;panic&quot;,
+	&quot;print&quot;, &quot;println&quot;, &quot;real&quot;, &quot;recover&quot;,
+}
+
+func builtinID(name string) int {
+	for i, s := range builtins {
+		if s == name {
+			return i
+		}
+	}
+	return -1
+}
+</code></pre>
+
+<p>Now we run the <code>ruleguard</code>:</p>
+
+<pre><code class="language-bash">$ ruleguard -rules rules.go -fix rangecopy.go
+rangecopy.go:12:20: builtins copy can be avoided with &amp;builtins
+</code></pre>
+
+<p>If we look into <code>rangecopy.go</code> again, we&rsquo;ll see the fixed result, because <code>ruleguard</code> was called with <code>-fix</code> argument.</p>
+
+<p>By the way, simpler rules can be debugged without <code>gorules</code> file:</p>
+
+<pre><code>$ ruleguard -c 1 -e 'm.Match(`return -1`)' rangecopy.go
+rangecopy.go:17:2: return -1
+16		}
+17		return -1
+18	}
+</code></pre>
+
+<p>Thanks to the <a href="https://godoc.org/golang.org/x/tools/go/analysis/singlechecker">singlechecker</a> package, we have <code>-c</code> option that controls how many &ldquo;context lines&rdquo; are printed along with the match result.</p>
+
+<p>This option is a little bit weird: default value is <code>-c=-1</code> which means &ldquo;no context lines&rdquo; while <code>-c=0</code> gives you exactly one context line (the matched line itself).</p>
+
+<p>Some more notable features of <code>gorules</code>:</p>
+
+<ul>
+<li><a href="https://github.com/quasilyte/go-ruleguard/blob/master/docs/gorules.md#type-pattern-matching">Type templates</a> to match expected types. For example, <code>map[$t]$t</code> describes all maps that have key type identical to the element type and <code>*[$len]$elem</code> matches all pointers to arrays.</li>
+<li>There can be multiple rules inside one function. Functions themselves are called <a href="https://github.com/quasilyte/go-ruleguard/blob/master/docs/gorules.md#rule-group-statements">rule groups</a>.</li>
+<li>All rules inside a group are applied one after another, in the order they are defined. The first matched rule makes all remaining rules to be skipped for the matched node. This is needed in cases where patterns are defined with priorities in mind: when you want to rewrite <code>$x=$x+$y</code> to <code>$x+=$y</code> it would be desirable to have a higher priority pattern <code>$x=$x+1</code> that is rewritten to <code>$x++</code> instead of <code>$x+=1</code>.</li>
+</ul>
+
+<p>See more information about the DSL in <a href="https://github.com/quasilyte/go-ruleguard/blob/master/docs/gorules.md">docs/gorules.md</a> file.</p>
+
+<h1 id="multi-rule-function-example">Multi-rule function example</h1>
+
+<pre><code class="language-go">package gorules
+
+import &quot;github.com/quasilyte/go-ruleguard/dsl/fluent&quot;
+
+func exampleGroup(m fluent.Matcher) {
+        // Find potentially incorrect usages of json.Decoder.
+        // See http://golang.org/issue/36225
+        m.Match(`json.NewDecoder($_).Decode($_)`).
+                Report(`this json.Decoder usage is erroneous`)
+
+        // Smart unconvert, removes redundant conversions.
+        m.Match(`time.Duration($x) * time.Second`).
+                Where(m[&quot;x&quot;].Const).
+                Suggest(`$x * time.Second`)
+
+        // Suggest to replace fmt.Sprint($x) with a call to String() method
+        // if $x has such method.
+        m.Match(`fmt.Sprint($x)`).
+                Where(m[&quot;x&quot;].Type.Implements(`fmt.Stringer`)).
+                Suggest(`$x.String()`)
+
+        // Simplify some boolean expressions.
+        m.Match(`!($x != $y)`).Suggest(`$x == $y`)
+        m.Match(`!($x == $y)`).Suggest(`$x != $y`)
+}
+</code></pre>
+
+<p>If a rule has no explicit <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Report">Report()</a> call, <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Suggest">Suggest()</a> message is used instead.</p>
+
+<p>Submatch filters can have various property constraints:</p>
+
+<ul>
+<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Var">Var.Pure</a> requires an expression to be side-effect-free.</li>
+<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Var">Var.Const</a> expects an expression to be usable inside a const context</li>
+<li>And more&hellip;</li>
+</ul>
+
+<p>For <code>package-qualified</code> type names like <code>fmt.Stringer</code> you need to use <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Import">Import()</a> method. For convenience reasons, all stdlib packages are imported by default, this is why we don&rsquo;t need to import anything in the examples above.</p>
+
+<h1 id="quickfix-actions">quickfix actions</h1>
+
+<p><code>quickfix</code> actions are implemented by <code>analysis</code> framework, we get them for free.</p>
+
+<p>In the <code>analysis</code> model, analyzer generates <a href="https://godoc.org/golang.org/x/tools/go/analysis#Diagnostic">diagnostics</a> and <a href="https://godoc.org/golang.org/x/tools/go/analysis#Fact">facts</a>. Diagnostics are sent to the users, facts are used by other analyzers.</p>
+
+<p>A diagnostic can have a list of <a href="https://godoc.org/golang.org/x/tools/go/analysis#SuggestedFix">suggested fixes</a>. Every suggestion tells how to modify source code in a given location to resolve a problem found by a diagnostic.</p>
+
+<p>More detailed description can be found inside <a href="https://github.com/golang/tools/blob/master/go/analysis/doc/suggested_fixes.md">suggested_fixes.md design document</a>.</p>
+
+<h1 id="closing-words">Closing words</h1>
+
+<p><img src="https://habrastorage.org/webt/m3/bs/zw/m3bszwzp2nwkxrnxdnenypatyjk.png" alt="" /></p>
+
+<p>Try <code>ruleguard</code> on your projects.</p>
+
+<p>In case you found any bug in <code>ruleguard</code> or you have a feature request, please <a href="https://github.com/quasilyte/go-ruleguard/issues/new">open an issue</a> and let me know.</p>
+
+<p>Here are some ideas on how you can use <code>ruleguard</code>:</p>
+
+<ul>
+<li>Custom inspections implementations.</li>
+<li>Automated code modernization or refactoring with <code>-fix</code>.</li>
+<li>Collect and process code statistics with the help of <a href="https://github.com/golang/tools/blob/master/go/analysis/internal/analysisflags/flags.go#L76">-json</a> flag.</li>
+</ul>
+
+<p><code>ruleguard</code> development plans:</p>
+
+<ul>
+<li>Integrate <code>ruleguard</code> into <a href="https://github.com/go-critic/go-critic">go-critic</a> as another way to extend it.</li>
+<li>Test ideas from <a href="https://github.com/quasilyte/talks/tree/master/2019-7-Oct-moscow">Applied Go code similarity analysis</a> (<a href="https://github.com/quasilyte/astnorm">code normalization</a>)</li>
+<li>Add new DSL features. <a href="https://github.com/quasilyte/go-ruleguard/issues/28">sub-matches</a> is one of the examples.</li>
+<li>Borrow and adapt ideas from <a href="https://github.com/github/codeql-go">CodeQL</a> and <a href="https://comby.dev/">comby</a>.</li>
+</ul>
+
+<h1 id="useful-links-and-resources">Useful links and resources</h1>
+
+<ul>
+<li>Recommended rules file example: <a href="https://github.com/quasilyte/go-ruleguard/blob/master/rules.go">rules.go</a></li>
+<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent">dsl/fluent package docs</a></li>
+<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/ruleguard">ruleguard package docs</a></li>
+<li>AST matching engine used in ruleguard: <a href="https://github.com/mvdan/gogrep">mvdan/gogrep</a></li>
+<li><a href="https://medium.com/@vktech/noverify-dynamic-rules-for-static-analysis-8f42859e9253">Dynamic Rules for Static Analysis</a></li>
+</ul>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/habr-translation">[habr-translation] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/static-analysis">[static-analysis] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=ruleguard%3a%20dynamic%20inspection%20rules%20for%20Go&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fruleguard%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fruleguard%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fruleguard%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2020 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

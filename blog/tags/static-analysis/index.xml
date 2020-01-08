@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>[static-analysis] on Iskander Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/static-analysis/</link>
+    <description>Recent content in [static-analysis] on Iskander Sharipov technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 08 Jan 2020 21:54:02 +0300</lastBuildDate>
+    
+	<atom:link href="https://quasilyte.dev/blog/tags/static-analysis/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>ruleguard: dynamic inspection rules for Go</title>
+      <link>https://quasilyte.dev/blog/post/ruleguard/</link>
+      <pubDate>Wed, 08 Jan 2020 21:54:02 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/ruleguard/</guid>
+      <description>If you found a typo or a misspelling, please file an issue or send a PR that fixes it.
+ Original (ru): https://habr.com/post/481696/.
+ This article introduces a new static analysis library (and CLI utility) go-ruleguard. It&amp;rsquo;s like a gogrep that is adapted for the use inside your CI pipeline.
+You describe static analysis rules in terms of a special Go-like DSL. During the startup, ruleguard turns these definitions into a set of inspections to be executed.</description>
+    </item>
+    
+  </channel>
+</rss>
