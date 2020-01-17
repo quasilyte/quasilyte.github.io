@@ -254,7 +254,7 @@ func callToGC(m fluent.Matcher) {
 
 <p>There is a <a href="https://go-critic.github.io/overview#rangeExprCopy-ref">rangeExprCopy</a> checker in <code>go-critic</code> linter. It finds potentially unwanted array copying.</p>
 
-<p>Вот этот код итерируется по <strong>копии</strong> массива:</p>
+<p>This code is iterated over a <strong>copy</strong> of the array:</p>
 
 <pre><code class="language-go">var xs [2048]byte
 for _, x := range xs { // Copies 2048 bytes
