@@ -14,24 +14,24 @@ I am:
 <table><caption>Working experience (6 years)</caption>
 <tr><td>
   
-  <b>2019-2020</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go).  
-  Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + network stack library.  
+  <b>2019-2020</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go).<br>
+  Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + network stack library.<br>
   <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.
   
 </td></tr>
 <tr><td>
   
-  <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer (compiler, linker, asm, stdlib, ...).  
-  Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go.  
-  Several compiler optimizations (worked on escape analysis, inliner, SSA backend).  
-  Fixed some bugs in the toolchain (x86 assembler and linker, mostly).  
+  <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer (compiler, linker, asm, stdlib, ...).<br>
+  Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go.<br>
+  Several compiler optimizations (worked on escape analysis, inliner, SSA backend).<br>
+  Fixed some bugs in the toolchain (x86 assembler and linker, mostly).<br>
   Commits: <a href="https://github.com/golang/go/commits?author=quasilyte">golang/go</a>, <a href="https://github.com/golang/arch/commits?author=quasilyte">golang/arch</a>.
   
 </td></tr>
 <tr><td>
   
-  <b>2017</b> @ DataArmor. C++ backend developer.  
-  Worked on a database firewall that implemented several database protocols and acted  
+  <b>2017</b> @ DataArmor. C++ backend developer.<br>
+  Worked on a database firewall that implemented several database protocols and acted<br>
   like a reverse-proxy, bringing an additional layer of security for our users.
   
 </td></tr>
