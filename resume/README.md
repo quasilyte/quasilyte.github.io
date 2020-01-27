@@ -11,8 +11,7 @@ I am:
 * Leader of 2 Go communities in Russia ([Kazan](https://www.meetup.com/GolangKazan/) and [Nizhny Novgorod](https://golang-events-nizhny.github.io/))
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks)
 
-<table>
-<caption>Working experience</caption>
+<table><caption>Working experience</caption>
 <tr><td>
   
   <b>2019-2020</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go).  
@@ -47,7 +46,7 @@ I have several certificates: [C](https://certification.mail.ru/certificates/e57a
 
 I worked with different databases, both relational and non-relational like Neo4j and MongoDB.
 
-<table>
+<table><caption>Contacts</caption>
 <tr>
   <td><b>Email</b>: quasilyte@gmail.com</td>
   <td><b>GitHub</b>: <a href="https://github.com/quasilyte/">https://github.com/quasilyte</a></td>
