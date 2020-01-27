@@ -12,6 +12,7 @@ I am:
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks)
 
 <table>
+<caption>Working experience</caption>
 <tr><td>
   
   <b>2019-2020</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go).  
