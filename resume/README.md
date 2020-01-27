@@ -17,7 +17,7 @@ Working experience (6 years):
   
   <b>2019-2020</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go).  
   Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + network stack library.  
-  <a href="https://github.com/VKCOM/noverify">NoVerify</a>() static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.
+  <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.
   
 </td></tr>
 <tr><td>
