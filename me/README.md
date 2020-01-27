@@ -42,17 +42,7 @@ I am:
 </td></tr>
 </table>
 
-I have several certificates: [C](https://certification.mail.ru/certificates/e57a5ec8-6f33-47af-86e4-9faf8623e611/en/), [Java](https://certification.mail.ru/certificates/f43b50a0-b3ab-41ca-8c2e-7a8887284b6f/en/), [Python](https://certification.mail.ru/certificates/66299407-2a6c-44cb-80e7-485297d16668/en/), [C++](https://certification.mail.ru/certificates/d1df8d39-2a0c-466b-b096-247ae2c0f5d1/en/), [PHP](https://certification.mail.ru/certificates/7baee88f-2e9a-4119-8541-088852a73acb/en/), [Ruby](https://certification.mail.ru/certificates/d4899615-fb93-4d93-bbdb-030f1851a03a/en/). But my best tool is Go.
-
 I worked with different databases, both relational and non-relational like Neo4j and MongoDB.
 
-<table><caption>Contacts</caption>
-<tr>
-  <td><b>Email</b>: quasilyte@gmail.com</td>
-  <td><b>GitHub</b>: <a href="https://github.com/quasilyte/">https://github.com/quasilyte</a></td>
-</tr>
-<tr>
-  <td><b>LinkedIn</b>: <a href="https://www.linkedin.com/in/quasilyte/">https://www.linkedin.com/in/quasilyte</a></td>
-  <td><b>Twitter</b>: <a href="http://twitter.com/quasilyte/">http://twitter.com/quasilyte</a></td>
-</tr>
-</table>
+**Certificates**: [C](https://certification.mail.ru/certificates/e57a5ec8-6f33-47af-86e4-9faf8623e611/en/), [Java](https://certification.mail.ru/certificates/f43b50a0-b3ab-41ca-8c2e-7a8887284b6f/en/), [Python](https://certification.mail.ru/certificates/66299407-2a6c-44cb-80e7-485297d16668/en/), [C++](https://certification.mail.ru/certificates/d1df8d39-2a0c-466b-b096-247ae2c0f5d1/en/), [PHP](https://certification.mail.ru/certificates/7baee88f-2e9a-4119-8541-088852a73acb/en/), [Ruby](https://certification.mail.ru/certificates/d4899615-fb93-4d93-bbdb-030f1851a03a/en/). But my best tool is Go.  
+**Contacts**: [GitHub](https://github.com/quasilyte), [LinkedIn](https://www.linkedin.com/in/quasilyte), [Twitter](https://twitter.com/quasilyte).
