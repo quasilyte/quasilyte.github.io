@@ -11,7 +11,7 @@ I am:
 * Leader of 2 Go communities in Russia ([Kazan](https://www.meetup.com/GolangKazan/) and [Nizhny Novgorod](https://golang-events-nizhny.github.io/))
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks)
 
-<table><caption>Working experience</caption>
+<table><caption>Working experience (6 years)</caption>
 <tr><td>
   
   <b>2019-2020</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go).  
