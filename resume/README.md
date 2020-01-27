@@ -11,7 +11,6 @@ I am:
 * Leader of 2 Go communities in Russia ([Kazan](https://www.meetup.com/GolangKazan/) and [Nizhny Novgorod](https://golang-events-nizhny.github.io/))
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks)
 
-Working experience (6 years):
 <table>
 <tr><td>
   
