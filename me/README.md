@@ -24,7 +24,7 @@
   Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go.<br>
   Several compiler optimizations (worked on escape analysis, inliner, SSA backend).<br>
   Fixed some bugs in the toolchain (x86 assembler and linker, mostly).<br>
-  Commits: <a href="https://github.com/golang/go/commits?author=quasilyte">golang/go</a>, <a href="https://github.com/golang/arch/commits?author=quasilyte">golang/arch</a>.
+  Commits: <a href="https://github.com/golang/go/commits?author=quasilyte">golang/go</a>, <a href="https://github.com/golang/arch/commits?author=quasilyte">golang/arch</a>, <a href="https://github.com/golang/tools/commits?author=quasilyte">golang/tools</a>.
   
 </td></tr>
 <tr><td>
