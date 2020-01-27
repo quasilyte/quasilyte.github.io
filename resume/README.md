@@ -30,8 +30,15 @@ I am:
 </td></tr>
 <tr><td>
   
-  <b>2017</b> @ DataArmor. C++ backend developer.
+  <b>2017</b> @ DataArmor. C++ backend developer.  
+  Worked on a database firewall that implemented several database protocols and acted  
+  like a reverse-proxy, bringing an additional layer of security for our users.
   
+</td></tr>
+<tr><td>
+
+  <b>2014-2017</b> Full-stack developer with Go, C, PHP and JS.
+
 </td></tr>
 </table>
 
