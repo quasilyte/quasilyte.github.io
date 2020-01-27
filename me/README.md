@@ -3,7 +3,6 @@
 **Location**: Germany, Aachen. Mostly interested in remote jobs.  
 **Education**: Bachelor's degree in Computer Science ([Kazan Federal University](https://en.wikipedia.org/wiki/Kazan_Federal_University)).
 
-I am:
 * [Go contributor](https://github.com/golang/go/commits?author=quasilyte)
 * Maintainer of [several](https://go-critic.github.io/) (1) [good](https://github.com/VKCOM/noverify) (2) [static](https://github.com/quasilyte/go-consistent) (3) [analyzers](https://github.com/quasilyte/go-ruleguard) (4)
 * Skilled in [low-level programming](https://github.com/quasilyte/YALWEE)
