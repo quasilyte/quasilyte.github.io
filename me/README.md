@@ -5,6 +5,7 @@
 
 * [Go contributor](https://github.com/golang/go/commits?author=quasilyte)
 * Maintainer of several<sup>[[1]](https://go-critic.github.io/)</sup> good<sup>[[2]](https://github.com/VKCOM/noverify)</sup> static<sup>[[3]](https://github.com/quasilyte/go-consistent)</sup> analyzers<sup>[[4]](https://github.com/quasilyte/go-ruleguard)</sup>
+* Author of dev tools like [phpgrep](https://github.com/quasilyte/phpgrep) and [go-parsefix](https://github.com/quasilyte/go-parsefix)
 * Skilled in [low-level programming](https://github.com/quasilyte/YALWEE)
 * Open-source enthusiast. Contributed to dozens of projects, maintain a lot of [my own](http://quasilyte.dev/status/)
 * Leader of 2 Go communities in Russia ([Kazan](https://www.meetup.com/GolangKazan/) and [Nizhny Novgorod](https://golang-events-nizhny.github.io/))
