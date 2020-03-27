@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Let&#39;s Go write Pratt parsers! &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">83% technical. NaN% emotional.</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Let&#39;s Go write Pratt parsers!</h1>
+        <div class="post-meta">
+            <time datetime="27 March 2020">
+                27 March 2020
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#go-and-go">Go++ and ++Go</a></li><br>
+<li><a href="#handling-prefix-expressions">Handling prefix expressions</a></li><br>
+<li><a href="#handling-infix-expressions">Handling infix expressions</a></li><br>
+<li><a href="#handling-precedence-and-associativity">Handling precedence and associativity</a></li><br>
+<li><a href="#parsing-the-rest">Parsing the rest</a></li><br>
+<li><a href="#the-final-moves">The final moves</a></li><br>
+<li><a href="#conclusion">Conclusion</a></li><br>
+</ul></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<p><center>If you found a typo or a misspelling, please <a href="https://github.com/quasilyte/blog-src/issues/new">file an issue</a> or send a PR that fixes it.</center></p>
+
+<p><img src="https://hsto.org/webt/gi/eg/ji/giegjidcnqpsbkpiwlbrj9evce4.png" alt="" /></p>
+
+<blockquote>
+<p>Original (ru): <a href="https://habr.com/ru/post/494316/">https://habr.com/ru/post/494316/</a>.</p>
+</blockquote>
+
+<p><a href="https://en.wikipedia.org/wiki/Recursive_descent">Recursive descent parsing</a> works well when you can continue parsing using the current context and a given token.</p>
+
+<p>Some <a href="https://en.wikipedia.org/wiki/Expression_(computer_science)">expressions</a> make parsing harder: postfix, infix and other. They introduce a problem: you don&rsquo;t know which kind of expression you&rsquo;re processing until you&rsquo;ve already parsed half of it. Most of the time you also care about <a href="https://en.wikipedia.org/wiki/Order_of_operations">operations precedence</a> and their <a href="https://en.wikipedia.org/wiki/Operator_associativity">associativity</a>, so the result <a href="https://en.wikipedia.org/wiki/Abstract_syntax_tree">AST</a> has a proper shape.</p>
+
+<p>It&rsquo;s hard to handle infix expression without some extra hints for the recursive descent approach. We can view a <a href="https://en.wikipedia.org/wiki/Pratt_parser">Pratt algorithm</a> as a missing part that makes parsing of any kinds of expressions simple.</p>
+
+<p>In this article, we&rsquo;ll write a parser for a <a href="https://golang.org/">Go</a> dialect (more on that dialect later).</p>
+
+<h2 id="go-and-go">Go++ and ++Go</h2>
+
+<p>Since this article is about parsing, we&rsquo;ll cut some corners for <a href="https://en.wikipedia.org/wiki/Lexical_analysis">lexical analysis</a>:</p>
+
+<ul>
+<li><a href="https://golang.org/pkg/go/scanner/">go/scanner</a> converts a text into a token stream</li>
+<li><a href="https://golang.org/pkg/go/token/">go/token</a> describes the token types that <code>scanner</code> produces</li>
+</ul>
+
+<p>For convenience, we&rsquo;ll introduce our <code>Token</code> type to combine token tag and value:</p>
+
+<pre><code class="language-go">type Token struct {
+	kind  token.Token // Token category (tag), INT/IDENT/ADD
+	value string      // Associated textual value
+}
+</code></pre>
+
+<p>The <a href="https://golang.org/pkg/go/scanner/#Scanner">scanner.Scanner</a> will be wrapped in <code>lexer</code> with the following interface:</p>
+
+<ul>
+<li><code>Peek()</code> - returns the next token without consuming it; <code>lookahead(0)</code></li>
+<li><code>Consume()</code> - returns the next token from a stream</li>
+</ul>
+
+<p>As for the AST, we&rsquo;re not going to use <a href="https://golang.org/pkg/go/ast/">go/ast</a> package.</p>
+
+<p>Since Go does not have any right-associative operators, we&rsquo;ll make <code>&lt;&lt;</code> (bitwise shift left) operator right-associative for the demonstration purposes.</p>
+
+<p>In normal Go, both increment and decrement are statements, not expressions. In our dialect, they&rsquo;ll be expressions. On top of that, there will be prefix increment and decrement expressions as well, so you can parse <code>Go++ + ++Go</code> successfully!</p>
+
+<blockquote>
+<p>Don&rsquo;t be confused when the text does not present all functions and type definitions. You can browse <a href="https://github.com/quasilyte/pratt-parsers-go">the complete implementation</a> after you understand the concept itself.</p>
+</blockquote>
+
+<h2 id="handling-prefix-expressions">Handling prefix expressions</h2>
+
+<p>Our first goal is to parse something simple like variables and prefix operators.</p>
+
+<p>This is how our AST types will look like:</p>
+
+<pre><code class="language-go">// exprNode is a closed sum type that includes all possible expressions.
+type exprNode interface {
+	expr()
+}
+
+type nameExpr struct {
+	Value string
+}
+
+type prefixExpr struct {
+	Op  token.Token // Operation type, e.g. '+' or '-'
+	Arg exprNode    // Unary operation argument
+}
+
+func (e *nameExpr) expr()   {}
+func (e *prefixExpr) expr() {}
+</code></pre>
+
+<p>The main parsing function, <code>parseExpr()</code>, can be implemented with a switch statement:</p>
+
+<pre><code class="language-go">func (p *exprParser) parseExpr() exprNode {
+	tok := p.lexer.Consume()
+	switch tok.kind {
+	case token.IDENT:
+		return p.parseName(tok)
+	case token.ADD, token.SUB:
+		return p.parsePrefixExpr(tok)
+	case token.LPAREN:
+		return p.parseParenExpr(tok)
+	// ... and so on.
+	}
+}
+
+func (p *exprParser) parseName(tok Token) exprNode {
+	return &amp;nameExpr{Value: tok.value}
+}
+
+func (p *exprParser) parsePrefixExpr(tok Token) exprNode {
+	arg := p.parseExpr()
+	return &amp;prefixExpr{Op: tok.kind, Arg: arg}
+}
+</code></pre>
+
+<p>This switch-based solution can end up being quite unmaintainable.</p>
+
+<p>It&rsquo;s possible to put parsing methods like <code>parsePrefixExpr()</code> into a <code>map</code> or some other data structure that supports efficient indexing. It would be more efficient to use a slice (or array): tokens are usually dense and it&rsquo;s a rare case to have more than 256 kinds of tokens.</p>
+
+<p>Since all parsing methods have the same signature, let&rsquo;s define a <code>prefixParselet</code> type for them:</p>
+
+<pre><code class="language-go">type prefixParselet func(Token) exprNode
+</code></pre>
+
+<p>Parser gets a new <code>map[token.Token]prefixParselet</code> field to store all prefix parselets. That table is initialized during the parser construction:</p>
+
+<pre><code class="language-go">func newExprParser() *exprParser {
+	p := &amp;exprParser{
+		prefixParselets: make(map[token.Token]prefixParselet),
+	}
+
+	prefixExpr := func(kinds ...token.Token) {
+		for _, kind := range kinds {
+			p.prefixParselets[kind] = p.parsePrefixExpr
+		}
+	}
+
+	p.prefixParselets[token.IDENT] = p.parseName
+	prefixExpr(token.ADD, token.SUB)
+
+	return p
+}
+</code></pre>
+
+<p><code>prefixExpr()</code> helper function makes it easier to add new prefix operators. It&rsquo;s possible to go further and make it more declarative (see more below).</p>
+
+<pre><code class="language-go">func (p *exprParser) parseExpr() exprNode {
+  tok := p.lexer.consume()
+  prefix, ok := p.prefixParselets[tok.kind]
+  if !ok {
+    // Parse error: unexpected token
+  }
+  return prefix(tok)
+}
+</code></pre>
+
+<blockquote>
+<p>The example above can handle errors in at least 2 ways. I tend to use <code>panic+recover</code> in parsers, but you can use <code>{exprNode, error}</code> return values and
+  handle errors more traditionally. If you choose the <code>panic</code> approach, don&rsquo;t forget to <code>recover</code> inside your parser entry method and return
+  parsing error as a value.</p>
+</blockquote>
+
+<h2 id="handling-infix-expressions">Handling infix expressions</h2>
+
+<p>Let&rsquo;s try parsing <code>x+y</code> now.</p>
+
+<p>The current implementation will return <code>nameExpr{Value:&quot;x&quot;}</code> and stop at the <code>+</code> token.</p>
+
+<p>To handle that, a new <code>infixParselet</code> type will have an extra argument: an expression that was parsed before the infix parselet was called.</p>
+
+<p>For the <code>x+y</code> case, that extra argument would be <code>x</code>.</p>
+
+<pre><code class="language-go">type infixParselet func(left exprNode, tok Token) exprNode
+</code></pre>
+
+<p>Just like with prefix parselets, we add a new <code>map</code> field to a parser.</p>
+
+<p>We&rsquo;ll express binary operators like <code>+</code> and <code>-</code> with <code>binaryExpr</code> type:</p>
+
+<pre><code class="language-go">func (p *exprParser) parseBinaryExpr(left exprNode, tok token) exprNode {
+	right := p.parseExpr()
+	return &amp;binaryExpr{Op: tok.kind, Left: left, Right: right}
+}
+</code></pre>
+
+<p>The next step is to make <code>parseExpr()</code> method aware of infix parselets:</p>
+
+<pre><code class="language-go">func (p *exprParser) parseExpr() exprNode {
+	tok := p.lexer.Consume()
+	prefix, ok := p.prefixParselets[tok.kind]
+	if !ok {
+		// Parse error: unexpected token
+	}
+	left := prefix(tok)
+	tok = p.lexer.Peek()
+	infix, ok := p.infixParselets[tok.kind]
+	if !ok {
+		return left
+	}
+	p.lexer.Consume() // skip/discard for the previously peeked token
+	return infix(left, tok)
+}
+</code></pre>
+
+<p>This implementation has two problems:</p>
+
+<ol>
+<li>All expressions are parsed as right-associative: <code>x-y-z</code> =&gt; <code>x-(y-z)</code></li>
+<li>All operations have identical precedence: <code>x*y+z</code> =&gt; <code>x*(y+z)</code></li>
+</ol>
+
+<h2 id="handling-precedence-and-associativity">Handling precedence and associativity</h2>
+
+<p>To solve both problems, we need a <code>{token.Token =&gt; priority}</code> mapping. This mapping can be a global variable or a part of the parser state. To keep relevant pieces together, we&rsquo;ll store precedence tables inside the parser.</p>
+
+<pre><code class="language-go">func newExprParser() *exprParser {
+	// ...
+	p.prefixPrecedenceTab = map[token.Token]int{
+		token.ADD: 4,
+		token.SUB: 4,
+	}
+	p.infixPrecedenceTab = map[token.Token]int{
+		token.ADD: 2,
+		token.SUB: 2,
+		token.MUL: 3,
+		token.QUO: 3,
+	}
+	// ...
+}
+</code></pre>
+
+<p>The final <code>parseExpr()</code> version takes <code>precedence</code> argument:</p>
+
+<pre><code class="language-go">func (p *exprParser) parseExpr(precedence int) exprNode {
+	tok := p.lexer.Consume()
+	prefix, ok := p.prefixParselets[tok.kind]
+	if !ok {
+		// Parse error: unexpected token
+	}
+	left := prefix(tok)
+
+	for precedence &lt; p.infixPrecedenceTab[p.lexer.Peek().kind] {
+		tok := p.lexer.Consume()
+		infix := p.infixParselets[tok.kind]
+		left = infix(left, tok)
+	}
+
+	return left
+}
+</code></pre>
+
+<p>With the help of a new argument, <code>parseExpr()</code> knows when to continue and when to stop.</p>
+
+<p>Every parselet now needs to pass its <code>precedence</code> during the <code>parseExpr()</code> call:</p>
+
+<pre><code class="language-go">func (p *exprParser) parseBinaryExpr(left exprNode, tok Token) exprNode {
+	right := p.parseExpr(p.infixPrecedenceTab[tok.kind])
+	return &amp;binaryExpr{Op: tok.kind, Left: left, Right: right}
+}
+</code></pre>
+
+<p><code>parseBinaryExpr()</code> binds expressions as left-associative. To have right-associative parsing, just subtract 1 from the operation priority:</p>
+
+<pre><code class="language-go">func (p *exprParser) rparseBinaryExpr(left exprNode, tok Token) exprNode {
+	right := p.parseExpr(p.infixPrecedenceTab[tok.kind] - 1)
+	return &amp;binaryExpr{Op: tok.kind, Left: left, Right: right}
+}
+</code></pre>
+
+<p>We defined <code>&lt;&lt;</code> as right-associative operation, this is why we&rsquo;ll use <code>rparseBinaryExpr()</code> to handle it.</p>
+
+<h2 id="parsing-the-rest">Parsing the rest</h2>
+
+<p>A function call is <code>infixParselet</code> that handles <code>'('</code> token and collets all arguments with <code>parseExpr(0)</code> until it reaches <code>')'</code> token.</p>
+
+<pre><code class="language-go">func (p *exprParser) parseCallExpr(left exprNode, tok Token) exprNode {
+	if p.lexer.Peek().kind == token.RPAREN {
+		// A call without arguments.
+		p.lexer.Consume()
+		return &amp;callExpr{fn: left}
+	}
+
+	var args []exprNode
+	for {
+		args = append(args, p.parseExpr(0))
+		if p.lexer.Peek().kind != token.COMMA {
+			break
+		}
+		p.lexer.Consume()
+	}
+	p.expect(token.RPAREN)
+	return &amp;callExpr{fn: left, args: args}
+}
+</code></pre>
+
+<p>Grouping operator (parentheses) is <code>prefixParselet</code> that handles <code>'('</code> token and a single argument with <code>parseExpr(0)</code>, then it expects <code>')'</code> token.</p>
+
+<pre><code class="language-go">func (p *exprParser) parseParenExpr(tok Token) exprNode {
+	x := p.parseExpr(0)
+	p.expect(token.RPAREN)
+	return x
+}
+</code></pre>
+
+<p>Any postfix operation is a very simple <code>infixParselet</code>:</p>
+
+<pre><code class="language-go">func (p *exprParser) parsePostfixExpr(left exprNode, tok Token) exprNode {
+	return &amp;postfixExpr{Op: tok.kind, Arg: left}
+}
+</code></pre>
+
+<h2 id="the-final-moves">The final moves</h2>
+
+<p>As with everything else, there is some room for improvement.</p>
+
+<p>For example, instead of filling a precedence table separately, one can add a <code>precedence</code> argument to helper functions inside the parser constructor:</p>
+
+<pre><code class="language-go">prefixExpr := func(precedence int, kinds ...token.Token) {
+	for _, kind := range kinds {
+		p.prefixParselets[kind] = p.parsePrefixExpr
+		p.prefixPrecedenceTab[kind] = precedence
+	}
+}
+</code></pre>
+
+<p>With this, we can re-write the initialization code:</p>
+
+<pre><code class="language-go">prefixExpr(6,
+	token.ADD,
+	token.SUB,
+	token.INC,
+	token.DEC,
+)
+postfixExpr(7,
+	token.INC,
+	token.DEC,
+)
+leftAssocBinaryExpr(3,
+	token.ADD,
+	token.SUB,
+)
+leftAssocBinaryExpr(4,
+	token.MUL,
+	token.QUO,
+	token.REM,
+)
+rightAssocBinaryExpr(3,
+	token.SHL,
+)
+</code></pre>
+
+<p>Magic constants can be replaced with named precedence groups, like <code>PrecAdd=3</code> and <code>PrecMult=4</code>.</p>
+
+<p>To make parser creation less expensive, you can initialize a &ldquo;grammar&rdquo; object separately and then pass it into <code>newExprParser</code>. You&rsquo;ll need to change <code>prefixParselet</code> and <code>infixParselet</code> signatures to include a new argument - <code>*exprParser</code>.</p>
+
+<p>Separate precedence tables can be avoided with a structure that holds both a parselet and associated operation priority. It&rsquo;s also possible to make both parselets an <code>interface</code> and define a separate type for every parselet kind.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Pratt parsers became my favorite way to build hand-written parsers. I wanted to write a simple example in Go and share it with the world for quite a long time now. I finally did it, I guess.</p>
+
+<p>The final parser version can be found at <a href="https://github.com/quasilyte/pratt-parsers-go">github.com/quasilyte/pratt-parsers-go</a>.</p>
+
+<p>This article is heavily inspired by <a href="https://journal.stuffwithstuff.com/2011/03/19/pratt-parsers-expression-parsing-made-easy/">Pratt Parsers: Expression Parsing Made Easy</a> (Bob Nystrom). I strongly recommend you to read the original article as well. It has a better wording and examples are in Java (if you&rsquo;re into that).</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/habr-translation">[habr-translation] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/compilers">[compilers] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Let%27s%20Go%20write%20Pratt%20parsers%21&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fpratt-parsers-go%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fpratt-parsers-go%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fpratt-parsers-go%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2020 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

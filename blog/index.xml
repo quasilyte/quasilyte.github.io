@@ -6,10 +6,22 @@
     <description>Recent content on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 08 Jan 2020 21:54:02 +0300</lastBuildDate>
+    <lastBuildDate>Fri, 27 Mar 2020 17:08:04 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Let&#39;s Go write Pratt parsers!</title>
+      <link>https://quasilyte.dev/blog/post/pratt-parsers-go/</link>
+      <pubDate>Fri, 27 Mar 2020 17:08:04 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/pratt-parsers-go/</guid>
+      <description>If you found a typo or a misspelling, please file an issue or send a PR that fixes it.
+ Original (ru): https://habr.com/ru/post/494316/.
+ Recursive descent parsing works well when you can continue parsing using the current context and a given token.
+Some expressions make parsing harder: postfix, infix and other. They introduce a problem: you don&amp;rsquo;t know which kind of expression you&amp;rsquo;re processing until you&amp;rsquo;ve already parsed half of it.</description>
+    </item>
     
     <item>
       <title>ruleguard: dynamic inspection rules for Go</title>
