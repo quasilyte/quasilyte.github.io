@@ -3,9 +3,10 @@
 regexp-lint:
 	rm -rf regexp-lint/
 	mkdir -p regexp-lint/src/github.com/quasilyte
-	git clone https://github.com/quasilyte/regexp-lint.git regexp-lint/src/github.com/quasilyte/regexp-lint
-	export GOPATH=`pwd`/regexp-lint
-	GOOS=js GOARCH=wasm go build -o regexp-lint/main.wasm ./regexp-lint/src/github.com/quasilyte/regexp-lint
-	cp ./regexp-lint/src/github.com/quasilyte/regexp-lint/www/wasm_exec.js regexp-lint/
-	cp ./regexp-lint/src/github.com/quasilyte/regexp-lint/www/index.html regexp-lint/
-	rm -rf regexp-lint/src
+	cd regexp-lint && \
+		git clone https://github.com/quasilyte/regexp-lint.git src/github.com/quasilyte/regexp-lint && \
+		export GOPATH=`pwd` && \
+		GOOS=js GOARCH=wasm go build -o main.wasm ./src/github.com/quasilyte/regexp-lint && \
+		cp ./src/github.com/quasilyte/regexp-lint/www/wasm_exec.js . && \
+		cp ./src/github.com/quasilyte/regexp-lint/www/index.html . && \
+		rm -rf src
