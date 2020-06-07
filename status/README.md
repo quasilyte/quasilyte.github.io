@@ -17,7 +17,6 @@ I rarely do a translation into several languages, it's usually either English-on
 * <https://github.com/quasilyte/talks> a collection of talks I gave
 * <https://github.com/quasilyte/gopher-arts> a collection of gopher pics and images
 * <https://www.deviantart.com/quasilyte> account on deviantart (digital arts)
-* <https://github.com/quasilyte/alley-of-reading> notes on various books I read
 
 ## Community-related projects I maintain
 
@@ -31,12 +30,14 @@ Development + maintenance:
 * <https://github.com/quasilyte/go-ruleguard> dynamic AST rules based Go linter
 * <https://github.com/go-critic> lintpack-compatible Go linter
 * <https://github.com/quasilyte/phpgrep> syntax-aware code search for PHP
-* <https://github.com/quasilyte/go-parsefix> program that tries to fix Go file parsing errors
 * <https://github.com/quasilyte/go-consistent> Go code style consistency linter
+* <https://github.com/quasilyte/vscode-phpgrep> phpgrep VS Code extension
+* <https://github.com/quasilyte/vscode-gogrep> gogrep VS Code extension
 
 Mostly maintenance:
 
-* <https://github.com/go-lintpack> Go linters builder
+* <https://quasilyte.dev/regexp-lint> online regexp linter
+* <https://github.com/quasilyte/go-parsefix> program that tries to fix Go file parsing errors
 * <https://github.com/quasilyte/go-namecheck> Go naming style consistency linter
 * <https://github.com/go-toolsmith> a set of libraries for working with Go AST and types
 * <https://github.com/quasilyte/inltest> library for inlining testing
@@ -57,5 +58,5 @@ Mostly maintenance:
   * <https://vk.com/speaking_clubs_nizhny> community group in vk social network
 * <https://github.com/speaking-clubs-kazan> curated list of speaking clubs in Kazan
   * <https://vk.com/speaking_clubs_kazan> community group in vk social network
-
+* <https://github.com/go-lintpack> Go linters builder
 
