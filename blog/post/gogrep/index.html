@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>gogrep: structural search and replace &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">83% technical. NaN% emotional.</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">gogrep: structural search and replace</h1>
+        <div class="post-meta">
+            <time datetime="07 June 2020">
+                07 June 2020
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#why-do-you-need-gogrep">Why do you need gogrep?</a></li><br>
+<li><a href="#search-patterns">Search patterns</a></li><br>
+<li><a href="#pipelines-commands-and-attributes">Pipelines, commands, and attributes</a></li><br>
+<li><a href="#vs-code-extension-overview">VS Code extension overview</a></li><br>
+<li><a href="#closing-words">Closing words</a></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<p><center>If you found a typo or a misspelling, please <a href="https://github.com/quasilyte/blog-src/issues/new">file an issue</a> or send a PR that fixes it.</center></p>
+
+<p><img src="https://habrastorage.org/webt/l7/s7/gc/l7s7gccru4deae3xyln5scwfof8.jpeg" alt="" /></p>
+
+<blockquote>
+<p>Original (ru): <a href="https://habr.com/post/481696/">https://habr.com/post/481696/</a>.</p>
+</blockquote>
+
+<p><a href="https://github.com/mvdan/gogrep">gogrep</a> is one of my favorite tools. It gives you the ability to search Go code using syntax patterns, filter matches by expression types, and perform structural replace.</p>
+
+<p>Today I&rsquo;ll talk about how to use <code>gogrep</code> and about <a href="https://marketplace.visualstudio.com/items?itemName=quasilyte.gogrep">VS Code extension</a> that integrates <code>gogrep</code> into the editor.</p>
+
+<h1 id="why-do-you-need-gogrep">Why do you need gogrep?</h1>
+
+<p>In a nutshell, <code>gogrep</code> is useful for:</p>
+
+<ul>
+<li>Refactoring (search and replace)</li>
+<li>Codebase exploration</li>
+<li>Suspicious code detection (example: <a href="https://habr.com/ru/post/481696/">ruleguard</a>)</li>
+</ul>
+
+<p>I&rsquo;ll show you an example that demonstrates the power and elegance of the structural search.</p>
+
+<p>In the snippet below, both <code>a()</code> and <code>b()</code> functions perform the same operation:</p>
+
+<pre><code class="language-go">func a(xs []int) []int {
+  xs = append(xs, 1)
+  xs = append(xs, 2)
+  return xs
+}
+
+func b(xs []int) []int {
+  xs = append(xs, 1, 2)
+  return xs
+}
+</code></pre>
+
+<p>Suppose we want to re-write all places where <code>append</code> calls can be merged.</p>
+
+<p>Let&rsquo;s try <code>gogrep</code>:</p>
+
+<pre><code class="language-bash">gogrep -w -x '$x=append($x,$a);$x=append($x,$b)' -s '$x=append($x,$a,$b)' ./...
+</code></pre>
+
+<ul>
+<li>Find all replacement candidates with <code>-x</code> command</li>
+<li>Re-write matches with <code>-s</code> command <code>$x=append($x,$a,$b)</code> pattern</li>
+<li>Add a <code>-w</code> argument to write replacements to the source files instead of stdout</li>
+</ul>
+
+<p>With <a href="https://marketplace.visualstudio.com/items?itemName=quasilyte.gogrep">gogrep extension for VS Code</a> it becomes even easier.</p>
+
+<p>Here is an example of <code>+=1</code> replacement with <code>++</code>:</p>
+
+<p><img src="https://habrastorage.org/webt/bc/pq/1x/bcpq1xmkv2fq3annn9oo0lu9t6i.gif" alt="" /></p>
+
+<p>Real-world example: once upon a time, I wanted to perform a global <code>slice[:] -&gt; slice</code> replacement. I&rsquo;ve even opened an <a href="https://github.com/dominikh/go-tools/issues/282">issue in staticcheck</a>. The major problem is that you can&rsquo;t just search for <code>[:]</code> without knowing the types. <code>array[:]</code> expression makes sense, we only want to match strings and slices.</p>
+
+<p>Here is how you can perform such replacement for <code>[]byte</code> slices inside Go stdlib:</p>
+
+<pre><code class="language-bash"># Search only.
+gogrep -x '$s[:]' -a 'type([]byte)' std
+
+# Search+replace.
+gogrep -x '$s[:]' -a 'type([]byte)' -s '$s' -w std
+</code></pre>
+
+<p><details>
+<summary>If you wonder what would that query reveal</summary></p>
+
+<p>Only the first 30 results are showed (out of 300+):</p>
+
+<pre><code>$GOROOT/src/archive/tar/format.go:163:59: b[:]
+$GOROOT/src/archive/tar/reader.go:345:33: tr.blk[:]
+$GOROOT/src/archive/tar/reader.go:348:17: tr.blk[:]
+$GOROOT/src/archive/tar/reader.go:348:28: zeroBlock[:]
+$GOROOT/src/archive/tar/reader.go:349:34: tr.blk[:]
+$GOROOT/src/archive/tar/reader.go:352:18: tr.blk[:]
+$GOROOT/src/archive/tar/reader.go:352:29: zeroBlock[:]
+$GOROOT/src/archive/tar/reader.go:396:23: tr.blk[:]
+$GOROOT/src/archive/tar/reader.go:497:36: blk[:]
+$GOROOT/src/archive/tar/reader.go:528:33: blk[:]
+$GOROOT/src/archive/tar/reader.go:531:14: blk[:]
+$GOROOT/src/archive/tar/writer.go:392:26: blk[:]
+$GOROOT/src/archive/tar/writer.go:477:23: zeroBlock[:]
+$GOROOT/src/archive/zip/reader.go:233:29: buf[:]
+$GOROOT/src/archive/zip/reader.go:236:15: buf[:]
+$GOROOT/src/archive/zip/reader.go:251:30: buf[:]
+$GOROOT/src/archive/zip/reader.go:254:15: buf[:]
+$GOROOT/src/archive/zip/writer.go:92:17: buf[:]
+$GOROOT/src/archive/zip/writer.go:110:19: buf[:]
+$GOROOT/src/archive/zip/writer.go:116:30: buf[:]
+$GOROOT/src/archive/zip/writer.go:132:27: buf[:]
+$GOROOT/src/archive/zip/writer.go:157:17: buf[:]
+$GOROOT/src/archive/zip/writer.go:177:27: buf[:]
+$GOROOT/src/archive/zip/writer.go:190:16: buf[:]
+$GOROOT/src/archive/zip/writer.go:198:26: buf[:]
+$GOROOT/src/archive/zip/writer.go:314:18: mbuf[:]
+$GOROOT/src/archive/zip/writer.go:319:31: mbuf[:]
+$GOROOT/src/archive/zip/writer.go:386:16: buf[:]
+$GOROOT/src/archive/zip/writer.go:398:23: buf[:]
+$GOROOT/src/bytes/bytes.go:172:24: b[:]
+</code></pre>
+
+<p></details></p>
+
+<h1 id="search-patterns">Search patterns</h1>
+
+<p>A <strong>search pattern</strong> is a small Go code fragment that can include <strong>$-expressions</strong> (we&rsquo;ll refer to them as &ldquo;pattern variables&rdquo;). A pattern can be an expression, a statement, or a declaration.</p>
+
+<p><strong>Pattern variables</strong> are Go variables with <code>$</code> prefix. Pattern variables with the same name always match identical AST nodes. The only exception is <code>$_</code> variable that can be used multiple times to express &ldquo;whatever&rdquo; parts of the pattern.</p>
+
+<p>If <code>*</code> is placed before the pattern variable name then it will match zero or more nodes instead of exactly one.</p>
+
+<table>
+<thead>
+<tr>
+<th>Search pattern</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>$_</code></td>
+<td>Anything.</td>
+</tr>
+
+<tr>
+<td><code>$x</code></td>
+<td>Identical to the example above, &ldquo;anything&rdquo;.</td>
+</tr>
+
+<tr>
+<td><code>$x = $x</code></td>
+<td>Self-assignment.</td>
+</tr>
+
+<tr>
+<td><code>(($_))</code></td>
+<td>Anything surrounded by two pairs of parens.</td>
+</tr>
+
+<tr>
+<td><code>if $init; $cond {$x} else {$x}</code></td>
+<td><code>if</code> with duplicated then/else blocks.</td>
+</tr>
+
+<tr>
+<td><code>fmt.Fprintf(os.Stdout, $*_)</code></td>
+<td><code>Fprintf</code> call with <code>os.Stdout</code> argument.</td>
+</tr>
+</tbody>
+</table>
+
+<p>As already demonstrated in the example with <code>append()</code>, the pattern can contain multiple statements. The &ldquo;<code>$x; $y</code>&rdquo; syntax means &ldquo;find $x that is followed by $y&rdquo;.</p>
+
+<p><code>gogrep</code> performs a genuine backtracking for the patterns with <code>*</code>. For example, the pattern below can find all <code>map</code> literals that contain at least 1 duplicated key expression:</p>
+
+<pre><code>map[$_]$_{$*_, $key: $val1, $*_, $key: $val2, $*_}
+</code></pre>
+
+<blockquote>
+<p>The Go compiler finds the duplicated map keys in literal, but only if they&rsquo;re constant expressions. <code>gogrep</code> pattern will find more suspicious candidates.</p>
+</blockquote>
+
+<h1 id="pipelines-commands-and-attributes">Pipelines, commands, and attributes</h1>
+
+<p>We already used <code>-x</code> and <code>-s</code> commands before, but now it&rsquo;s time to describe them in detail.</p>
+
+<p><code>gogrep</code> accepts a list of <strong>commands</strong> that form a <strong>pipeline</strong>. The order of the commands matters. The full synopsis looks like this:</p>
+
+<pre><code>gogrep command [more commands...] [targets...]
+</code></pre>
+
+<p>A <code>target</code> can be a file, a folder, or a package (same as the <code>go build</code> targets).</p>
+
+<p>My number-1 frequently used target is <code>./...</code> which performs a recursive search.</p>
+
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Description</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>-x pattern</code></td>
+<td>Find nodes that match the <code>pattern</code>.</td>
+</tr>
+
+<tr>
+<td><code>-g pattern</code></td>
+<td>Discard matches that <strong>do not</strong> match the <code>pattern</code>.</td>
+</tr>
+
+<tr>
+<td><code>-v pattern</code></td>
+<td>Discard matches that <strong>do</strong> match the <code>pattern</code>.</td>
+</tr>
+
+<tr>
+<td><code>-a attribute</code></td>
+<td>Discard matches that <strong>do not</strong> have the <code>attribute</code>.</td>
+</tr>
+
+<tr>
+<td><code>-s pattern</code></td>
+<td>Re-write the match using the `pattern.</td>
+</tr>
+
+<tr>
+<td><code>-p n</code></td>
+<td>For every match, navigate up <code>n</code> node parents.</td>
+</tr>
+</tbody>
+</table>
+
+<p>Normally, <code>-x</code> is the very first pipeline command and is followed by other commands that perform filtering or substitution.</p>
+
+<p>Examples should help you to understand this idea better.</p>
+
+<pre><code class="language-go">// file foo.go
+package foo
+
+func bar() {
+	println(1)
+	println(2)
+	println(3)
+}
+</code></pre>
+
+<pre><code class="language-bash"># Find all println() calls.
+$ gogrep -x 'println($*_)' foo.go
+foo.go:4:2: println(1)
+foo.go:5:2: println(2)
+foo.go:6:2: println(3)
+
+# The first -v discards matches that contain a literal 1.
+# The second -v discards matches that contain a literal 2.
+$ gogrep -x 'println($*_)' -v 1 -v 2 foo.go
+foo.go:6:2: println(3)
+
+# -p 2 traverses two nodes up, leading us to the containing *ast.BlockStmt.
+$ gogrep -x 'println($*_)' -v 1 -v 2 -p 2 foo.go
+foo.go:3:12: { println(1); println(2); println(3); }
+</code></pre>
+
+<p>There are a lot of <strong>attributes</strong> and they&rsquo;re quite underdocumented.</p>
+
+<p>You can learn them from the <a href="https://github.com/mvdan/gogrep/blob/24e8804e5b3cbe82de972195f127eb3c3592d94b/parse.go#L362">source code</a> though.</p>
+
+<p>An example below will illustrate the concept of the attributes.</p>
+
+<pre><code class="language-bash"># Will match both numerical and string &quot;+&quot; operations.
+gogrep -x '$lhs + $rhs'
+
+# Matches only string concatenations.
+gogrep -x '$lhs + $rhs' -a 'type(string)'
+</code></pre>
+
+<p>By default, <code>gogrep</code> does not perform a search inside test files. If you want to include these files, use <code>-tests</code> argument.</p>
+
+<h1 id="vs-code-extension-overview">VS Code extension overview</h1>
+
+<p>The extension exposes gogrep search commands (<code>Ctrl+Shift+P</code> or <code>Cmd+Shift+P</code>):</p>
+
+<p><img src="https://habrastorage.org/webt/t6/to/yt/t6toytgl4xxl07-twzwidbguzlu.jpeg" alt="" /></p>
+
+<p>Every command creates a search pattern prompt:</p>
+
+<p><img src="https://habrastorage.org/webt/y8/4q/f9/y84qf9p7mxjajc0oligrbt_8tho.jpeg" alt="" /></p>
+
+<p>Search results are printed to the <strong>output channel</strong> named <code>gogrep</code>:</p>
+
+<p><img src="https://habrastorage.org/webt/pj/c6/h-/pjc6h-nobw_bpbly_51t-cgi-sk.jpeg" alt="" /></p>
+
+<p>To perform a search and replace, divide the &ldquo;Find&rdquo; and &ldquo;Replace&rdquo; patterns with <code>-&gt;</code> token:</p>
+
+<p><img src="https://habrastorage.org/webt/72/7c/yy/727cyy4mbar0zq937ya_qfzrovo.jpeg" alt="" /></p>
+
+<p>The trailing <code>!</code> serves as a <code>-w</code> switch. If you end your search and replace patterns with it, your files will be updated. Otherwise, the replacement results are printed to the output channel.</p>
+
+<p>An example of how you can find <code>append()</code> calls that can be combined:</p>
+
+<p><img src="https://habrastorage.org/webt/hn/nc/zc/hnnczclqvnxb1maimtze2qlkrqo.gif" alt="" /></p>
+
+<p>By default, the extension commands are not bound to any hotkey combination. If you want quick access to them, you can assign any shortcut, following your sense of what is ergonomic.</p>
+
+<p>The extension can automatically install the <code>gogrep</code> binary for <code>linux-amd64</code>, <code>windows-amd64</code> and <code>darwin-amd64</code>. If something goes wrong or you&rsquo;re using a different platform, consider building <code>gogrep</code> from the source:</p>
+
+<pre><code class="language-bash">GO111MODULE=on go get mvdan.cc/gogrep
+</code></pre>
+
+<p>If you have a feature request (or a bug report), consider opening the <a href="https://github.com/quasilyte/vscode-gogrep/issues/new">issue on the GitHub</a>.</p>
+
+<h1 id="closing-words">Closing words</h1>
+
+<p>I hope this tutorial will make <code>gogrep</code> more accessible to people.</p>
+
+<p>If you&rsquo;re using JetBrains IDE, you may be familiar with <a href="https://www.jetbrains.com/help/idea/structural-search-and-replace.html">structural search and replace</a> (SSR) mechanism. It&rsquo;s basically doing the same thing, but you&rsquo;re can&rsquo;t use it outside of the IDE, so <code>gogrep</code> wins here.</p>
+
+<p>In case you find yourself doing the same refactoring commands, again and again, consider to use the <a href="https://github.com/quasilyte/go-ruleguard">ruleguard</a> with <code>-fix</code> option on the file save hook.</p>
+
+<pre><code class="language-go">// These 3 rules will find Fprint* calls with Stdout arguments and
+// will replace them with Print* equivalents.
+// The patterns inside Match() are gogrep patterns.
+m.Match(`fmt.Fprint(os.Stdout, $*args)`).Suggest(`fmt.Print($args)`)
+m.Match(`fmt.Fprintln(os.Stdout, $*args)`).Suggest(`fmt.Println($args)`)
+m.Match(`fmt.Fprintf(os.Stdout, $*args)`).Suggest(`fmt.Printf($args)`)
+</code></pre>
+
+<p>Additional resources:</p>
+
+<ul>
+<li><a href="https://talks.godoc.org/github.com/mvdan/talks/2018/gogrep.slide">Daniel Martí gogrep talk</a></li>
+<li><a href="https://github.com/quasilyte/go-ruleguard/blob/master/rules.go">gogrep pattern examples</a></li>
+<li><a href="https://godoc.org/golang.org/x/tools/cmd/eg">golang.org/x/tools/cmd/eg</a></li>
+</ul>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/habr-translation">[habr-translation] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/refactoring">[refactoring] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/tutorial">[tutorial] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=gogrep%3a%20structural%20search%20and%20replace&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fgogrep%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fgogrep%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fgogrep%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2020 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

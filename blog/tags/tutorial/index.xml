@@ -6,10 +6,22 @@
     <description>Recent content in [tutorial] on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 21 Jun 2017 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 07 Jun 2020 14:11:49 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/tags/tutorial/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>gogrep: structural search and replace</title>
+      <link>https://quasilyte.dev/blog/post/gogrep/</link>
+      <pubDate>Sun, 07 Jun 2020 14:11:49 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/gogrep/</guid>
+      <description>If you found a typo or a misspelling, please file an issue or send a PR that fixes it.
+ Original (ru): https://habr.com/post/481696/.
+ gogrep is one of my favorite tools. It gives you the ability to search Go code using syntax patterns, filter matches by expression types, and perform structural replace.
+Today I&amp;rsquo;ll talk about how to use gogrep and about VS Code extension that integrates gogrep into the editor.</description>
+    </item>
     
     <item>
       <title>RISC-V: custom instruction and its simulation</title>

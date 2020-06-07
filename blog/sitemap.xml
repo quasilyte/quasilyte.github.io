@@ -4,8 +4,49 @@
   
   <url>
     <loc>https://quasilyte.dev/blog/</loc>
-    <lastmod>2020-03-27T17:08:04+03:00</lastmod>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
     <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/</loc>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/</loc>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/go/</loc>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/habr-translation/</loc>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/refactoring/</loc>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/tutorial/</loc>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/post/gogrep/</loc>
+    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
   </url>
   
   <url>
@@ -14,31 +55,7 @@
   </url>
   
   <url>
-    <loc>https://quasilyte.dev/blog/post/</loc>
-    <lastmod>2020-03-27T17:08:04+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.dev/blog/tags/</loc>
-    <lastmod>2020-03-27T17:08:04+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>https://quasilyte.dev/blog/tags/compilers/</loc>
-    <lastmod>2020-03-27T17:08:04+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.dev/blog/tags/go/</loc>
-    <lastmod>2020-03-27T17:08:04+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.dev/blog/tags/habr-translation/</loc>
     <lastmod>2020-03-27T17:08:04+03:00</lastmod>
     <priority>0</priority>
   </url>
@@ -218,12 +235,6 @@
   
   <url>
     <loc>https://quasilyte.dev/blog/tags/risc-v/</loc>
-    <lastmod>2017-06-21T00:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.dev/blog/tags/tutorial/</loc>
     <lastmod>2017-06-21T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>

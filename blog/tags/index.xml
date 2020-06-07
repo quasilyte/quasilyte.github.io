@@ -6,24 +6,15 @@
     <description>Recent content in Tags on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Mar 2020 17:08:04 +0300</lastBuildDate>
+    <lastBuildDate>Sun, 07 Jun 2020 14:11:49 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>[compilers]</title>
-      <link>https://quasilyte.dev/blog/tags/compilers/</link>
-      <pubDate>Fri, 27 Mar 2020 17:08:04 +0300</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/compilers/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>[go]</title>
       <link>https://quasilyte.dev/blog/tags/go/</link>
-      <pubDate>Fri, 27 Mar 2020 17:08:04 +0300</pubDate>
+      <pubDate>Sun, 07 Jun 2020 14:11:49 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/go/</guid>
       <description></description>
@@ -32,9 +23,36 @@
     <item>
       <title>[habr-translation]</title>
       <link>https://quasilyte.dev/blog/tags/habr-translation/</link>
-      <pubDate>Fri, 27 Mar 2020 17:08:04 +0300</pubDate>
+      <pubDate>Sun, 07 Jun 2020 14:11:49 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/habr-translation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[refactoring]</title>
+      <link>https://quasilyte.dev/blog/tags/refactoring/</link>
+      <pubDate>Sun, 07 Jun 2020 14:11:49 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/refactoring/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[tutorial]</title>
+      <link>https://quasilyte.dev/blog/tags/tutorial/</link>
+      <pubDate>Sun, 07 Jun 2020 14:11:49 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/tutorial/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[compilers]</title>
+      <link>https://quasilyte.dev/blog/tags/compilers/</link>
+      <pubDate>Fri, 27 Mar 2020 17:08:04 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/compilers/</guid>
       <description></description>
     </item>
     
@@ -206,15 +224,6 @@
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/risc-v/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[tutorial]</title>
-      <link>https://quasilyte.dev/blog/tags/tutorial/</link>
-      <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/tutorial/</guid>
       <description></description>
     </item>
     
