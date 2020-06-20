@@ -6,10 +6,22 @@
     <description>Recent content in Posts on Iskander Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 07 Jun 2020 14:11:49 +0300</lastBuildDate>
+    <lastBuildDate>Sat, 20 Jun 2020 10:41:50 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Calling Go funcs from asm and JITed code</title>
+      <link>https://quasilyte.dev/blog/post/call-go-from-jit/</link>
+      <pubDate>Sat, 20 Jun 2020 10:41:50 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/call-go-from-jit/</guid>
+      <description>If you found a typo or a misspelling, please file an issue or send a PR that fixes it.
+ Original (ru): https://habr.com/ru/post/489482/.
+ Intro As long as your assembler code does something simple, you&amp;rsquo;re golden.
+As soon as you&amp;rsquo;ll need to call a Go function from it, the first suggestion that you&amp;rsquo;ll probably get: don&amp;rsquo;t do it. Perhaps you would like to follow that advice, especially if you&amp;rsquo;re unsure why you needed it in the first place.</description>
+    </item>
     
     <item>
       <title>gogrep: structural search and replace</title>

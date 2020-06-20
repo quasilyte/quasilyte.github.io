@@ -3,32 +3,49 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://quasilyte.dev/blog/post/call-go-from-jit/</loc>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.dev/blog/</loc>
-    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.dev/blog/post/</loc>
-    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.dev/blog/tags/</loc>
-    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/asm/</loc>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.dev/blog/tags/go/</loc>
-    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.dev/blog/tags/habr-translation/</loc>
-    <lastmod>2020-06-07T14:11:49+03:00</lastmod>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/jit/</loc>
+    <lastmod>2020-06-20T10:41:50+03:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -90,12 +107,6 @@
   <url>
     <loc>https://quasilyte.dev/blog/post/go_ssa_rules/</loc>
     <lastmod>2018-06-30T18:53:25+03:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.dev/blog/tags/asm/</loc>
-    <lastmod>2018-06-30T18:53:25+03:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>

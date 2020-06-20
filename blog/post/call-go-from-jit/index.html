@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Calling Go funcs from asm and JITed code &middot; Iskander Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about systems programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">Quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">Technical blog about systems programming and related topics</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Calling Go funcs from asm and JITed code</h1>
+        <div class="post-meta">
+            <time datetime="20 June 2020">
+                20 June 2020
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+<ul>
+<li><a href="#intro">Intro</a></li><br>
+<li><a href="#the-go-calling-convention">The Go calling convention</a></li><br>
+<li><a href="#pointers-and-the-stackmap">Pointers and the stackmap</a></li><br>
+<li><a href="#no-local-pointers-macro">NO_LOCAL_POINTERS macro</a></li><br>
+<li><a href="#go-args-macro">GO_ARGS macro</a></li><br>
+<li><a href="#go-results-initialized-macro">GO_RESULTS_INITIALIZED macro</a></li><br>
+<li><a href="#calling-go-funcs-from-jit-code">Calling Go funcs from JIT code</a></li><br>
+<li><a href="#go-internal-abi">Go internal ABI</a></li><br>
+<li><a href="#useful-resources">Useful resources</a></li><br>
+</ul>
+</nav>
+    
+    <section class="post-content">
+        
+
+<p><center>If you found a typo or a misspelling, please <a href="https://github.com/quasilyte/blog-src/issues/new">file an issue</a> or send a PR that fixes it.</center></p>
+
+<p><img src="https://hsto.org/webt/ep/4u/el/ep4uelswcffwgq9yfqkyuvcy5bu.png" alt="" /></p>
+
+<blockquote>
+<p>Original (ru): <a href="https://habr.com/ru/post/489482/">https://habr.com/ru/post/489482/</a>.</p>
+</blockquote>
+
+<h1 id="intro">Intro</h1>
+
+<p>As long as your assembler code does something simple, you&rsquo;re golden.</p>
+
+<p>As soon as you&rsquo;ll need to call a Go function from it, the first suggestion that you&rsquo;ll probably get: don&rsquo;t do it. Perhaps you would like to follow that advice, especially if you&rsquo;re unsure why you needed it in the first place.</p>
+
+<p>But what if you can&rsquo;t avoid that? Read-on, we have a cure.</p>
+
+<blockquote>
+<p>You&rsquo;ve run into a really hairy area of asm code.
+My first suggestion is not try to call from assembler into Go. &ndash; <a href="https://groups.google.com/d/msg/golang-nuts/a6NKBbL9fX0/SuMDpME-AgAJ">Ian Lance Taylor</a></p>
+</blockquote>
+
+<h1 id="the-go-calling-convention">The Go calling convention</h1>
+
+<p>The first thing that we need to understand is <a href="https://en.wikipedia.org/wiki/Calling_convention">how to pass function arguments and get its result</a>.</p>
+
+<p>I would recommend the <a href="https://github.com/golang/go/files/447163/GoFunctionsInAssembly.pdf">Go functions in assembly language</a> by <a href="https://twitter.com/MikeMunday">Michael Munday</a>.</p>
+
+<p>Normally, the calling convention is a very platform-dependent thing. We&rsquo;ll dig into <code>GOARCH=amd64</code> because this is what I&rsquo;m most familiar with.</p>
+
+<p>Here are some facts:</p>
+
+<ul>
+<li>All arguments are passed via the stack, expect the &ldquo;context&rdquo; in closures which occupies <code>DX</code> (%rdx) register.</li>
+<li>Function results are returned via the stack.</li>
+<li>Callee arguments are stored on the caller frame side.</li>
+<li>Frame allocation and de-allocation is performed by the callee. These actions are performed by the prologues and epilogues. Go assembler inserts them automatically.</li>
+</ul>
+
+<p>If there is not enough goroutine stack space, it will be extended. During that process, Go tries to fix pointers to the stack, so your program can work without knowing that anything changed.</p>
+
+<p><img src="https://hsto.org/webt/kb/jk/hy/kbjkhyjugizyb1weh2haraas7qy.png" alt="" /></p>
+
+<p>This picture may become outdated if the <a href="https://github.com/golang/go/issues/18597">register-based calling convention</a> will be adopted.</p>
+
+<p>We&rsquo;ll try to call <code>gofunc</code> from the <code>asmfunc</code>:</p>
+
+<pre><code class="language-go">package main
+
+func asmfunc(x int32) (int32, int32)
+
+func gofunc(a1 int64, a2, a3 int32) (int32, int32) {
+	return int32(a1) + a2, int32(a1) + a3
+}
+
+func main() {
+	v1, v2 := asmfunc(10)
+	println(v1, v2) // =&gt; 3, 11
+}
+</code></pre>
+
+<p>The <code>asmfunc</code> is defined as:</p>
+
+<pre><code class="language-x86asm">//; func asmfunc(x int32) (int32, int32)
+TEXT ·asmfunc(SB), 0, $24-12
+  MOVL x+0(FP), AX
+  MOVQ $1, 0(SP)  //; First argument (a1 int64)
+  MOVL $2, 8(SP)  //; Second argument (a2 int32)
+  MOVL AX, 12(SP) //; Third argument (a3 int32)
+  CALL ·gofunc(SB)
+  MOVL 16(SP), AX //; Get first result
+  MOVL 20(SP), CX //; Get second result
+  MOVL AX, ret+8(FP)  //; Return first result
+  MOVL CX, ret+12(FP) //; Return second result
+  RET
+</code></pre>
+
+<pre><code>$24-16 (locals=24 bytes, args=16 bytes)
+
+          0     8     12    16     20     SP
+locals=24 [a1:8][a2:4][a3:4][ret:4][ret:4]
+(ret belongs to asmfunc frame, it stores gofunc results)
+
+        0    4          8      12     FP
+args=16 [x:4][padding:4][ret:4][ret:4]
+(ret belongs to main frame, it stores asmfunc results)
+</code></pre>
+
+<p>Note that there is 4-byte padding between the function arguments and its result for the alignment. Go requires function results to be pointer-aligned (8-byte on x64-64).</p>
+
+<p>Every argument is aligned, just like fields in a struct.</p>
+
+<p>If the first argument is <code>int32</code> and the second is <code>int64</code>, then the offset of the latter will be 8 instead of 4. This is more or less consistent with <code>reflect.TypeOf(T).Align()</code> result.</p>
+
+<p>Some mistakes related to the function frame size and <code>FP</code> register usage can be found with <code>go vet</code> (asmdecl).</p>
+
+<p>If you try to call <code>gofunc</code>, there should be no problems. But don&rsquo;t relax just yet.</p>
+
+<h1 id="pointers-and-the-stackmap">Pointers and the stackmap</h1>
+
+<p>Let&rsquo;s try to call a Go function with a pointer argument.</p>
+
+<pre><code class="language-go">package foo
+
+import (
+	&quot;fmt&quot;
+	&quot;testing&quot;
+)
+
+func foo(ptr *object)
+
+type object struct {
+	x, y, z int64
+}
+
+func printPtr(ptr *object) {
+	fmt.Println(*ptr)
+}
+
+func TestFoo(t *testing.T) {
+	foo(&amp;object{x: 11, y: 22, z: 33})
+}
+</code></pre>
+
+<pre><code class="language-x86asm">TEXT ·foo(SB), 0, $8-8
+  MOVQ ptr+0(FP), AX
+  MOVQ AX, 0(SP)
+  CALL ·printPtr(SB)
+  RET
+</code></pre>
+
+<p>If we run that test, <a href="https://groups.google.com/d/msg/golang-nuts/a6NKBbL9fX0/MzUGGqQ9AgAJ">we&rsquo;ll get a panic</a>:</p>
+
+<pre><code>=== RUN   TestFoo
+runtime: frame &lt;censored&gt; untyped locals 0xc00008ff38+0x8
+fatal error: missing stackmap
+</code></pre>
+
+<p>In order to successfully find pointers on the stack, GC needs the help of so-called stackmaps. For normal Go functions, stackmaps are generated by the compiler. Assembler functions don&rsquo;t have this information.</p>
+
+<p>Well, we can have <strong>partial</strong> with the help of the &ldquo;function stubs&rdquo; (Go prototypes) with the correct types. The <a href="https://golang.org/doc/asm">documentation</a> also mentions cases where the stackmap is not necessary, but we need one in our program as it gently crashes without it.</p>
+
+<p>There are at least 3 approaches we can try to take from here:</p>
+
+<ul>
+<li>Try to make your asm function fall into the category where the stackmap is not needed (sometimes it&rsquo;s impossible).</li>
+<li>Manually build a stackmap inside the asm function body (difficult and error-prone).</li>
+<li>Use <code>NO_LOCAL_POINTERS</code> macro and pray that you know what you&rsquo;re doing.</li>
+</ul>
+
+<h1 id="no-local-pointers-macro">NO_LOCAL_POINTERS macro</h1>
+
+<p>If we add the <code>NO_LOCAL_POINTERS</code> to our asm function, it&rsquo;ll pass the test:</p>
+
+<pre><code class="language-x86asm">#include &quot;funcdata.h&quot;
+
+TEXT ·foo(SB), 0, $8-8
+  NO_LOCAL_POINTERS
+  MOVQ ptr+0(FP), AX
+  MOVQ AX, 0(SP)
+  CALL ·printPtr(SB)
+  RET
+</code></pre>
+
+<p>Now we need to understand the hows and whys.</p>
+
+<p>Why GC need to know which stack slots contain pointers? Let&rsquo;s assume that these pointers are coming from the caller, they are reachable from the code that called the assembler function. So it shouldn&rsquo;t be a problem that asm function local pointers are not considered to be &ldquo;live&rdquo;.</p>
+
+<p>Pointers can point to the stack objects as well as to the heap objects. When a stack resize happens, all pointers to stack values need to be fixed. This is the responsibility of the runtime to adjust the affected pointers.</p>
+
+<p>All pointers that are passed to the assembler function &ldquo;escape to the heap&rdquo; in the terms of the escape analysis, so it&rsquo;s not that simple to have a pointer to a stack-allocated value inside the assembler function.</p>
+
+<blockquote>
+<p>It&rsquo;s safe to use <code>NO_LOCAL_POINTERS</code> if all local pointers store heap-allocated addresses and they are reachable for the GC from somewhere else.</p>
+</blockquote>
+
+<p>With <a href="https://github.com/golang/proposal/blob/master/design/24543-non-cooperative-preemption.md">non-cooperative preemption</a>, it&rsquo;s good to keep in mind that <a href="https://go-review.googlesource.com/c/go/+/202337/">assembler functions with NO_LOCAL_POINTERS are not interrupted</a>.</p>
+
+<p>Another example of safe usage can be found <a href="https://github.com/golang/go/blob/d67d044310bc5cc1c26b60caf23a58602e9a1946/src/runtime/vlop_arm.s#L147-L158">inside the Go runtime</a>. Functions that are marked with <code>go:nosplit</code> will not have a stack resize. Nosplit can be used only inside <code>runtime</code> package.</p>
+
+<h1 id="go-args-macro">GO_ARGS macro</h1>
+
+<p>For asm functions that have Go prototype, <code>GO_ARGS</code> is automatically inserted by the assembler.</p>
+
+<p><code>GO_ARGS</code> is another macro from the <a href="https://golang.org/src/runtime/funcdata.h">funcdata.h</a>. It specifies that the arguments stackmap can be found inside a Go declaration.</p>
+
+<p>It didn&rsquo;t work in the past for the <a href="https://github.com/golang/go/issues/24419">functions defined in a different package</a>. Nowadays you don&rsquo;t need to manually place <code>args_stackmap</code> for the exported symbols.</p>
+
+<h1 id="go-results-initialized-macro">GO_RESULTS_INITIALIZED macro</h1>
+
+<p>If asm function has a pointer return value and it makes calls to Go functions, it should begin with result stack slots zeroing (as they may contain garbage) followed by a <code>GO_RESULTS_INITIALIZED</code> macro call.</p>
+
+<p>Example:</p>
+
+<pre><code class="language-x86asm">//; func getg() interface{}
+TEXT ·getg(SB), NOSPLIT, $32-16
+  //; Interface consists of two pointers.
+  //; Both of them need to be zeroed.
+  MOVQ $0, ret_type+0(FP)
+  MOVQ $0, ret_data+8(FP)
+  GO_RESULTS_INITIALIZED
+  //; The function body...
+  RET
+</code></pre>
+
+<p>In general, it&rsquo;s better to avoid asm functions that return a pointer result.</p>
+
+<p>You can find more <code>GO_RESULTS_INITIALIZED</code> examples <a href="https://github.com/search?l=Unix+Assembly&amp;q=GO_RESULTS_INITIALIZED&amp;type=Code">by using a GitHub search</a>.</p>
+
+<h1 id="calling-go-funcs-from-jit-code">Calling Go funcs from JIT code</h1>
+
+<p>Now for the most exciting part: calling a Go function from a dynamically generated machine code.</p>
+
+<p>Go GC expects that all code that makes a function calls is available during the compile time. That means that <a href="https://github.com/golang/go/issues/20123">Go doesn&rsquo;t play well with JITed code</a>.</p>
+
+<p>We&rsquo;ll start by reproducing a fatal error.</p>
+
+<pre><code class="language-go">// file jit.go
+package main
+
+import (
+	&quot;log&quot;
+	&quot;reflect&quot;
+	&quot;syscall&quot;
+	&quot;unsafe&quot;
+)
+
+func main() {
+	a := funcAddr(goFunc)
+
+	code := []byte{
+		// MOVQ addr(goFunc), AX
+		0xb8, byte(a), byte(a &gt;&gt; 8), byte(a &gt;&gt; 16), byte(a &gt;&gt; 24),
+		// CALL AX
+		0xff, 0xd0,
+		// RET
+		0xc3,
+	}
+
+	executable, err := mmapExecutable(len(code))
+	if err != nil {
+		log.Panicf(&quot;mmap: %v&quot;, err)
+	}
+	copy(executable, code)
+	callJIT(&amp;executable[0])
+}
+
+func callJIT(code *byte)
+
+func goFunc() {
+	println(&quot;called from JIT&quot;)
+}
+
+// Extra (scary) code is hidden under the spoiler for brevity.
+</code></pre>
+
+<p><details>
+<summary>Helper functions</summary></p>
+
+<pre><code class="language-go">func mmapExecutable(length int) ([]byte, error) {
+	const prot = syscall.PROT_READ | syscall.PROT_WRITE | syscall.PROT_EXEC
+	const flags = syscall.MAP_PRIVATE | syscall.MAP_ANON
+	return mmapLinux(0, uintptr(length), prot, flags, 0, 0)
+}
+
+func mmapLinux(addr, length, prot, flags, fd, off uintptr) ([]byte, error) {
+	ptr, _, err := syscall.Syscall6(
+		syscall.SYS_MMAP,
+		addr, length, prot, flags, fd, offset)
+	if err != 0 {
+		return nil, err
+	}
+	slice := *(*[]byte)(unsafe.Pointer(&amp;reflect.SliceHeader{
+		Data: ptr,
+		Len:  int(length),
+		Cap:  int(length),
+	}))
+	return slice, nil
+}
+
+func funcAddr(fn interface{}) uintptr {
+	type emptyInterface struct {
+		typ   uintptr
+		value *uintptr
+	}
+	e := (*emptyInterface)(unsafe.Pointer(&amp;fn))
+	return *e.value
+}
+</code></pre>
+
+<p></details></p>
+
+<pre><code class="language-x86asm">// file jit_amd64.s
+TEXT ·calljit(SB), 0, $0-8
+    MOVQ code+0(FP), AX
+    JMP AX
+</code></pre>
+
+<p>If you build and run that program, it&rsquo;ll look like everything works fine:</p>
+
+<pre><code class="language-bash">$ go build -o jit . &amp;&amp; ./jit
+called from JIT
+</code></pre>
+
+<p>With a single line addition to a <code>goFunc</code>, we can make our program crash:</p>
+
+<pre><code class="language-diff"> func goFunc() {
+ 	println(&quot;called from JIT&quot;)
++ 	runtime.GC()
+ }
+</code></pre>
+
+<pre><code class="language-bash">$ go build -o jit . &amp;&amp; ./jit
+called from JIT
+runtime: unexpected return pc for main.goFunc called from 0x7f9465f7c007
+stack: frame={sp:0xc00008ced0, fp:0xc00008cef0} stack=[0xc00008c000,0xc00008d000)
+000000c00008cdd0:  0000000000000000  00007f94681f7558 
+000000c00008cde0:  000000c000029270  000000000000000b 
+... (+ more)
+</code></pre>
+
+<p>The &ldquo;return PC&rdquo; points to a JIT code that is unknown to the runtime, hence the error:</p>
+
+<p><img src="/blog/img/jit_call1.png" alt="" /></p>
+
+<p>If Go runtime doesn&rsquo;t want us to call a function from a JIT code, we&rsquo;ll call them from the places it can recognize.</p>
+
+<p>The second version of the <code>callJIT</code> will have a section that is responsible for the Go function call. Whenever we need to call a Go function we&rsquo;ll jump to that <code>gocall</code> section.</p>
+
+<pre><code class="language-x86asm">#include &quot;funcdata.h&quot;
+
+TEXT ·callJIT(SB), 0, $8-8
+    NO_LOCAL_POINTERS
+    MOVQ code+0(FP), AX
+    JMP AX
+gocall:
+    CALL CX
+    JMP (SP)
+</code></pre>
+
+<p>Some notable changes:</p>
+
+<ul>
+<li>We need at least 8 extra frame bytes to write the origin return address</li>
+<li><code>NO_LOCAL_POINTERS</code> is needed due to the <code>CALL</code> and non-zero frame size</li>
+</ul>
+
+<p>The normal execution path for the <code>callJIT</code> is unchanged.</p>
+
+<p><code>gocall</code> handles JIT-&gt;Go calls. We expect that the caller puts the callee function address into <code>CX</code> and the origin return address into <code>(SP)</code>.</p>
+
+<p>Now we need the <code>gocall</code> label address. I used the disassembler to get that, but maybe there is a more clear way to do it.</p>
+
+<p>The modified <code>main</code> is shown below.</p>
+
+<pre><code class="language-go">a := funcAddr(goFunc)
+j := funcAddr(calljit) + 36
+
+code := []byte{
+    // MOVQ funcAddr(goFunc), CX
+    0x48, 0xc7, 0xc1, byte(a), byte(a &gt;&gt; 8), byte(a &gt;&gt; 16), byte(a &gt;&gt; 24),
+    // MOVQ funcAddr(gocall), DI
+    0x48, 0xc7, 0xc7, byte(j), byte(j &gt;&gt; 8), byte(j &gt;&gt; 16), byte(j &gt;&gt; 24),
+    // LEAQ 6(PC), SI
+    0x48, 0x8d, 0x35, (4 + 2), 0, 0, 0,
+    // MOVQ SI, (SP)
+    0x48, 0x89, 0x34, 0x24,
+    // JMP DI
+    0xff, 0xe7,
+
+    // ADDQ $framesize, SP
+    0x48, 0x83, 0xc4, (8 + 8),
+    // RET
+    0xc3,
+}
+</code></pre>
+
+<p>The &ldquo;call Go&rdquo; code sequence:</p>
+
+<ol>
+<li>The callee address is stored in <code>CX</code></li>
+<li>The <code>gocall</code> address is stored in <code>DI</code></li>
+<li>The return address is evaluated to <code>SI</code>, then stored to <code>(SP)</code><br>
+4+2 is a width of <code>MOVQ</code> and <code>JMP</code> instructions that follow the <code>LEAQ</code></li>
+<li>Then we jump to the <code>gocall</code></li>
+</ol>
+
+<p>Our function now has a frame, so we need to do a cleanup before returning. 8 bytes for our frame plus 8 bytes for the <code>BP</code> spilling.</p>
+
+<pre><code>here we store the return address for gocall
+|
+|       Go stores the previous BP value here
+|       |
+0(SP)   8(SP)    16(SP)    24(SP)
+[empty] [prevBP] [retaddr] [arg1:code]
+|             /  |         |
+|            /   |         callJIT argument (caller frame)
+|           /    |      
+|          /     pushed by the CALL during the callJIT() call from main
+|         /
+callJIT frame, 16 bytes 
+</code></pre>
+
+<p>With that trampoline, Go runtime sees a known <code>callJIT</code> function in its call stack:</p>
+
+<p><img src="/blog/img/jit_call2.png" alt="" /></p>
+
+<pre><code class="language-bash">$ go build -o jit . &amp;&amp; ./jit
+called from JIT
+</code></pre>
+
+<p>Success!</p>
+
+<p>This solution can be modified to call Go functions with arguments. All you need to do is to add some extra frame space in <code>callJIT</code> to put Go function arguments there.</p>
+
+<h1 id="go-internal-abi">Go internal ABI</h1>
+
+<p><a href="https://github.com/golang/proposal/blob/master/design/27539-internal-abi.md">Go Internal ABI</a> is another hot topic.</p>
+
+<p>Long story short, Go may get a new <code>ABI</code> pretty soon. It&rsquo;s going to be versioned.</p>
+
+<p>The proposal highlighted two things:</p>
+
+<ul>
+<li>The existing assembler code will continue to work correctly.</li>
+<li>Older calling conventions will still be supported for the new code.</li>
+</ul>
+
+<p>The original Go calling convention is a part of <code>ABI0</code>.<br>
+The experimental calling convention is a part of <code>ABIInternal</code>.</p>
+
+<p>If we&rsquo;ll start a Go compilation with <code>-S</code> flag, it&rsquo;s possible to note that <code>ABIInternal</code> is already there (but it&rsquo;s very similar to <code>ABI0</code> right now):</p>
+
+<p><img src="https://habrastorage.org/webt/yf/cz/ox/yfczox8dzfemakdghfoit5m14iu.png" alt="" /></p>
+
+<p>When <code>ABIInternal</code> will be good enough, it&rsquo;ll be released as <code>ABI1</code> and the cycle will continue.</p>
+
+<p>The good news is that our assembler code should continue to work correctly, at least in the near future. On this optimistic note, I would like to finish this article.</p>
+
+<h1 id="useful-resources">Useful resources</h1>
+
+<p><img src="https://habrastorage.org/webt/q2/is/vu/q2isvuiycngnmodmqvefkv7bmfw.png" alt="" /></p>
+
+<ul>
+<li><a href="https://github.com/golang/go/files/447163/GoFunctionsInAssembly.pdf">Go functions in assembly language</a></li>
+<li><a href="https://github.com/golang/proposal/blob/master/design/27539-internal-abi.md">Go internal ABI</a></li>
+<li><a href="https://eli.thegreenplace.net/2011/09/06/stack-frame-layout-on-x86-64">Stack frame layout on x86-64</a></li>
+<li><a href="https://groups.google.com/d/msg/golang-nuts/SxWxUG0uezY/YWXLSuesBQAJ">NO_LOCAL_POINTERS and stack addresses</a></li>
+<li><a href="https://github.com/modern-go/amd64">amd64 library that can be used for machine code generation</a></li>
+<li><a href="https://quasilyte.dev/blog/post/go-asm-complementary-reference/">Go assembly language complementary reference</a></li>
+</ul>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/habr-translation">[habr-translation] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/asm">[asm] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/jit">[jit] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Calling%20Go%20funcs%20from%20asm%20and%20JITed%20code&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fcall-go-from-jit%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fcall-go-from-jit%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fcall-go-from-jit%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that got lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2020 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
