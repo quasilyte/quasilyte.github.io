@@ -85,6 +85,7 @@
 <li><a href="#quickstart">Quickstart</a></li><br>
 <li><a href="#multi-rule-function-example">Multi-rule function example</a></li><br>
 <li><a href="#quickfix-actions">quickfix actions</a></li><br>
+<li><a href="#using-from-the-golangci-lint">Using from the golangci-lint</a></li><br>
 <li><a href="#closing-words">Closing words</a></li><br>
 <li><a href="#useful-links-and-resources">Useful links and resources</a></li><br>
 </ul>
@@ -400,6 +401,49 @@ func exampleGroup(m fluent.Matcher) {
 
 <p>More detailed description can be found inside <a href="https://github.com/golang/tools/blob/master/go/analysis/doc/suggested_fixes.md">suggested_fixes.md design document</a>.</p>
 
+<h1 id="using-from-the-golangci-lint">Using from the golangci-lint</h1>
+
+<p><a href="https://github.com/golangci/golangci-lint">golangci-lint</a> integrates <code>go-critic</code>, which in turn includes <code>ruleguard</code>.</p>
+
+<p>If you have a new version of <code>golangci-lint</code> that includes <a href="https://github.com/golangci/golangci-lint/pull/1148">PR1148</a>, you can use <code>ruleguard</code> through <code>golangci-lint</code>.</p>
+
+<p>To make it work, you must ensure that:</p>
+
+<ol>
+<li><code>gocritic</code> linter is enabled</li>
+<li><code>ruleguard</code> check is enabled</li>
+<li><code>rules</code> parameter is set</li>
+</ol>
+
+<p>Here is a minimal example of <code>.golangci.yml</code> that satisfies these 3 conditions:</p>
+
+<pre><code>linters:
+  enable:
+    - gocritic
+linters-settings:
+  gocritic:
+    enabled-checks:
+      - ruleguard
+    settings:
+      ruleguard:
+        rules: &quot;rules.go&quot;
+</code></pre>
+
+<p>When you run <code>golangci-lint</code> with this configuration file, you should see warnings that come from the rules you defined:</p>
+
+<pre><code class="language-bash">$ golangci-lint run example.go 
+example.go:5:9: ruleguard: can rewrite as xs[0] == ys[0] (gocritic)
+	return !(xs[0] != ys[0])
+	       ^
+</code></pre>
+
+<p>When changing the rules file, you might need to do a cache cleanup once in a while:</p>
+
+<pre><code class="language-bash">golangci-lint cache clean
+</code></pre>
+
+<p>In general, it&rsquo;s easier to debug you rules with <code>ruleguard</code> binary, but for the integration purposes, <code>golangci-lint</code> is priceless.</p>
+
 <h1 id="closing-words">Closing words</h1>
 
 <p><img src="https://habrastorage.org/webt/m3/bs/zw/m3bszwzp2nwkxrnxdnenypatyjk.png" alt="" /></p>
@@ -419,7 +463,6 @@ func exampleGroup(m fluent.Matcher) {
 <p><code>ruleguard</code> development plans:</p>
 
 <ul>
-<li>Integrate <code>ruleguard</code> into <a href="https://github.com/go-critic/go-critic">go-critic</a> as another way to extend it.</li>
 <li>Test ideas from <a href="https://github.com/quasilyte/talks/tree/master/2019-7-Oct-moscow">Applied Go code similarity analysis</a> (<a href="https://github.com/quasilyte/astnorm">code normalization</a>)</li>
 <li>Add new DSL features. <a href="https://github.com/quasilyte/go-ruleguard/issues/28">sub-matches</a> is one of the examples.</li>
 <li>Borrow and adapt ideas from <a href="https://github.com/github/codeql-go">CodeQL</a> and <a href="https://comby.dev/">comby</a>.</li>
