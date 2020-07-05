@@ -411,7 +411,7 @@ func exampleGroup(m fluent.Matcher) {
 
 <ol>
 <li><code>gocritic</code> linter is enabled</li>
-<li><code>ruleguard</code> check is enabled</li>
+<li><code>ruleguard</code> check is enabled as well</li>
 <li><code>rules</code> parameter is set</li>
 </ol>
 
@@ -433,8 +433,8 @@ linters-settings:
 
 <pre><code class="language-bash">$ golangci-lint run example.go 
 example.go:5:9: ruleguard: can rewrite as xs[0] == ys[0] (gocritic)
-	return !(xs[0] != ys[0])
-	       ^
+        return !(xs[0] != ys[0])
+               ^
 </code></pre>
 
 <p>When changing the rules file, you might need to do a cache cleanup once in a while:</p>
@@ -442,7 +442,7 @@ example.go:5:9: ruleguard: can rewrite as xs[0] == ys[0] (gocritic)
 <pre><code class="language-bash">golangci-lint cache clean
 </code></pre>
 
-<p>In general, it&rsquo;s easier to debug you rules with <code>ruleguard</code> binary, but for the integration purposes, <code>golangci-lint</code> is priceless.</p>
+<p>In general, it&rsquo;s easier to debug your rules with <code>ruleguard</code> binary, but for integration purposes, <code>golangci-lint</code> is priceless.</p>
 
 <h1 id="closing-words">Closing words</h1>
 
