@@ -1,15 +1,51 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on Iskander Sharipov technical blog</title>
+    <title>Tags on Iskander (Alex) Sharipov technical blog</title>
     <link>https://quasilyte.dev/blog/tags/</link>
-    <description>Recent content in Tags on Iskander Sharipov technical blog</description>
+    <description>Recent content in Tags on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 20 Jun 2020 10:41:50 +0300</lastBuildDate>
+    <lastBuildDate>Thu, 10 Sep 2020 22:01:24 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>[json5]</title>
+      <link>https://quasilyte.dev/blog/tags/json5/</link>
+      <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/json5/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[shortread]</title>
+      <link>https://quasilyte.dev/blog/tags/shortread/</link>
+      <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/shortread/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[yaml5]</title>
+      <link>https://quasilyte.dev/blog/tags/yaml5/</link>
+      <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/yaml5/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[yaml]</title>
+      <link>https://quasilyte.dev/blog/tags/yaml/</link>
+      <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/yaml/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>[asm]</title>
@@ -80,15 +116,6 @@
       <pubDate>Wed, 08 Jan 2020 21:54:02 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/static-analysis/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[shortread]</title>
-      <link>https://quasilyte.dev/blog/tags/shortread/</link>
-      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/shortread/</guid>
       <description></description>
     </item>
     

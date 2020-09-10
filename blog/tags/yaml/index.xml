@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>[yaml] on Iskander (Alex) Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/yaml/</link>
+    <description>Recent content in [yaml] on Iskander (Alex) Sharipov technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Sep 2020 22:01:24 +0300</lastBuildDate>
+    
+	<atom:link href="https://quasilyte.dev/blog/tags/yaml/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>YAML is your JSON5</title>
+      <link>https://quasilyte.dev/blog/post/yaml5/</link>
+      <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/yaml5/</guid>
+      <description>TL;DR:
+ Write YAML as JSON5 (but use # for comments) Enforce this style with yaml5 lint  # JSON5? YAML? {a: 1, b: [&#39;x&#39;, &#39;y&#39;]}  What you see above is a valid YAML 1.2 document.
+It uses the flow-style syntax for objects and arrays.
+If you look at the JSON5 feature list, you can deduce that YAML is a superset of JSON5.
+The only difference is the single-line comment syntax.</description>
+    </item>
+    
+  </channel>
+</rss>
