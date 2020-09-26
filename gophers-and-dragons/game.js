@@ -97,6 +97,7 @@ var App;
             for (const key in elements.status) {
                 elements.status[key].innerText = '0';
             }
+            elements.status.score.classList.remove('text-green');
             // Reset hero.
             elements.avatar.hp.innerText = `${AVATAR_MAX_HP}`;
             elements.avatar.mp.innerText = `${AVATAR_MAX_MP}`;
@@ -176,11 +177,17 @@ var App;
             resetPage();
             elements.creep.pic.onmouseenter = function (e) {
                 let currentCreep = elements.creep.name.innerText;
+                if (currentCreep === 'None') {
+                    return;
+                }
                 let creepStats = getCreepStats(currentCreep);
                 renderCreepDetails(currentCreep, creepStats);
             };
             elements.nextCreep.pic.onmouseenter = function (e) {
                 let nextCreep = elements.nextCreep.name.innerText;
+                if (nextCreep === 'None') {
+                    return;
+                }
                 let creepStats = getCreepStats(nextCreep);
                 renderCreepDetails(nextCreep, creepStats);
             };
@@ -230,6 +237,9 @@ var App;
             };
         }
         const handlers = {
+            victory: function () {
+                elements.status.score.classList.add('text-green');
+            },
             defeat: function () {
                 elements.avatar.pic.src = `img/dead_avatar/avatar${AVATAR_ID}.png`;
             },
