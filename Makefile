@@ -1,4 +1,25 @@
-.PHONY: regexp-lint
+.PHONY: regexp-lint gophers-and-dragons
+
+#		wasm-opt main.wasm -Oz -o main.wasm && \
+
+gophers-and-dragons:
+	rm -rf gophers-and-dragons/
+	mkdir -p gophers-and-dragons/src/github.com/quasilyte
+	cd gophers-and-dragons && \
+		git clone https://github.com/quasilyte/gophers-and-dragons.git src/github.com/quasilyte/gophers-and-dragons && \
+		cd src/github.com/quasilyte/gophers-and-dragons && \
+		GO111MODULE=on GOOS=js GOARCH=wasm go build -o www/go.wasm ./wasm && \
+		tsc --target es6 ./www/game.ts
+	cd gophers-and-dragons && \
+		cp ./src/github.com/quasilyte/gophers-and-dragons/www/styles.css . && \
+		cp ./src/github.com/quasilyte/gophers-and-dragons/www/index.html . && \
+		cp ./src/github.com/quasilyte/gophers-and-dragons/www/game.html . && \
+		cp ./src/github.com/quasilyte/gophers-and-dragons/www/wasm_exec.js . && \
+		cp ./src/github.com/quasilyte/gophers-and-dragons/www/game.js . && \
+		cp -a ./src/github.com/quasilyte/gophers-and-dragons/www/img . && \
+		cp ./src/github.com/quasilyte/gophers-and-dragons/www/go.wasm . && \
+		wasm-opt go.wasm -Oz -o go.wasm && \
+		rm -rf src
 
 regexp-lint:
 	rm -rf regexp-lint/
