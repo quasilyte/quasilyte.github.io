@@ -16,6 +16,23 @@ var App;
                 init();
             });
         }
+        function copyToClipboard(text) {
+            let el = document.createElement('textarea'); // Temp container
+            el.value = text;
+            el.setAttribute('readonly', '');
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            try {
+                let ok = document.execCommand('copy');
+                console.debug('copy to clipboard:', ok);
+            }
+            catch (e) {
+                console.error('clipboard insertion failed', e);
+            }
+            document.body.removeChild(el);
+        }
         function rand(max) {
             return Math.floor(Math.random() * Math.floor(max));
         }
@@ -29,6 +46,8 @@ var App;
             'button': {
                 'run': document.getElementById('button_run'),
                 'pause': document.getElementById('button_pause'),
+                'format': document.getElementById('button_format'),
+                'share': document.getElementById('button_share'),
             },
             'speed': document.getElementById('select_speed'),
             'log': document.getElementById('log'),
@@ -87,6 +106,33 @@ var App;
             elements.nextCreep.pic.src = `img/creep/${name}.png`;
             elements.nextCreep.name.innerText = name;
             elements.nextCreep.hp.innerText = hp.toString();
+        }
+        function encodeCodeURI(code) {
+            console.log("code length: %d", code.length);
+            code = gominify(code);
+            console.log("code minformat length: %d", code.length);
+            code = LZString.compressToEncodedURIComponent(code);
+            console.log("code minify+compress length: %d", code.length);
+            return code;
+        }
+        function decodeCodeURI(uri) {
+            let code = LZString.decompressFromEncodedURIComponent(uri);
+            return gofmt(code);
+        }
+        function shareURL() {
+            let code = elements.code.value;
+            let codeURI = encodeCodeURI(code);
+            let site = 'https://quasilyte.dev/gophers-and-dragons/game.html';
+            if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+                site = `https://${location.host}/game.html`;
+            }
+            if (codeURI.length > 1800) {
+                return '';
+            }
+            var params = [];
+            params.push(`avatar=${AVATAR_ID}`);
+            params.push(`code=${codeURI}`);
+            return site + '?' + params.join('&');
         }
         function resetPage() {
             // Set spell counts to 0.
@@ -174,6 +220,10 @@ var App;
             }
         }
         function initGame() {
+            let code = urlParams.get('code');
+            if (code !== null) {
+                elements.code.value = decodeCodeURI(code);
+            }
             resetPage();
             elements.creep.pic.onmouseenter = function (e) {
                 let currentCreep = elements.creep.name.innerText;
@@ -200,6 +250,16 @@ var App;
             for (let i = 0; i < cardLabels.length; i++) {
                 cardLabels[i].addEventListener('mouseenter', cardDetailsHandler, false);
             }
+            elements.button.format.onclick = function (e) {
+                let code = elements.code.value;
+                let result = gofmt(code);
+                if (result.startsWith('error:')) {
+                    console.error("gofmt: %s", result);
+                }
+                else {
+                    elements.code.value = result;
+                }
+            };
             elements.button.run.onclick = function (e) {
                 if (currentSimulationInterval) {
                     clearInterval(currentSimulationInterval);
@@ -232,6 +292,15 @@ var App;
                     insertText(elements.code, '    ');
                 }
             });
+            elements.button.share.onclick = function (e) {
+                let url = shareURL();
+                if (url) {
+                    copyToClipboard(url);
+                }
+                else {
+                    alert('Your code is too big to be shared');
+                }
+            };
             elements.button.pause.onclick = function (e) {
                 handlePause();
             };
