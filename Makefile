@@ -18,7 +18,6 @@ gophers-and-dragons:
 		cp ./src/github.com/quasilyte/gophers-and-dragons/www/game.js . && \
 		cp -a ./src/github.com/quasilyte/gophers-and-dragons/www/img . && \
 		cp ./src/github.com/quasilyte/gophers-and-dragons/www/go.wasm . && \
-		wasm-opt go.wasm -Oz -o go.wasm && \
 		rm -rf src
 
 regexp-lint:
