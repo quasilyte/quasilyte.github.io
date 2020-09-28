@@ -46,7 +46,8 @@ var App;
         }
         const elements = {
             'details': document.getElementById('hover_details'),
-            'code': document.getElementById('code_editor'),
+            'tactics': document.getElementById('tactics_editor'),
+            'settings': document.getElementById('settings_editor'),
             'button': {
                 'run': document.getElementById('button_run'),
                 'pause': document.getElementById('button_pause'),
@@ -55,6 +56,7 @@ var App;
                 'share': document.getElementById('button_share'),
             },
             'speed': document.getElementById('select_speed'),
+            'tab': document.getElementById('select_tab'),
             'log': document.getElementById('log'),
             'avatar': {
                 'pic': document.getElementById('avatar_status_pic'),
@@ -85,9 +87,12 @@ var App;
             'Parry': document.getElementById('card_parry'),
         };
         const urlParams = new URLSearchParams(window.location.search);
+        let gameSettings = {
+            avatarHP: 40,
+            avatarMP: 20,
+            seed: null,
+        };
         const NUM_ROUNDS = 10;
-        const AVATAR_MAX_HP = 40;
-        const AVATAR_MAX_MP = 20;
         const AVATAR_ID = urlParams.get('avatar') || rand(5);
         const cardDescriptions = {
             'Attack': 'Simple offensive action',
@@ -126,7 +131,7 @@ var App;
             return gofmt(code);
         }
         function shareURL() {
-            let code = elements.code.value;
+            let code = elements.tactics.value;
             let codeURI = encodeCodeURI(code);
             let site = 'https://quasilyte.dev/gophers-and-dragons/game.html';
             if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
@@ -141,6 +146,7 @@ var App;
             return site + '?' + params.join('&');
         }
         function resetPage() {
+            applySettings();
             // Set spell counts to 0.
             for (const key in cardElements) {
                 cardElements[key].innerText = '0';
@@ -151,8 +157,8 @@ var App;
             }
             elements.status.score.classList.remove('text-green');
             // Reset hero.
-            elements.avatar.hp.innerText = `${AVATAR_MAX_HP}`;
-            elements.avatar.mp.innerText = `${AVATAR_MAX_MP}`;
+            elements.avatar.hp.innerText = `${gameSettings.avatarHP}`;
+            elements.avatar.mp.innerText = `${gameSettings.avatarMP}`;
             elements.avatar.pic.src = `img/avatar/avatar${AVATAR_ID}.png`;
             // Set the initial creeps.
             setCreep('Cheepy', getCreepStats('Cheepy').maxHP);
@@ -246,10 +252,32 @@ var App;
                 }
             }
         }
+        function applySettings() {
+            let settingsText = elements.settings.value;
+            try {
+                let x = JSON.parse(settingsText);
+                if (x.avatarHP) {
+                    gameSettings.avatarHP = x.avatarHP;
+                }
+                if (x.avatarMP) {
+                    gameSettings.avatarMP = x.avatarMP;
+                }
+                if (x.seed) {
+                    gameSettings.seed = x.seed;
+                }
+            }
+            catch (e) {
+                console.error("bad settings: " + e);
+            }
+        }
         function initGame() {
             let code = urlParams.get('code');
             if (code !== null) {
-                elements.code.value = decodeCodeURI(code);
+                elements.tactics.value = decodeCodeURI(code);
+            }
+            elements.tab.options[0].selected = true;
+            if (elements.settings.value === '') {
+                elements.settings.value = JSON.stringify(gameSettings, undefined, 4);
             }
             resetPage();
             elements.creep.pic.onmouseenter = function (e) {
@@ -268,6 +296,17 @@ var App;
                 let creepStats = getCreepStats(nextCreep);
                 renderCreepDetails(nextCreep, creepStats);
             };
+            elements.tab.onchange = function (e) {
+                let selected = elements.tab.options[elements.tab.selectedIndex].value;
+                if (selected === 'tab_tactics') {
+                    elements.tactics.style.display = '';
+                    elements.settings.style.display = 'none';
+                }
+                else if (selected === 'tab_settings') {
+                    elements.tactics.style.display = 'none';
+                    elements.settings.style.display = '';
+                }
+            };
             let cardLabels = document.getElementsByClassName('card');
             let cardDetailsHandler = function () {
                 let cardName = this.innerText;
@@ -283,13 +322,13 @@ var App;
                 }
             };
             elements.button.format.onclick = function (e) {
-                let code = elements.code.value;
+                let code = elements.tactics.value;
                 let result = gofmt(code);
                 if (result.startsWith('error:')) {
                     console.error("gofmt: %s", result);
                 }
                 else {
-                    elements.code.value = result;
+                    elements.tactics.value = result;
                 }
             };
             elements.button.run.onclick = function (e) {
@@ -298,12 +337,12 @@ var App;
                     currentSimulationInterval = null;
                 }
                 resetPage();
-                let config = {
-                    avatarHP: AVATAR_MAX_HP,
-                    avatarMP: AVATAR_MAX_MP,
-                    rounds: NUM_ROUNDS,
-                };
-                let code = elements.code.value;
+                let config = {};
+                config["avatarHP"] = gameSettings.avatarHP;
+                config["avatarMP"] = gameSettings.avatarMP;
+                config["rounds"] = NUM_ROUNDS;
+                config["seed"] = gameSettings.seed;
+                let code = elements.tactics.value;
                 let actions = runSimulation(config, code);
                 let speed = parseInt(elements.speed.options[elements.speed.selectedIndex].value, 10);
                 currentSimulationPlayer = new SimulationPlayer(actions);
@@ -312,17 +351,17 @@ var App;
                 applyActions(speed, currentSimulationPlayer);
             };
             document.addEventListener('keyup', function (e) {
-                let textareaFocused = (elements.code === document.activeElement);
+                let textareaFocused = (elements.tactics === document.activeElement);
                 if (e.code === 'Space' && !textareaFocused) {
                     e.preventDefault();
                     handlePause();
                 }
             });
             document.addEventListener('keydown', function (e) {
-                let textareaFocused = (elements.code === document.activeElement);
+                let textareaFocused = (elements.tactics === document.activeElement);
                 if (e.code === 'Tab' && textareaFocused) {
                     e.preventDefault();
-                    insertText(elements.code, '    ');
+                    insertText(elements.tactics, '    ');
                 }
             });
             elements.button.share.onclick = function (e) {
