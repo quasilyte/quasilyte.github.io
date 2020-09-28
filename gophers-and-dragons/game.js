@@ -38,7 +38,11 @@ var App;
         }
         function updateElementText(el, delta) {
             let val = parseInt(el.innerText, 10);
-            el.innerText = '' + (val + delta);
+            let newVal = val + delta;
+            if (newVal < 0) {
+                newVal = 0;
+            }
+            el.innerText = `${newVal}`;
         }
         const elements = {
             'details': document.getElementById('hover_details'),
@@ -46,6 +50,7 @@ var App;
             'button': {
                 'run': document.getElementById('button_run'),
                 'pause': document.getElementById('button_pause'),
+                'nextTurn': document.getElementById('button_next_turn'),
                 'format': document.getElementById('button_format'),
                 'share': document.getElementById('button_share'),
             },
@@ -97,6 +102,7 @@ var App;
         };
         let paused = false;
         let currentSimulationInterval = null;
+        let currentSimulationPlayer = null;
         function setCreep(name, hp) {
             elements.creep.pic.src = `img/creep/${name}.png`;
             elements.creep.name.innerText = name;
@@ -219,6 +225,27 @@ var App;
                 initialFocus.focus();
             }
         }
+        class SimulationPlayer {
+            constructor(actions) {
+                this.nextAction = 0;
+                this.actions = actions;
+            }
+            canPlayTurn() {
+                return this.nextAction < this.actions.length;
+            }
+            playTurn() {
+                for (let i = this.nextAction; i < this.actions.length; i++) {
+                    this.nextAction++;
+                    let a = this.actions[i];
+                    if (a[0] == 'wait') {
+                        updateElementText(elements.status.turn, 1);
+                        break;
+                    }
+                    const [, ...tail] = a;
+                    handlers[a[0]].apply(null, tail);
+                }
+            }
+        }
         function initGame() {
             let code = urlParams.get('code');
             if (code !== null) {
@@ -250,6 +277,11 @@ var App;
             for (let i = 0; i < cardLabels.length; i++) {
                 cardLabels[i].addEventListener('mouseenter', cardDetailsHandler, false);
             }
+            elements.button.nextTurn.onclick = function (e) {
+                if (paused && currentSimulationPlayer.canPlayTurn()) {
+                    currentSimulationPlayer.playTurn();
+                }
+            };
             elements.button.format.onclick = function (e) {
                 let code = elements.code.value;
                 let result = gofmt(code);
@@ -274,9 +306,10 @@ var App;
                 let code = elements.code.value;
                 let actions = runSimulation(config, code);
                 let speed = parseInt(elements.speed.options[elements.speed.selectedIndex].value, 10);
+                currentSimulationPlayer = new SimulationPlayer(actions);
                 console.log('starting applyActions with speed=%d', speed);
                 console.log('actions:', actions);
-                applyActions(speed, actions);
+                applyActions(speed, currentSimulationPlayer);
             };
             document.addEventListener('keyup', function (e) {
                 let textareaFocused = (elements.code === document.activeElement);
@@ -351,25 +384,17 @@ var App;
                 setNextCreep(name, hp);
             },
         };
-        function applyActions(interval, actions) {
-            let nextAction = 0;
+        function applyActions(interval, player) {
             currentSimulationInterval = setInterval(function () {
                 if (paused) {
                     return;
                 }
-                for (let i = nextAction; i < actions.length; i++) {
-                    nextAction++;
-                    let a = actions[i];
-                    if (a[0] == 'wait') {
-                        updateElementText(elements.status.turn, 1);
-                        break;
-                    }
-                    const [, ...tail] = a;
-                    handlers[a[0]].apply(null, tail);
+                if (player.canPlayTurn()) {
+                    player.playTurn();
                 }
-                if (nextAction >= actions.length) {
+                else {
                     clearInterval(currentSimulationInterval);
-                    console.log('applied %d actions', actions.length);
+                    console.log('applied %d actions', player.actions.length);
                     currentSimulationInterval = null;
                 }
             }, interval);
