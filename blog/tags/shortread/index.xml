@@ -6,10 +6,21 @@
     <description>Recent content in [shortread] on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Sep 2020 22:01:24 +0300</lastBuildDate>
+    <lastBuildDate>Mon, 21 Dec 2020 00:54:25 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/tags/shortread/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ruleguard rules package management</title>
+      <link>https://quasilyte.dev/blog/post/ruleguard-modules/</link>
+      <pubDate>Mon, 21 Dec 2020 00:54:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/ruleguard-modules/</guid>
+      <description>Bundles is a new feature coming to the ruleguard. It&amp;rsquo;ll make it possible to re-use third-party rules without having to copy/paste them.
+Creating an importable bundle A package that exports rules must define a Bundle object:
+package gorules import &amp;quot;github.com/quasilyte/go-ruleguard/dsl&amp;quot; // Bundle holds the rules package metadata. // // In order to be importable from other gorules package, // a package must define a Bundle variable. var Bundle = dsl.</description>
+    </item>
     
     <item>
       <title>YAML is your JSON5</title>

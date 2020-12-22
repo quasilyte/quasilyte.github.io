@@ -6,10 +6,46 @@
     <description>Recent content in Tags on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Sep 2020 22:01:24 +0300</lastBuildDate>
+    <lastBuildDate>Mon, 21 Dec 2020 00:54:25 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>[go]</title>
+      <link>https://quasilyte.dev/blog/tags/go/</link>
+      <pubDate>Mon, 21 Dec 2020 00:54:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/go/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[ruleguard]</title>
+      <link>https://quasilyte.dev/blog/tags/ruleguard/</link>
+      <pubDate>Mon, 21 Dec 2020 00:54:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/ruleguard/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[shortread]</title>
+      <link>https://quasilyte.dev/blog/tags/shortread/</link>
+      <pubDate>Mon, 21 Dec 2020 00:54:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/shortread/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[static-analysis]</title>
+      <link>https://quasilyte.dev/blog/tags/static-analysis/</link>
+      <pubDate>Mon, 21 Dec 2020 00:54:25 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/static-analysis/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>[json5]</title>
@@ -17,15 +53,6 @@
       <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/json5/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[shortread]</title>
-      <link>https://quasilyte.dev/blog/tags/shortread/</link>
-      <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/shortread/</guid>
       <description></description>
     </item>
     
@@ -53,15 +80,6 @@
       <pubDate>Sat, 20 Jun 2020 10:41:50 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/asm/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[go]</title>
-      <link>https://quasilyte.dev/blog/tags/go/</link>
-      <pubDate>Sat, 20 Jun 2020 10:41:50 +0300</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/go/</guid>
       <description></description>
     </item>
     
@@ -107,15 +125,6 @@
       <pubDate>Fri, 27 Mar 2020 17:08:04 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/compilers/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[static-analysis]</title>
-      <link>https://quasilyte.dev/blog/tags/static-analysis/</link>
-      <pubDate>Wed, 08 Jan 2020 21:54:02 +0300</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/static-analysis/</guid>
       <description></description>
     </item>
     

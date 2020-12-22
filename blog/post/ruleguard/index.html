@@ -282,7 +282,7 @@ for _, x := range xs { // Copies 2048 bytes
 
 import &quot;github.com/quasilyte/go-ruleguard/dsl/fluent&quot;
 
-func _(m fluent.Matcher) {
+func rangeExprCopy(m fluent.Matcher) {
     m.Match(`for $_, $_ := range $x { $*_ }`,
             `for $_, $_ = range $x { $*_ }`).
             Where(m[&quot;x&quot;].Addressable &amp;&amp; m[&quot;x&quot;].Type.Size &gt;= 128).
@@ -492,6 +492,9 @@ example.go:5:9: ruleguard: can rewrite as xs[0] == ys[0] (gocritic)
             
                 
                 <a href="https://quasilyte.dev/blog/tags/habr-translation">[habr-translation] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/ruleguard">[ruleguard] </a>
             
                 
                 <a href="https://quasilyte.dev/blog/tags/static-analysis">[static-analysis] </a>
