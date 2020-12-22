@@ -240,9 +240,9 @@ func (w lintCallToGC) Visit(node ast.Node) ast.Visitor {
 
 <pre><code class="language-go">package gorules
 
-import &quot;github.com/quasilyte/go-ruleguard/dsl/fluent&quot;
+import &quot;github.com/quasilyte/go-ruleguard/dsl&quot;
 
-func callToGC(m fluent.Matcher) {
+func callToGC(m dsl.Matcher) {
 	m.Match(`runtime.GC()`).Report(`explicit call to the garbage collector`)
 }
 </code></pre>
@@ -280,9 +280,9 @@ for _, x := range xs { // Copies 2048 bytes
 
 <pre><code class="language-go">package gorules
 
-import &quot;github.com/quasilyte/go-ruleguard/dsl/fluent&quot;
+import &quot;github.com/quasilyte/go-ruleguard/dsl&quot;
 
-func rangeExprCopy(m fluent.Matcher) {
+func rangeExprCopy(m dsl.Matcher) {
     m.Match(`for $_, $_ := range $x { $*_ }`,
             `for $_, $_ = range $x { $*_ }`).
             Where(m[&quot;x&quot;].Addressable &amp;&amp; m[&quot;x&quot;].Type.Size &gt;= 128).
@@ -292,9 +292,9 @@ func rangeExprCopy(m fluent.Matcher) {
 }
 </code></pre>
 
-<p>This rule finds all <code>for-range</code> loops which uses both loop variables (only this case leads to unwanted copy). <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Where">Where()</a> requires that iterated expression <code>$x</code> is <a href="https://golang.org/ref/spec#Address_operators">addressable</a> and its size should be at least 128 bytes.</p>
+<p>This rule finds all <code>for-range</code> loops which uses both loop variables (only this case leads to unwanted copy). <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Matcher.Where">Where()</a> requires that iterated expression <code>$x</code> is <a href="https://golang.org/ref/spec#Address_operators">addressable</a> and its size should be at least 128 bytes.</p>
 
-<p><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Report">Report()</a> defines an associated message that should be given to the user if the pattern is matched. <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Suggest">Suggest()</a> specifies a <code>quickfix</code> pattern that can be used by your editor through <a href="https://github.com/golang/tools/tree/master/gopls">gopls</a> (or other Go LSP) or via command-line API if you use <code>-fix</code> parameter (we&rsquo;ll discuss that later in more detail). <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.At">At()</a> binds the warning <strong>and</strong> <code>quickfix</code> location to the specific part of the match. We need that location specification so we rewrite <code>$x</code> to <code>&amp;$x</code> instead of replacing the entire for loop with that.</p>
+<p><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Matcher.Report">Report()</a> defines an associated message that should be given to the user if the pattern is matched. <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Matcher.Suggest">Suggest()</a> specifies a <code>quickfix</code> pattern that can be used by your editor through <a href="https://github.com/golang/tools/tree/master/gopls">gopls</a> (or other Go LSP) or via command-line API if you use <code>-fix</code> parameter (we&rsquo;ll discuss that later in more detail). <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Matcher.At">At()</a> binds the warning <strong>and</strong> <code>quickfix</code> location to the specific part of the match. We need that location specification so we rewrite <code>$x</code> to <code>&amp;$x</code> instead of replacing the entire for loop with that.</p>
 
 <p>Both <code>Report()</code> and <code>Suggest()</code> accept a template-like string that can reference pattern submatches. Predefined variable <code>$$</code> refers to the entire match, like <code>$0</code> in the regular expressions.</p>
 
@@ -354,9 +354,9 @@ rangecopy.go:17:2: return -1
 
 <pre><code class="language-go">package gorules
 
-import &quot;github.com/quasilyte/go-ruleguard/dsl/fluent&quot;
+import &quot;github.com/quasilyte/go-ruleguard/dsl&quot;
 
-func exampleGroup(m fluent.Matcher) {
+func exampleGroup(m dsl.Matcher) {
         // Find potentially incorrect usages of json.Decoder.
         // See http://golang.org/issue/36225
         m.Match(`json.NewDecoder($_).Decode($_)`).
@@ -379,17 +379,17 @@ func exampleGroup(m fluent.Matcher) {
 }
 </code></pre>
 
-<p>If a rule has no explicit <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Report">Report()</a> call, <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Suggest">Suggest()</a> message is used instead.</p>
+<p>If a rule has no explicit <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Matcher.Report">Report()</a> call, <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Matcher.Suggest">Suggest()</a> message is used instead.</p>
 
 <p>Submatch filters can have various property constraints:</p>
 
 <ul>
-<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Var">Var.Pure</a> requires an expression to be side-effect-free.</li>
-<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Var">Var.Const</a> expects an expression to be usable inside a const context</li>
+<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Var">Var.Pure</a> requires an expression to be side-effect-free.</li>
+<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Var">Var.Const</a> expects an expression to be usable inside a const context</li>
 <li>And more&hellip;</li>
 </ul>
 
-<p>For <code>package-qualified</code> type names like <code>fmt.Stringer</code> you need to use <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent#Matcher.Import">Import()</a> method. For convenience reasons, all stdlib packages are imported by default, this is why we don&rsquo;t need to import anything in the examples above.</p>
+<p>For <code>package-qualified</code> type names like <code>fmt.Stringer</code> you need to use <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Matcher.Import">Import()</a> method. For convenience reasons, all stdlib packages are imported by default, this is why we don&rsquo;t need to import anything in the examples above.</p>
 
 <h1 id="quickfix-actions">quickfix actions</h1>
 
@@ -474,7 +474,7 @@ example.go:5:9: ruleguard: can rewrite as xs[0] == ys[0] (gocritic)
 <li><a href="https://go-ruleguard.github.io/by-example/">Ruleguard by example</a> is an example-based tutorial</li>
 <li><a href="https://speakerdeck.com/quasilyte/ruleguard-vs-semgrep-vs-codeql">Ruleguard vs Semgrep vs CodeQL</a></li>
 <li>Recommended rules file example: <a href="https://github.com/quasilyte/go-ruleguard/blob/master/rules.go">rules.go</a></li>
-<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl/fluent">dsl/fluent package docs</a></li>
+<li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl">dsl package docs</a></li>
 <li><a href="https://godoc.org/github.com/quasilyte/go-ruleguard/ruleguard">ruleguard package docs</a></li>
 <li>AST matching engine used in ruleguard: <a href="https://github.com/mvdan/gogrep">mvdan/gogrep</a></li>
 <li><a href="https://medium.com/@vktech/noverify-dynamic-rules-for-static-analysis-8f42859e9253">Dynamic Rules for Static Analysis</a></li>
