@@ -126,7 +126,12 @@ func boolComparison(m dsl.Matcher) {
 
 <h2 id="importing-a-bundle">Importing a bundle</h2>
 
-<p>A package that wants to extend some rule set should import that package and then use its bundle in <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#ImportRules">ImportRules()</a> call:</p>
+<p>To use an external rule set:</p>
+
+<ol>
+<li>Import the containing package</li>
+<li>In <code>init()</code> function, use its <strong>Bundle</strong> variable in <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#ImportRules">ImportRules()</a> call</li>
+</ol>
 
 <pre><code class="language-go">package gorules
 
