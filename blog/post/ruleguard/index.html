@@ -136,7 +136,7 @@
 
 <p><a href="https://github.com/quasilyte/go-ruleguard"><code>go-ruleguard</code></a> is a static analysis tool that includes <strong>zero</strong> inspections by default.</p>
 
-<p>Rule definitions are loaded during the start from a special <code>gorules</code> file which describes bad code patterns in a declarative way. For every such pattern, there is an associated message to be printed if the pattern would match. That file is an extension point and is intended to be edited by the users.</p>
+<p>Rule definitions are loaded during the start from a special ruleguard file which describes bad code patterns in a declarative way. For every such pattern, there is an associated message to be printed if the pattern would match. That file is an extension point and is intended to be edited by the users.</p>
 
 <p>You don&rsquo;t need to re-compile the linter driver (main) program just to register new checks. This is why we can call these rules <a href="https://medium.com/@vktech/noverify-dynamic-rules-for-static-analysis-8f42859e9253">dynamic</a>.</p>
 
@@ -247,7 +247,7 @@ func callToGC(m dsl.Matcher) {
 }
 </code></pre>
 
-<p>In my opinion, this approach is almost as terse as we can get without sacrificing the Go syntax which is useful for us to get tooling support when editing <code>gorules</code>.</p>
+<p>In my opinion, this approach is almost as terse as we can get without sacrificing the Go syntax which is useful for us to get tooling support when editing ruleguard files.</p>
 
 <p>We&rsquo;ll get to the more exciting examples now, but you should already see the difference.</p>
 
@@ -327,7 +327,7 @@ rangecopy.go:12:20: builtins copy can be avoided with &amp;builtins
 
 <p>If we look into <code>rangecopy.go</code> again, we&rsquo;ll see the fixed result, because <code>ruleguard</code> was called with <code>-fix</code> argument.</p>
 
-<p>By the way, simpler rules can be debugged without <code>gorules</code> file:</p>
+<p>By the way, simpler rules can be debugged without ruleguard rules file:</p>
 
 <pre><code>$ ruleguard -c 1 -e 'm.Match(`return -1`)' rangecopy.go
 rangecopy.go:17:2: return -1
@@ -340,15 +340,15 @@ rangecopy.go:17:2: return -1
 
 <p>This option is a little bit weird: default value is <code>-c=-1</code> which means &ldquo;no context lines&rdquo; while <code>-c=0</code> gives you exactly one context line (the matched line itself).</p>
 
-<p>Some more notable features of <code>gorules</code>:</p>
+<p>Some more notable features of the DSL:</p>
 
 <ul>
-<li><a href="https://github.com/quasilyte/go-ruleguard/blob/master/docs/gorules.md#type-pattern-matching">Type templates</a> to match expected types. For example, <code>map[$t]$t</code> describes all maps that have key type identical to the element type and <code>*[$len]$elem</code> matches all pointers to arrays.</li>
-<li>There can be multiple rules inside one function. Functions themselves are called <a href="https://github.com/quasilyte/go-ruleguard/blob/master/docs/gorules.md#rule-group-statements">rule groups</a>.</li>
+<li><a href="https://github.com/quasilyte/go-ruleguard/blob/master/_docs/dsl.md#type-pattern-matching">Type templates</a> to match expected types. For example, <code>map[$t]$t</code> describes all maps that have key type identical to the element type and <code>*[$len]$elem</code> matches all pointers to arrays.</li>
+<li>There can be multiple rules inside one function. Functions themselves are called <a href="https://github.com/quasilyte/go-ruleguard/blob/master/_docs/dsl.md#rule-group-statements">rule groups</a>.</li>
 <li>All rules inside a group are applied one after another, in the order they are defined. The first matched rule makes all remaining rules to be skipped for the matched node. This is needed in cases where patterns are defined with priorities in mind: when you want to rewrite <code>$x=$x+$y</code> to <code>$x+=$y</code> it would be desirable to have a higher priority pattern <code>$x=$x+1</code> that is rewritten to <code>$x++</code> instead of <code>$x+=1</code>.</li>
 </ul>
 
-<p>See more information about the DSL in <a href="https://github.com/quasilyte/go-ruleguard/blob/master/docs/gorules.md">docs/gorules.md</a> file.</p>
+<p>See more information about the DSL in <a href="https://github.com/quasilyte/go-ruleguard/blob/master/_docs/dsl.md">_docs/dsl.md</a> file.</p>
 
 <h1 id="multi-rule-function-example">Multi-rule function example</h1>
 
@@ -555,7 +555,7 @@ example.go:5:9: ruleguard: can rewrite as xs[0] == ys[0] (gocritic)
       
   </section>
 
-		<section class="copyright">&copy; 2020 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+		<section class="copyright">&copy; 2021 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
 	</div>
 </footer>
 
