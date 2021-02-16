@@ -1,7 +1,7 @@
 # Iskander (Alex) Sharipov
 
-**Location**: Unspecified. Mostly interested in remote jobs.  
-**Education**: Bachelor's degree in Computer Science ([Kazan Federal University](https://en.wikipedia.org/wiki/Kazan_Federal_University)).
+**Location**: Unspecified. Mostly interested in remote jobs<br>
+**Education**: Bachelor's degree in Computer Science ([Kazan Federal University](https://en.wikipedia.org/wiki/Kazan_Federal_University))<br>
 
 * [Go](https://github.com/golang/go/commits?author=quasilyte) and [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte) programming languages contributor
 * Maintainer of several<sup>[[1]](https://go-critic.github.io/)</sup> good<sup>[[2]](https://github.com/VKCOM/noverify)</sup> static<sup>[[3]](https://github.com/quasilyte/go-consistent)</sup> analyzers<sup>[[4]](https://github.com/quasilyte/go-ruleguard)</sup>
@@ -46,5 +46,5 @@
 
 I worked with different databases, both relational and non-relational like Neo4j and MongoDB.
 
-**Certificates**: [C](https://certification.mail.ru/certificates/e57a5ec8-6f33-47af-86e4-9faf8623e611/en/), [Java](https://certification.mail.ru/certificates/f43b50a0-b3ab-41ca-8c2e-7a8887284b6f/en/), [Python](https://certification.mail.ru/certificates/66299407-2a6c-44cb-80e7-485297d16668/en/), [C++](https://certification.mail.ru/certificates/d1df8d39-2a0c-466b-b096-247ae2c0f5d1/en/), [PHP](https://certification.mail.ru/certificates/7baee88f-2e9a-4119-8541-088852a73acb/en/), [Ruby](https://certification.mail.ru/certificates/d4899615-fb93-4d93-bbdb-030f1851a03a/en/).  
-**Contacts**: [GitHub](https://github.com/quasilyte), [LinkedIn](https://www.linkedin.com/in/quasilyte), [Twitter](https://twitter.com/quasilyte).
+**Certificates**: [C](https://certification.mail.ru/certificates/e57a5ec8-6f33-47af-86e4-9faf8623e611/en/), [Java](https://certification.mail.ru/certificates/f43b50a0-b3ab-41ca-8c2e-7a8887284b6f/en/), [Python](https://certification.mail.ru/certificates/66299407-2a6c-44cb-80e7-485297d16668/en/), [C++](https://certification.mail.ru/certificates/d1df8d39-2a0c-466b-b096-247ae2c0f5d1/en/), [PHP](https://certification.mail.ru/certificates/7baee88f-2e9a-4119-8541-088852a73acb/en/), [Ruby](https://certification.mail.ru/certificates/d4899615-fb93-4d93-bbdb-030f1851a03a/en/)<br>
+**Contacts**: [GitHub](https://github.com/quasilyte), [LinkedIn](https://www.linkedin.com/in/quasilyte), [Twitter](https://twitter.com/quasilyte)
