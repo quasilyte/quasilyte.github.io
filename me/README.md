@@ -14,7 +14,7 @@
 <table><caption>Working experience (7 years)</caption>
 <tr><td>
   
-  <b>2019-2021</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go) and KPHP compiler team (C++).<br>
+  <b>2019-2021</b> @ <a href="https://vk.com">vk.com</a>. Backend infrastructure (Go) and KPHP compiler team (C++).<br>
   Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + network stack library.<br>
   Worked on the [KPHP](github.com/VKCOM/kphp/) runtime and compiler.<br>
   <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.<br>
