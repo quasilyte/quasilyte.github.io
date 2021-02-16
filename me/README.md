@@ -8,15 +8,15 @@
 * Author of dev tools like [phpgrep](https://github.com/quasilyte/phpgrep) and [go-parsefix](https://github.com/quasilyte/go-parsefix)
 * Skilled in low-level<sup>[[1]](https://github.com/quasilyte/YALWEE)</sup> programming<sup>[[2]](https://github.com/quasilyte/go-jdk)</sup>
 * Open-source enthusiast. Contributed to dozens of projects, maintain a lot of [my own](http://quasilyte.dev/status/)
-* Leader of 2 Go communities in Russia ([Kazan](https://www.meetup.com/GolangKazan/) and [Nizhny Novgorod](https://golang-events-nizhny.github.io/))
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks)
+* Founder of the [GolangKazan](https://www.meetup.com/GolangKazan/) community
 
 <table><caption>Working experience (7 years)</caption>
 <tr><td>
   
   <b>2019-2021</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go) and KPHP compiler team (C++).<br>
   Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + network stack library.<br>
-  Worked on a [KPHP](github.com/VKCOM/kphp/) runtime and compiler.<br>
+  Worked on the [KPHP](github.com/VKCOM/kphp/) runtime and compiler.<br>
   <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.<br>
   Commits: [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte), [NoVerify](https://github.com/VKCOM/noverify/commits?author=quasilyte).<br>
   
