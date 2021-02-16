@@ -3,7 +3,7 @@
 **Location**: Unspecified. Mostly interested in remote jobs.  
 **Education**: Bachelor's degree in Computer Science ([Kazan Federal University](https://en.wikipedia.org/wiki/Kazan_Federal_University)).
 
-* [Go contributor](https://github.com/golang/go/commits?author=quasilyte)
+* [Go](https://github.com/golang/go/commits?author=quasilyte) and [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte) programming languages contributor
 * Maintainer of several<sup>[[1]](https://go-critic.github.io/)</sup> good<sup>[[2]](https://github.com/VKCOM/noverify)</sup> static<sup>[[3]](https://github.com/quasilyte/go-consistent)</sup> analyzers<sup>[[4]](https://github.com/quasilyte/go-ruleguard)</sup>
 * Author of dev tools like [phpgrep](https://github.com/quasilyte/phpgrep) and [go-parsefix](https://github.com/quasilyte/go-parsefix)
 * Skilled in low-level<sup>[[1]](https://github.com/quasilyte/YALWEE)</sup> programming<sup>[[2]](https://github.com/quasilyte/go-jdk)</sup>
@@ -11,12 +11,14 @@
 * Leader of 2 Go communities in Russia ([Kazan](https://www.meetup.com/GolangKazan/) and [Nizhny Novgorod](https://golang-events-nizhny.github.io/))
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks)
 
-<table><caption>Working experience (6 years)</caption>
+<table><caption>Working experience (7 years)</caption>
 <tr><td>
   
-  <b>2019-2020</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go).<br>
+  <b>2019-2021</b> @ <a href="https://vk.com">vk.com</a> (#1 social network in Russia). Backend infrastructure (Go) and KPHP compiler team (C++).<br>
   Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + network stack library.<br>
-  <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.
+  Worked on a [KPHP](github.com/VKCOM/kphp/) runtime and compiler.<br>
+  <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.<br>
+  Commits: [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte), [NoVerify](https://github.com/VKCOM/noverify/commits?author=quasilyte).<br>
   
 </td></tr>
 <tr><td>
