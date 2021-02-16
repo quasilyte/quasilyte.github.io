@@ -5,9 +5,8 @@
 
 * [Go](https://github.com/golang/go/commits?author=quasilyte) and [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte) programming languages contributor
 * Maintainer of several<sup>[[1]](https://go-critic.github.io/)</sup> good<sup>[[2]](https://github.com/VKCOM/noverify)</sup> static<sup>[[3]](https://github.com/quasilyte/go-consistent)</sup> analyzers<sup>[[4]](https://github.com/quasilyte/go-ruleguard)</sup>
-* Author of dev tools like [phpgrep](https://github.com/quasilyte/phpgrep) and [go-parsefix](https://github.com/quasilyte/go-parsefix)
 * Skilled in low-level<sup>[[1]](https://github.com/quasilyte/YALWEE)</sup> programming<sup>[[2]](https://github.com/quasilyte/go-jdk)</sup>
-* Open-source enthusiast. Contributed to dozens of projects, maintain a lot of [my own](http://quasilyte.dev/status/)
+* Open-source enthusiast. Contributed to dozens of projects, maintain a lot of [my own](http://quasilyte.dev/status/) (mostly dev tools like [phpgrep](https://github.com/quasilyte/phpgrep))
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks)
 * Founder of the [GolangKazan](https://www.meetup.com/GolangKazan/) community
 
