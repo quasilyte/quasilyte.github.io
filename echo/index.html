@@ -1,0 +1,12 @@
+<div id="output"></div>
+
+<script>
+window.onload = function() {
+    var outputDiv = document.getElementById("output");
+    var params = new URLSearchParams(window.location.search);
+    var s = params.get("say") || "";
+    if (s) {
+        outputDiv.innerText = s;
+    }
+};
+</script>
