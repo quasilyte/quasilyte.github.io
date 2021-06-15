@@ -17,10 +17,11 @@
       <pubDate>Tue, 15 Jun 2021 00:48:18 +0300</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/single-exit/</guid>
-      <description>tl;dr: You program should probably have only one os.Exit() call, if any.
+      <description>There are other similar articles, like Why you shouldn&amp;rsquo;t use func main in Go. This post addresses the issue from a slightly different angle.
+ tl;dr: You program should probably have only one os.Exit() call, if any.
 That includes all indirect calls: log.Fatal() and any other function that calls os.Exit() at some point.
 If your main looks like this, then this article is for you:
-func main() { x, err := doSomething() defer x.Close() if err != nil { log.Fatalf(&amp;quot;failed to do something: %+v&amp;quot;, err) } y, err := doSomethingElse(x) if err != nil { log.</description>
+func main() { x, err := doSomething() defer x.</description>
     </item>
     
     <item>

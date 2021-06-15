@@ -80,7 +80,11 @@
     
     
     <section class="post-content">
-        <p><code>tl;dr</code>: You program should probably have only <strong>one</strong> <a href="https://golang.org/pkg/os/#Exit">os.Exit()</a> call, if any.</p>
+        <blockquote>
+<p>There are other similar articles, like <a href="https://pace.dev/blog/2020/02/12/why-you-shouldnt-use-func-main-in-golang-by-mat-ryer.html">Why you shouldn&rsquo;t use func main in Go</a>. This post addresses the issue from a slightly different angle.</p>
+</blockquote>
+
+<p><code>tl;dr</code>: You program should probably have only <strong>one</strong> <a href="https://golang.org/pkg/os/#Exit">os.Exit()</a> call, if any.</p>
 
 <p>That includes all indirect calls: <a href="https://golang.org/pkg/log/#Fatal">log.Fatal()</a> and any other function that calls <code>os.Exit()</code> at some point.</p>
 
