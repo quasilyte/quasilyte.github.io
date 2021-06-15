@@ -6,10 +6,22 @@
     <description>Recent content in Posts on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 21 Dec 2020 00:54:25 +0300</lastBuildDate>
+    <lastBuildDate>Tue, 15 Jun 2021 00:48:18 +0300</lastBuildDate>
     
 	<atom:link href="https://quasilyte.dev/blog/post/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A single point of exit</title>
+      <link>https://quasilyte.dev/blog/post/single-exit/</link>
+      <pubDate>Tue, 15 Jun 2021 00:48:18 +0300</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/single-exit/</guid>
+      <description>tl;dr: You program should probably have only one os.Exit() call, if any.
+That includes all indirect calls: log.Fatal() and any other function that calls os.Exit() at some point.
+If your main looks like this, then this article is for you:
+func main() { x, err := doSomething() defer x.Close() if err != nil { log.Fatalf(&amp;quot;failed to do something: %+v&amp;quot;, err) } y, err := doSomethingElse(x) if err != nil { log.</description>
+    </item>
     
     <item>
       <title>ruleguard rules package management</title>

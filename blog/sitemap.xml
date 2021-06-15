@@ -3,20 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://quasilyte.dev/blog/post/single-exit/</loc>
+    <lastmod>2021-06-15T00:48:18+03:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://quasilyte.dev/blog/</loc>
-    <lastmod>2020-12-21T00:54:25+03:00</lastmod>
+    <lastmod>2021-06-15T00:48:18+03:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.dev/blog/post/</loc>
-    <lastmod>2020-12-21T00:54:25+03:00</lastmod>
+    <lastmod>2021-06-15T00:48:18+03:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://quasilyte.dev/blog/tags/</loc>
-    <lastmod>2020-12-21T00:54:25+03:00</lastmod>
+    <lastmod>2021-06-15T00:48:18+03:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://quasilyte.dev/blog/tags/shortread/</loc>
+    <lastmod>2021-06-15T00:48:18+03:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -28,12 +39,6 @@
   
   <url>
     <loc>https://quasilyte.dev/blog/tags/ruleguard/</loc>
-    <lastmod>2020-12-21T00:54:25+03:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>https://quasilyte.dev/blog/tags/shortread/</loc>
     <lastmod>2020-12-21T00:54:25+03:00</lastmod>
     <priority>0</priority>
   </url>
