@@ -1,4 +1,4 @@
-<div id="output"></div>
+<pre id="output"></pre>
 
 <script>
 window.onload = function() {
@@ -6,6 +6,11 @@ window.onload = function() {
     var params = new URLSearchParams(window.location.search);
     var s = params.get("say") || "";
     if (s) {
+        s = s.replaceAll("\\n", "\n");
+        s = s.replaceAll("\n>", "\n");
+        if (s[0] == '>') {
+            s = s.substring(1);
+        }
         outputDiv.innerText = s;
     }
 };
