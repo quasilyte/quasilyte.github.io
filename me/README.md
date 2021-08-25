@@ -24,7 +24,7 @@
   
 </td></tr>
 <tr><td>
-
+  
   <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer (compiler, linker, asm, stdlib, ...)<br>
   <ul>
     <li>Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go (and other missing extensions)</li>
