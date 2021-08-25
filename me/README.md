@@ -13,10 +13,12 @@
 <table><caption>Working experience (~7 years)</caption>
 <tr><td>
   
-  <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go).<br>
-  Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + network stack library.<br>
-  Worked on the <a href="github.com/VKCOM/kphp/">KPHP</a> runtime and compiler.<br>
-  <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer. Also worked with <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>.<br>
+  <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)
+  * <a href="github.com/VKCOM/kphp/">KPHP</a> runtime and compiler.
+  * <a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer
+  * Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + networking stack library
+  * <a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a>
+
   Commits: <a href="https://github.com/VKCOM/kphp/commits?author=quasilyte">KPHP</a>, <a href="https://github.com/VKCOM/noverify/commits?author=quasilyte">NoVerify</a>.<br>
   
 </td></tr>
