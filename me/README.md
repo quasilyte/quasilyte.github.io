@@ -40,8 +40,8 @@
   <b>2017</b> @ DataArmor. C++ backend developer.
   <br>
   <ul>
-    <li>ANTLR-based SQL parsing<li>
-    <li>Database reverse-proxies, query security issues scans</li>
+    <li>ANTLR-based SQL parsing</li>
+    <li>Database reverse-proxies, query security issue scans</li>
   </ul>
   <br>
   
