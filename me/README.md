@@ -13,7 +13,7 @@
 <table><caption>Working experience (~7 years)</caption>
 <tr><td>
   
-  <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)
+  <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)<br>
   <ul>
     <li><a href="github.com/VKCOM/kphp/">KPHP</a> runtime and compiler.</li>
     <li><a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer</li>
