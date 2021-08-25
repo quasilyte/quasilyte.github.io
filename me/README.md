@@ -26,7 +26,7 @@
 </td></tr>
 <tr><td>
   
-  <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer (compiler, linker, asm, stdlib)
+  <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer
   <br>
   <ul>
     <li>Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go (and other missing extensions)</li>
@@ -42,6 +42,7 @@
   <br>
   Worked on a database firewall that implemented several database protocols and acted<br>
   like a reverse-proxy, bringing an additional layer of security for the users.
+  <br>
   
 </td></tr>
 <tr><td>
