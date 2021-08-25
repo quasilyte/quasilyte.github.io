@@ -10,7 +10,7 @@
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks); also organized several [workshops](https://github.com/quasilyte/talks#workshops) (more than listed there)
 * Founder of the [GolangKazan](https://www.meetup.com/GolangKazan/) community
 
-<table><caption>Working experience (7 years)</caption>
+<table><caption>Working experience (~7 years)</caption>
 <tr><td>
   
   <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go).<br>
