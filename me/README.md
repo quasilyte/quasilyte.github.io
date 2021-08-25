@@ -43,7 +43,6 @@
     <li>ANTLR-based SQL parsing</li>
     <li>Database reverse-proxies, query security issue scans</li>
   </ul>
-  <br>
   
 </td></tr>
 <tr><td>
