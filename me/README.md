@@ -15,7 +15,7 @@
   
   <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)<br>
   <ul>
-    <li><a href="github.com/VKCOM/kphp/">KPHP</a> runtime and compiler.</li>
+    <li><a href="github.com/VKCOM/kphp/">KPHP</a> runtime and compiler</li>
     <li><a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer</li>
     <li>Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + networking stack library</li>
     <li><a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a></li>
@@ -27,7 +27,7 @@
 
   <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer (compiler, linker, asm, stdlib, ...).<br>
   <ul>
-    <li>Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go (and other missing extensions).</li>
+    <li>Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go (and other missing extensions)</li>
     <li>Several compiler optimizations (escape analysis, inliner, SSA backend)</li>
   </ul>
   Commits: <a href="https://github.com/golang/go/commits?author=quasilyte">golang/go</a>, <a href="https://github.com/golang/arch/commits?author=quasilyte">golang/arch</a>, <a href="https://github.com/golang/tools/commits?author=quasilyte">golang/tools</a>
