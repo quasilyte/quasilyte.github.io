@@ -39,9 +39,10 @@
   
   <b>2017</b> @ DataArmor. C++ backend developer.
   <br>
-  <br>
-  Worked on a database firewall that implemented several database protocols and acted<br>
-  like a reverse-proxy, bringing an additional layer of security for the users.
+  <ul>
+    <li>ANTLR-based SQL parsing<li>
+    <li>Database reverse-proxies, query security issues scans</li>
+  </ul>
   <br>
   
 </td></tr>
