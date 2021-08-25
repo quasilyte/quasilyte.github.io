@@ -24,11 +24,12 @@
   
 </td></tr>
 <tr><td>
-  
+
   <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer (compiler, linker, asm, stdlib, ...).<br>
-  Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go.<br>
-  Several compiler optimizations (worked on escape analysis, inliner, SSA backend).<br>
-  Fixed some bugs in the toolchain (x86 assembler and linker, mostly).<br>
+  <ul>
+    <li>Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go (and other missing extensions).</li>
+    <li>Several compiler optimizations (escape analysis, inliner, SSA backend)</li>
+  </ul>
   Commits: <a href="https://github.com/golang/go/commits?author=quasilyte">golang/go</a>, <a href="https://github.com/golang/arch/commits?author=quasilyte">golang/arch</a>, <a href="https://github.com/golang/tools/commits?author=quasilyte">golang/tools</a>.
   
 </td></tr>
