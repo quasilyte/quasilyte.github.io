@@ -13,8 +13,7 @@
 <table><caption>Working experience (~7 years)</caption>
 <tr><td>
   
-  <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)
-  <br>
+  <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)<br>
   <ul>
     <li><a href="https://github.com/VKCOM/kphp/">KPHP</a> runtime and compiler</li>
     <li><a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer</li>
@@ -26,8 +25,7 @@
 </td></tr>
 <tr><td>
   
-  <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer
-  <br>
+  <b>2017-2018</b> @ <a href="https://github.com/intel-go">Intel</a>. Go toolchain developer<br>
   <ul>
     <li>Added <a href="https://github.com/golang/go/wiki/AVX512">AVX-512</a> support to Go (and other missing extensions)</li>
     <li>Several compiler optimizations (escape analysis, inliner, SSA backend)</li>
@@ -37,8 +35,7 @@
 </td></tr>
 <tr><td>
   
-  <b>2017</b> @ DataArmor. C++ backend developer.
-  <br>
+  <b>2017</b> @ DataArmor. C++ backend developer<br>
   <ul>
     <li>ANTLR-based SQL parsing</li>
     <li>Database reverse-proxies, query security issue scans</li>
