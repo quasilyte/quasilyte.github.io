@@ -6,7 +6,7 @@ import (
 	"go/token"
 	"syscall/js"
 
-	"github.com/quasilyte/gogrep-corpus-query/internal/gogrep"
+	"github.com/quasilyte/gocorpus/internal/gogrep"
 )
 
 func main() {

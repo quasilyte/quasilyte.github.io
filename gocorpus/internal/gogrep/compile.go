@@ -5,7 +5,7 @@ import (
 	"go/ast"
 	"go/token"
 
-	"github.com/quasilyte/gogrep-corpus-query/internal/stdinfo"
+	"github.com/quasilyte/gocorpus/internal/stdinfo"
 )
 
 type compileError string

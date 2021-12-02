@@ -1,6 +1,13 @@
-.PHONY: regexp-lint gophers-and-dragons
+.PHONY: regexp-lint gophers-and-dragons gocorpus
 
 #		wasm-opt main.wasm -Oz -o main.wasm && \
+
+gocorpus:
+	rm -rf gocorpus/
+	mkdir -p gocorpus && \
+		git clone https://github.com/quasilyte/gocorpus.git && \
+		cd gocorpus && \
+		make all
 
 gophers-and-dragons:
 	rm -rf gophers-and-dragons/

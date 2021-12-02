@@ -5,7 +5,7 @@ import (
 	"go/token"
 	"go/types"
 
-	"github.com/quasilyte/gogrep-corpus-query/internal/nodetag"
+	"github.com/quasilyte/gocorpus/internal/nodetag"
 )
 
 func IsEmptyNodeSlice(n ast.Node) bool {

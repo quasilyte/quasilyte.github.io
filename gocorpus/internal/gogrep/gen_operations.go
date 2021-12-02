@@ -211,7 +211,7 @@ var fileTemplate = template.Must(template.New("operations.go").Parse(`// Code ge
 package gogrep
 
 import (
-	"github.com/quasilyte/gogrep-corpus-query/internal/nodetag"
+	"github.com/quasilyte/gocorpus/internal/nodetag"
 )
 
 //go:generate stringer -type=operation -trimprefix=op

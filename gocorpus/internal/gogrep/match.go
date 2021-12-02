@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/go-toolsmith/astequal"
-	"github.com/quasilyte/gogrep-corpus-query/internal/stdinfo"
+	"github.com/quasilyte/gocorpus/internal/stdinfo"
 )
 
 type matcher struct {

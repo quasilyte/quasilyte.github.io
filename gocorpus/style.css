@@ -9,6 +9,9 @@ pre {
     margin-bottom: 8px !important;
     max-width: 976px;
 }
+button {
+    width: 64px !important;
+}
 .blue-text {
     color:#1e90ff;
 }
@@ -42,4 +45,8 @@ pre {
     height: 100%;
     padding: 0;
     white-space: pre;
+}
+#search-results {
+    width: 1024px;
+    display: inline-block;
 }

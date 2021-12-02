@@ -1,4 +1,4 @@
-module github.com/quasilyte/gogrep-corpus-query
+module github.com/quasilyte/gocorpus
 
 go 1.18
 
