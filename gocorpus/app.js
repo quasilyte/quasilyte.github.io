@@ -148,10 +148,13 @@ var App;
                 then(b => resolve({ repo: repo, archive: new Uint8Array(b) }));
         }));
     }
-    function loadRecursive(toLoad) {
+    function loadRecursive(toLoad, onFinish) {
         if (toLoad.length == 0) {
             appState.busy = false;
             updateStatus('ready');
+            if (onFinish) {
+                onFinish();
+            }
             return;
         }
         let repo = toLoad.pop();
@@ -172,7 +175,7 @@ var App;
             appState.corpus.set(repo.Name, repoData);
             let $checkbox = (document.getElementById(`repository-${repo.Name}`));
             $checkbox.parentElement.classList.add('blue-text');
-            loadRecursive(toLoad);
+            loadRecursive(toLoad, onFinish);
         });
     }
     function getSelectedRepos() {
@@ -186,10 +189,7 @@ var App;
         }
         return selected;
     }
-    function loadRepositories() {
-        if (appState.busy) {
-            return;
-        }
+    function forcedLoadRepositories(onFinish = function () { }) {
         appState.busy = true;
         let toLoad = [];
         for (let repo of getSelectedRepos()) {
@@ -197,7 +197,25 @@ var App;
                 toLoad.push(repo);
             }
         }
-        loadRecursive(toLoad);
+        loadRecursive(toLoad, onFinish);
+    }
+    function loadRepositories() {
+        if (appState.busy) {
+            return;
+        }
+        forcedLoadRepositories();
+    }
+    function allReposSelected() {
+        return getSelectedRepos().length === appState.metadata.Repositories.length;
+    }
+    function updateCheckallButton(unselect) {
+        let $selectAll = document.getElementById('selectall-button');
+        if (unselect) {
+            $selectAll.innerText = 'Unselect all';
+        }
+        else {
+            $selectAll.innerText = 'Select all';
+        }
     }
     function setupUI() {
         var $corpusSelection = document.getElementById('corpus-selection');
@@ -224,6 +242,22 @@ var App;
         $loadRepos.onclick = function () {
             loadRepositories();
         };
+        let $selectAll = document.getElementById('selectall-button');
+        $selectAll.onclick = function () {
+            let allSelected = allReposSelected();
+            let value = !allSelected;
+            for (let repo of appState.metadata.Repositories) {
+                let $checkbox = (document.getElementById(`repository-${repo.Name}`));
+                $checkbox.checked = value;
+            }
+            updateCheckallButton(value);
+        };
+        for (let repo of appState.metadata.Repositories) {
+            let $checkbox = (document.getElementById(`repository-${repo.Name}`));
+            $checkbox.onchange = function () {
+                updateCheckallButton(allReposSelected());
+            };
+        }
         var $run = document.getElementById('run-button');
         var $results = document.getElementById('search-results');
         $results.innerHTML = '';
@@ -246,11 +280,13 @@ var App;
             for (let repo of repos) {
                 appState.filesTotal += repo.Files.length;
             }
-            let $progress = document.getElementById('search-progress');
-            $progress.innerHTML = '';
-            $run.innerText = 'Stop';
-            appState.running = true;
-            runQueryRecursive(pattern, repos);
+            forcedLoadRepositories(() => {
+                let $progress = document.getElementById('search-progress');
+                $progress.innerHTML = '';
+                $run.innerText = 'Stop';
+                appState.running = true;
+                runQueryRecursive(pattern, repos);
+            });
         };
     }
     function runApp(wasm) {
