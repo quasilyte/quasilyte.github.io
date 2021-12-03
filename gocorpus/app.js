@@ -135,6 +135,10 @@ var App;
             });
             if (result.err) {
                 console.error(`grepping ${f.name}: ${result.err}`);
+                let canContinue = result.err.includes('parse Go:');
+                if (canContinue) {
+                    return true;
+                }
                 appState.runError = result.err;
                 appState.running = false;
                 return false;
