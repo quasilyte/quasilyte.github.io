@@ -114,6 +114,16 @@ func (cl *compiler) compilePatternVarMethodCallExpr(root *ast.CallExpr, varname 
 		return &Expr{Op: OpVarIsConst, Str: varname}, nil
 	case "IsPure":
 		return &Expr{Op: OpVarIsPure, Str: varname}, nil
+	case "IsStringLit":
+		return &Expr{Op: OpVarIsStringLit, Str: varname}, nil
+	case "IsRuneLit":
+		return &Expr{Op: OpVarIsRuneLit, Str: varname}, nil
+	case "IsIntLit":
+		return &Expr{Op: OpVarIsIntLit, Str: varname}, nil
+	case "IsFloatLit":
+		return &Expr{Op: OpVarIsFloatLit, Str: varname}, nil
+	case "IsComplexLit":
+		return &Expr{Op: OpVarIsComplexLit, Str: varname}, nil
 	default:
 		return nil, fmt.Errorf("compile %s method call: unsupported %s method", varname, method.Name)
 	}
@@ -165,6 +175,20 @@ func (cl *compiler) compileUnaryExpr(root *ast.UnaryExpr) (*Expr, error) {
 
 func (cl *compiler) compileBinaryExpr(root *ast.BinaryExpr) (*Expr, error) {
 	switch root.Op {
+	case token.LOR:
+		isTopLevel := cl.isTopLevel
+		cl.isTopLevel = false
+		lhs, err := cl.CompileExpr(root.X)
+		if err != nil {
+			return nil, err
+		}
+		rhs, err := cl.CompileExpr(root.Y)
+		if err != nil {
+			return nil, err
+		}
+		cl.isTopLevel = isTopLevel
+		return &Expr{Op: OpOr, Args: []*Expr{lhs, rhs}}, nil
+
 	case token.LAND:
 		lhs, err := cl.CompileExpr(root.X)
 		if err != nil {

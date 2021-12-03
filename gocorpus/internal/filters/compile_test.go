@@ -53,6 +53,37 @@ func TestCompile(t *testing.T) {
 			input: `$x.IsPure()`,
 			expr:  `(VarIsPure "x")`,
 		},
+		{
+			input: `$x.IsPure() || $y.IsPure()`,
+			expr:  `(Or (VarIsPure "x") (VarIsPure "y"))`,
+		},
+
+		{
+			input: `$x.IsStringLit()`,
+			expr:  `(VarIsStringLit "x")`,
+		},
+		{
+			input: `$x.IsRuneLit()`,
+			expr:  `(VarIsRuneLit "x")`,
+		},
+		{
+			input: `$x.IsIntLit()`,
+			expr:  `(VarIsIntLit "x")`,
+		},
+		{
+			input: `$x.IsFloatLit()`,
+			expr:  `(VarIsFloatLit "x")`,
+		},
+		{
+			input: `$x.IsComplexLit()`,
+			expr:  `(VarIsComplexLit "x")`,
+		},
+
+		{
+			input: `!file.IsAutogen() && (!$x.IsPure() || !$y.IsPure())`,
+			expr:  `(Or (Not (VarIsPure "x")) (Not (VarIsPure "y")))`,
+			info:  `AutogenFileCond=false`,
+		},
 
 		{
 			input: `(file.IsAutogen()) && !file.IsTest()`,
