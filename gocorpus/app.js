@@ -151,6 +151,7 @@ var App;
                 pattern: pattern,
                 filter: filter,
                 fileFlags: fileInfo.Flags,
+                fileMaxDepth: fileInfo.MaxDepth,
                 targetName: f.name,
                 targetSrc: f.contents,
             });
