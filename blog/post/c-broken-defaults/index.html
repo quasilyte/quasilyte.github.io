@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,118 +78,92 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#state-of-the-c">State of the C</a></li><br>
-<li><a href="#mutability-defaults">Mutability defaults</a></li><br>
-<li><a href="#tag-names">Tag names</a></li><br>
-<li><a href="#multiple-variable-declarations">Multiple variable declarations</a></li><br>
-<li><a href="#builtin-types">Builtin types</a></li><br>
-<li><a href="#array-decay">Array decay</a></li><br>
-<li><a href="#aliasing-defaults">Aliasing defaults</a></li><br>
-<li><a href="#statement-orientation">Statement-orientation</a></li><br>
-<li><a href="#constness-erasure">Constness erasure</a></li><br>
-<li><a href="#missing-features">Missing features</a></li><br>
-<li><a href="#to-be-continued">To be continued</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#state-of-the-c">State of the C</a></li><br>
+    <li><a href="#mutability-defaults">Mutability defaults</a></li><br>
+    <li><a href="#tag-names">Tag names</a></li><br>
+    <li><a href="#multiple-variable-declarations">Multiple variable declarations</a></li><br>
+    <li><a href="#builtin-types">Builtin types</a></li><br>
+    <li><a href="#array-decay">Array decay</a></li><br>
+    <li><a href="#aliasing-defaults">Aliasing defaults</a></li><br>
+    <li><a href="#statement-orientation">Statement-orientation</a></li><br>
+    <li><a href="#constness-erasure">Constness erasure</a></li><br>
+    <li><a href="#missing-features">Missing features</a></li><br>
+    <li><a href="#to-be-continued">To be continued</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="state-of-the-c">State of the C</h2>
-
+        <h2 id="state-of-the-c">State of the C</h2>
 <p>C fits its niche quite well.
 If you want relatively simple, ubiquitous and efficient language
 there is no much room for selection.</p>
-
 <p>It &ldquo;evolves so slowly&rdquo; because it is already quite complete.
 Most of the parts that can be improved without making C
 yet another bloated language require breaking changes.</p>
-
 <blockquote>
 <p>C could be designed better if we accept older code invalidation.</p>
 </blockquote>
-
 <p>&hellip;but in reallity it is impossible to achieve.
 If you are using C, you must know many of its quirks,
 use external static code analyzers and read carefully
 a lots of
 <a href="https://www.securecoding.cert.org/confluence/display/c/SEI+CERT+C+Coding+Standard">safe coding standards</a>.</p>
-
 <p>This post describes subjects that I believe should be
 changed in order to get a better language.
 Note that C is mostly unsafe by design;
 it trusts programmer nearly as much as assemblers do.
 The main target is not making C higher level, but rather
 reconsider the defaults and make best practice enforcements easier.</p>
-
 <h2 id="mutability-defaults">Mutability defaults</h2>
-
 <p>Programming language should force you to think about
 your code more thoroughly. Whenever there is a choice,
 the most safe and strict choice should be favoured for a default.</p>
-
 <p>Mutable state must have explicit eye-catcher.
 We generally should care more about marking potentially
 tricky code rather than const-correct code
 <a href="https://www.rust-lang.org">Rust language</a> also takes this approach).</p>
-
 <blockquote>
 <p>All variables and aggregate type members
 should be immutable by default.</p>
 </blockquote>
-
-<pre><code class="language-c">typedef struct Str Str;
-struct Str {
-  mut char* data;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">typedef</span> <span style="color:#66d9ef">struct</span> Str Str;
+<span style="color:#66d9ef">struct</span> Str {
+  mut <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> data;
   mut size_t len;
 };
 
-// Both arguments are &quot;const Str*&quot;
-bool str_eq(Str*, Str*); 
+<span style="color:#75715e">// Both arguments are &#34;const Str*&#34;
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">bool</span> <span style="color:#a6e22e">str_eq</span>(Str<span style="color:#f92672">*</span>, Str<span style="color:#f92672">*</span>); 
 
-// Mutable pointers marked so explicitly
-void str_copy(Str* dst, mut Str* src);
-</code></pre>
-
-<p>Compiler should warn if the variable marked as mutable,
+<span style="color:#75715e">// Mutable pointers marked so explicitly
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">str_copy</span>(Str<span style="color:#f92672">*</span> dst, mut Str<span style="color:#f92672">*</span> src);
+</code></pre></div><p>Compiler should warn if the variable marked as mutable,
 but needs not to be.</p>
-
 <h2 id="tag-names">Tag names</h2>
-
 <p>There could be a rationale for separate &ldquo;namespace&rdquo; for user-defined
 types like structs, unions and enums.
 C has no real namespaces, so if we put everything into single
 symbol table it will bloat and compilation time can increase
 marginally.</p>
-
 <p>Everything is fine except that 90% of people instantly typedef
 anonymous structs. Or, if they want to be able to forward
 declare it inside other header,
 <a href="http://www.embedded.com/electronics-blogs/programming-pointers/4024450/Tag-vs-Type-Names">smarter typedef is done</a>.
 This leads us to registering same symbol inside two tables.
 Not only this is not convenient, it is also inefficient.</p>
-
 <blockquote>
 <p>Tag symbols for type names = mistake.</p>
 </blockquote>
-
 <h2 id="multiple-variable-declarations">Multiple variable declarations</h2>
-
 <p>Multiple declarations on the same line do not improve code readability.
 C is not about typing fewer keywords =&gt; no real gain in using this syntax.
 They can also be a source of confusion for amateurs (when they define
 both pointer and non-pointer variables of type T).</p>
-
 <blockquote>
 <p>Declaring multiple variables in one statement should be forbidden.</p>
 </blockquote>
-
 <h2 id="builtin-types">Builtin types</h2>
-
 <p>More builtin primitive types would be convenient.
 Language would feel more coherent if things like size_t,
 int32_t and bool were builtin.
@@ -198,108 +172,82 @@ useful primitive types: &ldquo;stddef.h&rdquo; for size_t,
 &ldquo;stdint.h&rdquo; for fixed width types and &ldquo;stdbool.h&rdquo; to
 avoid ugly _Bool. Predefined NULL of special type
 would be great as well, but this is C++-ism.</p>
-
 <p>Talking about breaking existing code, I prefer int32 as a type name
 opposed to int32_t.</p>
-
 <blockquote>
 <p>Most useful primitive types should be builtin.</p>
 </blockquote>
-
 <h2 id="array-decay">Array decay</h2>
-
 <p>If you want to pass an &ldquo;array&rdquo; of known length,
 <a href="http://www.drdobbs.com/architecture-and-design/cs-biggest-mistake/228701625">C provides no help for that</a>.
 You can try something like <a href="http://libcello.org/learn/a-fat-pointer-library">Cello</a>
 to fix this, but then you lose an ability
 to pass sub-arrays without copying (address plus offset).</p>
-
 <p>Most projects I have ever seen define some kind of &ldquo;fat pointer&rdquo;
 structure. That is, structure of <code>{void*, size_t}</code>.
 The problem is: this structure is vital, universal and useful,
 but it is missing from the standard library =&gt;
 every project defines their own fat pointer.
 I demand &ldquo;stdarray.h&rdquo;.</p>
-
 <p>Every homebrew array is incompatible with someone else&rsquo;s array.
 We end up with two kinds of APIs as a result:
 one which expects two separate arguments
 for data and its length and another which exposes custom array type.</p>
-
 <p>As an addition, you will most likely need <code>{void*, size_t, size_t}</code>
 structure to express fixed-size container that is partially filled.
 This is essential to build extendable arrays (C++ calls them vectors).
 There are many useful fundamental data structures, but we need
 to start from something. Array seems like a good and easy first step.</p>
-
 <blockquote>
 <p>Arrays with length must be better supported by the language.</p>
 </blockquote>
-
 <h2 id="aliasing-defaults">Aliasing defaults</h2>
-
 <p>Additional pointer qualifier is needed to make aliasing
 possible only with explicit marker.
 If scope has more than one non-const <code>T*</code> then it
 should be marked either <code>alias</code> or <code>restrict</code>.
 Abscence of qualifier is an error.</p>
-
 <p>If pointers have different type, <code>restrict</code> is
 implied, but this can be redefined by explicit <code>alias</code>.
 This is needed to avoid breaking of
 <a href="http://blog.regehr.org/archives/1307">strict aliasing</a> rules.</p>
-
 <p>Alias takes one or more arguments that specify what
 pointer could be aliased. If <code>a</code> aliases <code>b</code>, then
 <code>b</code> gets implicit <code>alias(a)</code> qualifier.</p>
-
 <blockquote>
 <p>There should be more &ldquo;restrict&rdquo;
 and const pointers than mutable and/or aliased pointers.</p>
 </blockquote>
-
-<pre><code class="language-c">void copy(char* restrict dst, char* restrict src);
-void move(char* alias(src) dst, char* src);
-</code></pre>
-
-<pre><code class="language-c">// If we specify dst as const, no need to mark
-// other pointer as restrict or alias.
-void copy(const char* dst, char* src);
-// But in case of move we want to pass aliased 
-// pointers sometimes.
-void move(const alias(src) char* dst, char* src);
-</code></pre>
-
-<p><code>alias</code> is choosed as a keyword because GCC already have
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">copy</span>(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">restrict</span> dst, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> <span style="color:#66d9ef">restrict</span> src);
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">move</span>(<span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> alias(src) dst, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src);
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// If we specify dst as const, no need to mark
+</span><span style="color:#75715e">// other pointer as restrict or alias.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">copy</span>(<span style="color:#66d9ef">const</span> <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dst, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src);
+<span style="color:#75715e">// But in case of move we want to pass aliased 
+</span><span style="color:#75715e">// pointers sometimes.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">move</span>(<span style="color:#66d9ef">const</span> alias(src) <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> dst, <span style="color:#66d9ef">char</span><span style="color:#f92672">*</span> src);
+</code></pre></div><p><code>alias</code> is choosed as a keyword because GCC already have
 similar attribute
 <a href="https://gcc.gnu.org/onlinedocs/gcc-4.0.2/gcc/Type-Attributes.html">may_alias</a>.</p>
-
 <h2 id="statement-orientation">Statement-orientation</h2>
-
 <p>Expression-oriented languages are simply put, more expressive.
 There is no runtime cost because compiler can easily determine
 whenever particular construct is used inside lvalue context.</p>
-
 <blockquote>
 <p>Expression-oriented is better than statement-oriented.</p>
 </blockquote>
-
 <p>But there is an important exception:</p>
-
 <blockquote>
 <p>Assignments should be statements, not expressions.</p>
 </blockquote>
-
-<pre><code class="language-c">void f(ErrorCode code) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#66d9ef">void</span> <span style="color:#a6e22e">f</span>(ErrorCode code) {
   puts(switch_expr (code) {
-    case E_FOO: &quot;foo error!&quot;;
-    case E_BAR: &quot;bar error!&quot;;
-    default: &quot;unknown error!&quot;;
+    <span style="color:#66d9ef">case</span> E_FOO: <span style="color:#e6db74">&#34;foo error!&#34;</span>;
+    <span style="color:#66d9ef">case</span> E_BAR: <span style="color:#e6db74">&#34;bar error!&#34;</span>;
+    <span style="color:#66d9ef">default</span><span style="color:#f92672">:</span> <span style="color:#e6db74">&#34;unknown error!&#34;</span>;
   });
 }
-</code></pre>
-
-<p>One can argue that you can define separate function which
+</code></pre></div><p>One can argue that you can define separate function which
 uses same switch, but returns necessary value.
 This helps to avoid ugly &ldquo;break&rdquo;, but introduces a new function.
 Other solution is to use
@@ -308,24 +256,18 @@ When formatted properly, it emulates &ldquo;case&rdquo; expression well.
 Too bad I have yet to see a compiler that checks controlling
 expressions to be in sequential order (like enum constants)
 to perform optimizations akin to switch.</p>
-
 <h2 id="constness-erasure">Constness erasure</h2>
-
 <p>In modern code, casting away cv-qualifier is almost always a bad idea.
 Potentially, it can lead to undefined behavior.
 As long as const can be casted away, compiler can not make
 strong assumptions about it. Again, this affects both hypothetical
 perfomance and overall language safety.</p>
-
 <blockquote>
 <p>It should be impossible to cast away const quallifiers.</p>
 </blockquote>
-
 <h2 id="missing-features">Missing features</h2>
-
 <p>This section briefly describes controversial features
 from my wishlist. Completely optional things.</p>
-
 <p>Strict/strong typedefs were proposed for C++ more than once now.
 Check <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3515.pdf">this document</a>.
 C could benefit from type-checked typedefs,
@@ -333,11 +275,8 @@ but it can also lead to code pollution with casts if
 used wildly. If you interested in making C code more
 reliable via types, try
 <a href="http://www.cs.umd.edu/~jfoster/cqual/">CQual</a> tool.</p>
-
 <h2 id="to-be-continued">To be continued</h2>
-
 <p>I have not yet covered:</p>
-
 <ul>
 <li>dumb preprocessor;</li>
 <li>ambigious and clumsy syntax;</li>
@@ -345,9 +284,7 @@ reliable via types, try
 at compile time;</li>
 <li>permitted duplicates in enum values;</li>
 </ul>
-
 <p>&hellip;and some other things I dislike in C.</p>
-
 <p>Updates are not promised, but possible.</p>
 
     </section>

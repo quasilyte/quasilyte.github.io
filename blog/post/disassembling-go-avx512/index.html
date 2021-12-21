@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,167 +78,121 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#the-problem">The problem</a></li><br>
-<li><a href="#1-system-objdump-over-binary">1. System objdump over binary</a></li><br>
-<li><a href="#2-system-objdump-over-shellcode">2. System objdump over shellcode</a></li><br>
-<li><a href="#3-intel-xed-cli">3. Intel XED CLI</a></li><br>
-<li><a href="#prefix-only-disassembling">Prefix-only disassembling</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#the-problem">The problem</a></li><br>
+    <li><a href="#1-system-objdump-over-binary">1. System objdump over binary</a></li><br>
+    <li><a href="#2-system-objdump-over-shellcode">2. System objdump over shellcode</a></li><br>
+    <li><a href="#3-intel-xed-cli">3. Intel XED CLI</a></li><br>
+    <li><a href="#prefix-only-disassembling">Prefix-only disassembling</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="the-problem">The problem</h2>
-
-<p>Go 1.11 got updated assembler that supports AVX-512, but disassembler is left unchanged.<br />
+        <h2 id="the-problem">The problem</h2>
+<p>Go 1.11 got updated assembler that supports AVX-512, but disassembler is left unchanged.<br>
 In other words, <code>go tool asm</code> speaks AVX-512, <code>go tool objdump</code> does not.</p>
-
 <p>Suppose we have this <code>avx.s</code> file:</p>
-
-<pre><code class="language-x86asm">TEXT ·avxCheck(SB), 0, $0
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">TEXT ·avxCheck(SB), 0, $0
         VPOR X0, X1, X2             //; AVX1
         VPOR Y0, Y1, Y2             //; AVX2
         VPORD.BCST (DX), Z1, K2, Z2 //; AVX-512
         RET
-</code></pre>
-
-<p>You will be surprised after assemble+disassemble attempt:</p>
-
-<pre><code class="language-bash">$ go tool asm avx.s
+</code></pre><p>You will be surprised after assemble+disassemble attempt:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go tool asm avx.s
 $ go tool objdump avx.o
 
-TEXT ·avxCheck(SB) gofile..$GOROOT/avx.s
+TEXT ·avxCheck<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span> gofile..$GOROOT/avx.s
   avx.s:2       0xb7            c5f1ebd0        JMP 0x8b
   avx.s:3       0xbb            c5f5ebd0        JMP 0x8f
-  avx.s:4       0xbf            62              ?
+  avx.s:4       0xbf            <span style="color:#ae81ff">62</span>              ?
   avx.s:4       0xc0            f1              ICEBP
   avx.s:4       0xc1            755a            JNE 0x11d
   avx.s:4       0xc3            eb12            JMP 0xd7
   avx.s:5       0xc5            c3              RET
-</code></pre>
-
-<p>Rest of this article described how to overcome this situation.</p>
-
+</code></pre></div><p>Rest of this article described how to overcome this situation.</p>
 <h2 id="1-system-objdump-over-binary">1. System objdump over binary</h2>
-
 <p>System <a href="https://linux.die.net/man/1/objdump">objdump</a> can&rsquo;t handle Go object
 files as they are not ELF library files (<code>e_type=1</code>) but rather internal to Go wire format.</p>
-
-<pre><code class="language-bash">$ objdump -D avx.o
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ objdump -D avx.o
 
 objdump: avx.o: File format not recognized
-</code></pre>
-
-<p>We can make it work though.<br />
+</code></pre></div><p>We can make it work though.<br>
 To do so, we need to build executable that <code>objdump</code> can understand.</p>
-
 <p>First off, we add <code>main.go</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">avxCheck</span>()
 
-func avxCheck()
-
-func main() {
-    avxCheck()
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">avxCheck</span>()
 }
-</code></pre>
+</code></pre></div><p>It&rsquo;s now possible to build <code>avxCheck</code> along with main package.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go build -o avxcheck .
 
-<p>It&rsquo;s now possible to build <code>avxCheck</code> along with main package.</p>
-
-<pre><code class="language-bash">go build -o avxcheck .
-
-$ objdump -D avxcheck | sed '/&lt;main.avxCheck&gt;:/,/^$/!d'
+$ objdump -D avxcheck | sed <span style="color:#e6db74">&#39;/&lt;main.avxCheck&gt;:/,/^$/!d&#39;</span>
 
 000000000044e580 &lt;main.avxCheck&gt;:
   44e580:   c5 f1 eb d0             vpor   %xmm0,%xmm1,%xmm2
   44e584:   c5 f5 eb d0             vpor   %ymm0,%ymm1,%ymm2
-  44e588:   62 f1 75 5a eb 12       vpord  (%rdx){1to16},%zmm1,%zmm2{%k2}
+  44e588:   <span style="color:#ae81ff">62</span> f1 <span style="color:#ae81ff">75</span> 5a eb <span style="color:#ae81ff">12</span>       vpord  <span style="color:#f92672">(</span>%rdx<span style="color:#f92672">){</span>1to16<span style="color:#f92672">}</span>,%zmm1,%zmm2<span style="color:#f92672">{</span>%k2<span style="color:#f92672">}</span>
   44e58e:   c3                      retq
   44e58f:   cc                      int3
-</code></pre>
-
-<h2 id="2-system-objdump-over-shellcode">2. System objdump over shellcode</h2>
-
+</code></pre></div><h2 id="2-system-objdump-over-shellcode">2. System objdump over shellcode</h2>
 <p>Assembling <code>avx.s</code> with <code>-S</code> flag almost yields wanted results:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go tool asm -S avx.s
 
-<pre><code class="language-bash">$ go tool asm -S avx.s
-
-avxCheck STEXT nosplit size=15 args=0xffffffff80000000 locals=0x0
-    0x0000 00000 (avx.s:1)  TEXT    avxCheck(SB), NOSPLIT, $0
-    0x0000 00000 (avx.s:2)  VPOR    X0, X1, X2
-    0x0004 00004 (avx.s:3)  VPOR    Y0, Y1, Y2
-    0x0008 00008 (avx.s:4)  VPORD.BCST  (DX), Z1, K2, Z2
-    0x000e 00014 (avx.s:5)  RET
-    0x0000 c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3     ........b.uZ...
-go.info.avxCheck SDWARFINFO size=34
-    0x0000 02 61 76 78 43 68 65 63 6b 00 00 00 00 00 00 00  .avxCheck.......
-    0x0010 00 00 00 00 00 00 00 00 00 00 01 9c 00 00 00 00  ................
-    0x0020 01 00
-</code></pre>
-
-<p>Function body is <code>c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3</code>.</p>
-
+avxCheck STEXT nosplit size<span style="color:#f92672">=</span><span style="color:#ae81ff">15</span> args<span style="color:#f92672">=</span>0xffffffff80000000 locals<span style="color:#f92672">=</span>0x0
+    0x0000 <span style="color:#ae81ff">00000</span> <span style="color:#f92672">(</span>avx.s:1<span style="color:#f92672">)</span>  TEXT    avxCheck<span style="color:#f92672">(</span>SB<span style="color:#f92672">)</span>, NOSPLIT, $0
+    0x0000 <span style="color:#ae81ff">00000</span> <span style="color:#f92672">(</span>avx.s:2<span style="color:#f92672">)</span>  VPOR    X0, X1, X2
+    0x0004 <span style="color:#ae81ff">00004</span> <span style="color:#f92672">(</span>avx.s:3<span style="color:#f92672">)</span>  VPOR    Y0, Y1, Y2
+    0x0008 <span style="color:#ae81ff">00008</span> <span style="color:#f92672">(</span>avx.s:4<span style="color:#f92672">)</span>  VPORD.BCST  <span style="color:#f92672">(</span>DX<span style="color:#f92672">)</span>, Z1, K2, Z2
+    0x000e <span style="color:#ae81ff">00014</span> <span style="color:#f92672">(</span>avx.s:5<span style="color:#f92672">)</span>  RET
+    0x0000 c5 f1 eb d0 c5 f5 eb d0 <span style="color:#ae81ff">62</span> f1 <span style="color:#ae81ff">75</span> 5a eb <span style="color:#ae81ff">12</span> c3     ........b.uZ...
+go.info.avxCheck SDWARFINFO size<span style="color:#f92672">=</span><span style="color:#ae81ff">34</span>
+    0x0000 <span style="color:#ae81ff">02</span> <span style="color:#ae81ff">61</span> <span style="color:#ae81ff">76</span> <span style="color:#ae81ff">78</span> <span style="color:#ae81ff">43</span> <span style="color:#ae81ff">68</span> <span style="color:#ae81ff">65</span> <span style="color:#ae81ff">63</span> 6b <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>  .avxCheck.......
+    0x0010 <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">01</span> 9c <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span> <span style="color:#ae81ff">00</span>  ................
+    0x0020 <span style="color:#ae81ff">01</span> <span style="color:#ae81ff">00</span>
+</code></pre></div><p>Function body is <code>c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3</code>.</p>
 <p>These bytes definitely include 4 instructions from <code>avxCheck</code> function,
 but it&rsquo;s hard to associate octets with instructions they encode.
 The&rsquo;re all intermixed.</p>
-
-<p><code>objdump</code> does support raw shellcode input format.<br />
+<p><code>objdump</code> does support raw shellcode input format.<br>
 All we need to do is to turn hex octets into that.</p>
-
-<pre><code class="language-bash">$ echo 'c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3' |
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ echo <span style="color:#e6db74">&#39;c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3&#39;</span> |
     xxd -r -p &gt; code.bin
 $ objdump -b binary -m i386 -D code.bin
 
 Disassembly of section .data:
 
-00000000 &lt;.data&gt;:
+<span style="color:#ae81ff">00000000</span> &lt;.data&gt;:
    0:   c5 f1 eb d0             vpor   %xmm0,%xmm1,%xmm2
    4:   c5 f5 eb d0             vpor   %ymm0,%ymm1,%ymm2
-   8:   62 f1 75 5a eb 12       vpord  (%edx){1to16},%zmm1,%zmm2{%k2}
+   8:   <span style="color:#ae81ff">62</span> f1 <span style="color:#ae81ff">75</span> 5a eb <span style="color:#ae81ff">12</span>       vpord  <span style="color:#f92672">(</span>%edx<span style="color:#f92672">){</span>1to16<span style="color:#f92672">}</span>,%zmm1,%zmm2<span style="color:#f92672">{</span>%k2<span style="color:#f92672">}</span>
    e:   c3                      ret
-</code></pre>
-
-<h2 id="3-intel-xed-cli">3. Intel XED CLI</h2>
-
+</code></pre></div><h2 id="3-intel-xed-cli">3. Intel XED CLI</h2>
 <p><a href="https://github.com/intelxed/xed">Intel XED</a> includes several useful <a href="https://intelxed.github.io/ref-manual/group__EXAMPLES.html">command-line tools</a>.</p>
-
 <p>One of them is called <code>xed</code>. It&rsquo;s capable of encoding and decoding x86 instructions.</p>
-
-<pre><code class="language-bash">$ echo 'c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3' &gt; code.txt
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ echo <span style="color:#e6db74">&#39;c5 f1 eb d0 c5 f5 eb d0 62 f1 75 5a eb 12 c3&#39;</span> &gt; code.txt
 $ xed -64 -A -ih code.txt
 
 00: LOGICAL  AVX         C5F1EBD0      vpor %xmm0, %xmm1, %xmm2
 04: LOGICAL  AVX2        C5F5EBD0      vpor %ymm0, %ymm1, %ymm2
-08: LOGICAL  AVX512EVEX  62F1755AEB12  vpordl  (%rdx){1to16}, %zmm1, %zmm2{%k2}
+08: LOGICAL  AVX512EVEX  62F1755AEB12  vpordl  <span style="color:#f92672">(</span>%rdx<span style="color:#f92672">){</span>1to16<span style="color:#f92672">}</span>, %zmm1, %zmm2<span style="color:#f92672">{</span>%k2<span style="color:#f92672">}</span>
 0e: RET      BASE        C3            retq
-</code></pre>
-
-<p>Decoding single instruction is even simpler:</p>
-
-<pre><code class="language-bash">$ xed -64 -A -d '62 f1 75 5a eb 12'
+</code></pre></div><p>Decoding single instruction is even simpler:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ xed -64 -A -d <span style="color:#e6db74">&#39;62 f1 75 5a eb 12&#39;</span>
 
 62F1755AEB12
 ICLASS: VPORD   CATEGORY: LOGICAL   EXTENSION: AVX512EVEX  IFORM: VPORD_ZMMu32_MASKmskw_ZMMu32_MEMu32_AVX512   ISA_SET: AVX512F_512
-SHORT: vpordl  (%rdx){1to16}, %zmm1, %zmm2{%k2}
-</code></pre>
-
-<p>Without <code>-A</code> flag, it will print instructions in Intel syntax:</p>
-
-<pre><code class="language-bash">$ xed -64 -d '62 f1 75 5a eb 12'
+SHORT: vpordl  <span style="color:#f92672">(</span>%rdx<span style="color:#f92672">){</span>1to16<span style="color:#f92672">}</span>, %zmm1, %zmm2<span style="color:#f92672">{</span>%k2<span style="color:#f92672">}</span>
+</code></pre></div><p>Without <code>-A</code> flag, it will print instructions in Intel syntax:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ xed -64 -d <span style="color:#e6db74">&#39;62 f1 75 5a eb 12&#39;</span>
 
 62F1755AEB12
 ICLASS: VPORD   CATEGORY: LOGICAL   EXTENSION: AVX512EVEX  IFORM: VPORD_ZMMu32_MASKmskw_ZMMu32_MEMu32_AVX512   ISA_SET: AVX512F_512
-SHORT: vpord zmm2{k2}, zmm1, dword ptr [rdx]{1to16}
-</code></pre>
-
-<p>In addition, there is also <code>xed-ex4</code>, which prints many interesting details about instruction being decoded:</p>
-
-<pre><code class="language-bash">$ xed-ex4 -64 C5 F1 EB D0
+SHORT: vpord zmm2<span style="color:#f92672">{</span>k2<span style="color:#f92672">}</span>, zmm1, dword ptr <span style="color:#f92672">[</span>rdx<span style="color:#f92672">]{</span>1to16<span style="color:#f92672">}</span>
+</code></pre></div><p>In addition, there is also <code>xed-ex4</code>, which prints many interesting details about instruction being decoded:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ xed-ex4 -64 C5 F1 EB D0
 
 PARSING BYTES: c5 f1 eb d0
   VPOR VPOR_XMMdq_XMMdq_XMMdq
@@ -266,54 +220,40 @@ PARSING BYTES: c5 f1 eb d0
   VEXDEST3,
   VEXVALID:1,
   VEX_PREFIX:1
-0       REG0/W/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_R
-1       REG1/R/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_N
-2       REG2/R/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_B
+<span style="color:#ae81ff">0</span>       REG0/W/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_R
+<span style="color:#ae81ff">1</span>       REG1/R/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_N
+<span style="color:#ae81ff">2</span>       REG2/R/DQ/EXPLICIT/NT_LOOKUP_FN/XMM_B
 YDIS: vpor xmm2, xmm1, xmm0
 ATT syntax: vpor %xmm0, %xmm1, %xmm2
 INTEL syntax: vpor xmm2, xmm1, xmm0
-</code></pre>
-
-<p>Its output requires XED knowledge in order to be fully understood, but if you&rsquo;re
+</code></pre></div><p>Its output requires XED knowledge in order to be fully understood, but if you&rsquo;re
 excited, I&rsquo;m suggesting you to read the documentation and/or sources and achieve enlightenment.</p>
-
 <h2 id="prefix-only-disassembling">Prefix-only disassembling</h2>
-
 <p>If, for whatever reason, you only want to inspect prefix details, there is <a href="https://github.com/Quasilyte/tools/tree/master/src/vexdump">vexdump</a>
 utility which can be used to do just that.</p>
-
 <p>Dump single instruction prefix info:</p>
-
-<pre><code class="language-bash">$ vexdump 6272fd098ae8
-
-EVEX rxbR00mm Wvvvv1pp zLlbVaaa opcode modrm    fields
-62   01110010 11111101 00001001 8A     11101000 EVEX.128.66.0F38.W1
-</code></pre>
-
-<p>Dump multiple instructions (most probably for comparison):</p>
-
-<pre><code class="language-bash">$ vexdump 6272FD098AE8 '62 72 fd 09 8a c5'
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vexdump 6272fd098ae8
 
 EVEX rxbR00mm Wvvvv1pp zLlbVaaa opcode modrm    fields
-62   01110010 11111101 00001001 8A     11101000 EVEX.128.66.0F38.W1
-62   01110010 11111101 00001001 8A     11000101 EVEX.128.66.0F38.W1
-</code></pre>
+<span style="color:#ae81ff">62</span>   <span style="color:#ae81ff">01110010</span> <span style="color:#ae81ff">11111101</span> <span style="color:#ae81ff">00001001</span> 8A     <span style="color:#ae81ff">11101000</span> EVEX.128.66.0F38.W1
+</code></pre></div><p>Dump multiple instructions (most probably for comparison):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vexdump 6272FD098AE8 <span style="color:#e6db74">&#39;62 72 fd 09 8a c5&#39;</span>
 
-<p>It can also dump mixed prefixes:</p>
-
-<pre><code class="language-bash">$ vexdump 6272fd098ae8 6272fd098ac5 c4e1315813 c5b15813 c5f877
+EVEX rxbR00mm Wvvvv1pp zLlbVaaa opcode modrm    fields
+<span style="color:#ae81ff">62</span>   <span style="color:#ae81ff">01110010</span> <span style="color:#ae81ff">11111101</span> <span style="color:#ae81ff">00001001</span> 8A     <span style="color:#ae81ff">11101000</span> EVEX.128.66.0F38.W1
+<span style="color:#ae81ff">62</span>   <span style="color:#ae81ff">01110010</span> <span style="color:#ae81ff">11111101</span> <span style="color:#ae81ff">00001001</span> 8A     <span style="color:#ae81ff">11000101</span> EVEX.128.66.0F38.W1
+</code></pre></div><p>It can also dump mixed prefixes:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ vexdump 6272fd098ae8 6272fd098ac5 c4e1315813 c5b15813 c5f877
 
 VEX2 rvvvvlpp opcode modrm    fields
-C5   10110001 58     00010011 VEX.128.66.0F.W0
-C5   11111000 77     00000000 VEX.128.0F.W0
+C5   <span style="color:#ae81ff">10110001</span> <span style="color:#ae81ff">58</span>     <span style="color:#ae81ff">00010011</span> VEX.128.66.0F.W0
+C5   <span style="color:#ae81ff">11111000</span> <span style="color:#ae81ff">77</span>     <span style="color:#ae81ff">00000000</span> VEX.128.0F.W0
 VEX3 rxbmmmmm Wvvvvlpp opcode modrm    fields
-C4   11100001 00110001 58     00010011 VEX.128.66.0F.W0
+C4   <span style="color:#ae81ff">11100001</span> <span style="color:#ae81ff">00110001</span> <span style="color:#ae81ff">58</span>     <span style="color:#ae81ff">00010011</span> VEX.128.66.0F.W0
 EVEX rxbR00mm Wvvvv1pp zLlbVaaa opcode modrm    fields
-62   01110010 11111101 00001001 8A     11101000 EVEX.128.66.0F38.W1
-62   01110010 11111101 00001001 8A     11000101 EVEX.128.66.0F38.W1
-</code></pre>
-
-<p>That tool can be especially helpful for encoder validation.</p>
+<span style="color:#ae81ff">62</span>   <span style="color:#ae81ff">01110010</span> <span style="color:#ae81ff">11111101</span> <span style="color:#ae81ff">00001001</span> 8A     <span style="color:#ae81ff">11101000</span> EVEX.128.66.0F38.W1
+<span style="color:#ae81ff">62</span>   <span style="color:#ae81ff">01110010</span> <span style="color:#ae81ff">11111101</span> <span style="color:#ae81ff">00001001</span> 8A     <span style="color:#ae81ff">11000101</span> EVEX.128.66.0F38.W1
+</code></pre></div><p>That tool can be especially helpful for encoder validation.</p>
 
     </section>
 

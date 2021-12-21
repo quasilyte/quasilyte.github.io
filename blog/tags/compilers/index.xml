@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>[compilers] on Iskander (Alex) Sharipov technical blog</title>
@@ -6,27 +6,22 @@
     <description>Recent content in [compilers] on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 27 Mar 2020 17:08:04 +0300</lastBuildDate>
-    
-	<atom:link href="https://quasilyte.dev/blog/tags/compilers/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 27 Mar 2020 17:08:04 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/compilers/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Let&#39;s Go write Pratt parsers!</title>
       <link>https://quasilyte.dev/blog/post/pratt-parsers-go/</link>
-      <pubDate>Fri, 27 Mar 2020 17:08:04 +0300</pubDate>
+      <pubDate>Fri, 27 Mar 2020 17:08:04 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/pratt-parsers-go/</guid>
-      <description>If you found a typo or a misspelling, please file an issue or send a PR that fixes it.
- Original (ru): https://habr.com/ru/post/494316/.
+      <description>Original (ru): https://habr.com/ru/post/494316/.
  Recursive descent parsing works well when you can continue parsing using the current context and a given token.
-Some expressions make parsing harder: postfix, infix and other. They introduce a problem: you don&amp;rsquo;t know which kind of expression you&amp;rsquo;re processing until you&amp;rsquo;ve already parsed half of it.</description>
+Some expressions make parsing harder: postfix, infix and other. They introduce a problem: you don&amp;rsquo;t know which kind of expression you&amp;rsquo;re processing until you&amp;rsquo;ve already parsed half of it. Most of the time you also care about operations precedence and their associativity, so the result AST has a proper shape.</description>
     </item>
     
     <item>
       <title>Go compiler: SSA optimization rules description language</title>
       <link>https://quasilyte.dev/blog/post/go_ssa_rules/</link>
-      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      <pubDate>Sat, 30 Jun 2018 18:53:25 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/go_ssa_rules/</guid>
       <description>Original (ru): https://habr.com/post/415771/.

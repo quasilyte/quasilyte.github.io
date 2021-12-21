@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>[ssa] on Iskander (Alex) Sharipov technical blog</title>
@@ -6,15 +6,11 @@
     <description>Recent content in [ssa] on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0300</lastBuildDate>
-    
-	<atom:link href="https://quasilyte.dev/blog/tags/ssa/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sat, 30 Jun 2018 18:53:25 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/ssa/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Go compiler: SSA optimization rules description language</title>
       <link>https://quasilyte.dev/blog/post/go_ssa_rules/</link>
-      <pubDate>Sat, 30 Jun 2018 18:53:25 +0300</pubDate>
+      <pubDate>Sat, 30 Jun 2018 18:53:25 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/go_ssa_rules/</guid>
       <description>Original (ru): https://habr.com/post/415771/.

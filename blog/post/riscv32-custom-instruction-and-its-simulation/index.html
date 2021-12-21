@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,33 +78,25 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#agenda">Agenda</a></li><br>
-<li><a href="#toolchain-installation">Toolchain installation</a></li><br>
-<li><a href="#custom-instruction-description">Custom instruction description</a></li><br>
-<li><a href="#adding-mac-instruction-to-the-rv32im">Adding &ldquo;mac&rdquo; instruction to the rv32im</a></li><br>
-<li><a href="#testing-rv32im-brand-new-instruction">Testing rv32im brand new instruction</a></li><br>
-<li><a href="#mac-encoding-explained">Mac encoding explained</a></li><br>
-<li><a href="#plugin-vs-patch">Plugin vs patch</a></li><br>
-<li><a href="#gcc-rv32immac-plugin">GCC &ldquo;rv32imMac&rdquo; plugin</a></li><br>
-<li><a href="#gimple-gmac-statement">GIMPLE &ldquo;gmac&rdquo; statement</a></li><br>
-<li><a href="#the-pleasure-of-intrinsics">The pleasure of intrinsics</a></li><br>
-<li><a href="#compiling-mac-without-intrinsic">Compiling &ldquo;mac&rdquo; without intrinsic</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#agenda">Agenda</a></li><br>
+    <li><a href="#toolchain-installation">Toolchain installation</a></li><br>
+    <li><a href="#custom-instruction-description">Custom instruction description</a></li><br>
+    <li><a href="#adding-mac-instruction-to-the-rv32im">Adding &ldquo;mac&rdquo; instruction to the rv32im</a></li><br>
+    <li><a href="#testing-rv32im-brand-new-instruction">Testing rv32im brand new instruction</a></li><br>
+    <li><a href="#mac-encoding-explained">Mac encoding explained</a></li><br>
+    <li><a href="#plugin-vs-patch">Plugin vs patch</a></li><br>
+    <li><a href="#gcc-rv32immac-plugin">GCC &ldquo;rv32imMac&rdquo; plugin</a></li><br>
+    <li><a href="#gimple-gmac-statement">GIMPLE &ldquo;gmac&rdquo; statement</a></li><br>
+    <li><a href="#the-pleasure-of-intrinsics">The pleasure of intrinsics</a></li><br>
+    <li><a href="#compiling-mac-without-intrinsic">Compiling &ldquo;mac&rdquo; without intrinsic</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="agenda">Agenda</h2>
-
+        <h2 id="agenda">Agenda</h2>
 <p>This article shows how to add a new instruction to RISC-V and simulate it.</p>
-
 <p>These topics are covered along the way:</p>
-
 <ul>
 <li>Whole GNU <code>riscv</code> toolchain installation;</li>
 <li>Implementation of a new instruction for <code>spike</code> RISC-V ISA simulator;</li>
@@ -112,240 +104,170 @@
 <li>Custom instruction simulation (with visible output);</li>
 <li>[riscv32-]GCC plugin development;</li>
 </ul>
-
 <p>You may find <a href="https://github.com/Quasilyte/gnu-riscv32_ext">associated repository</a> useful.</p>
-
 <p>Many things can go wrong.
-Be prepared to fix upcoming issues by yourself.<br />
+Be prepared to fix upcoming issues by yourself.<br>
 The final result is very rewarding, I promise.</p>
-
 <h2 id="toolchain-installation">Toolchain installation</h2>
-
 <p>Choose installation directory. Call it <code>RISCV</code>.</p>
-
 <p>Add these lines to your <code>~/.bashrc</code>:</p>
-
-<pre><code class="language-bash">    # Directory which will contain everything we need.
-export RISCV_HOME=~/riscv-home
-    # $RISCV will point to toolchain install location.
-export RISCV=&quot;${RISCV_HOME}/riscv&quot;
-export PATH=&quot;${PATH}:${RISCV}/bin&quot;
-</code></pre>
-
-<p>Run <code>mkdir -p &quot;${RISCV_HOME}&quot; &quot;${RISCV}&quot;</code>.</p>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">    <span style="color:#75715e"># Directory which will contain everything we need.</span>
+export RISCV_HOME<span style="color:#f92672">=</span>~/riscv-home
+    <span style="color:#75715e"># $RISCV will point to toolchain install location.</span>
+export RISCV<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RISCV_HOME<span style="color:#e6db74">}</span><span style="color:#e6db74">/riscv&#34;</span>
+export PATH<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>PATH<span style="color:#e6db74">}</span><span style="color:#e6db74">:</span><span style="color:#e6db74">${</span>RISCV<span style="color:#e6db74">}</span><span style="color:#e6db74">/bin&#34;</span>
+</code></pre></div><p>Run <code>mkdir -p &quot;${RISCV_HOME}&quot; &quot;${RISCV}&quot;</code>.</p>
 <p>Use <a href="https://github.com/Quasilyte/gnu-riscv32_ext/blob/master/1_install/2_download-repos">1_install/2_download-repos</a> script to clone all required repositories.</p>
-
 <p>If you wish to save some time and traffic, avoid recursive clone of
 toolchain repository. Instead, clone sub-modules by hand.
 You may exclude &ldquo;riscv-glibc&rdquo;.</p>
-
 <blockquote>
 <p>Be warned: I have not tested partial toolchain build, caveat emptor</p>
 </blockquote>
-
 <p>Satisfy <a href="https://github.com/riscv/riscv-gnu-toolchain">GNU toolchain</a>
 prerequisites by installing all required packages.
 In addition, spike requires <code>device-tree-compiler</code> package.</p>
-
 <p>We choose:</p>
-
 <ul>
 <li>RISCV32 over RISCV64</li>
 <li>newlib over glibc</li>
 </ul>
-
 <p>Repositories must be built in this order:</p>
-
 <ol>
 <li>riscv-gnu-toolchain</li>
 <li>riscv-fesvr, riscv-pk</li>
 <li>riscv-isa-sim</li>
 </ol>
-
 <p>You can use <a href="https://github.com/Quasilyte/gnu-riscv32_ext/blob/master/1_install/build-repos">1_install/3_build-repos</a>
 script as a guideline.</p>
-
 <p>To check installation, use <a href="https://github.com/Quasilyte/gnu-riscv32_ext/blob/master/1_install/check-install">1_install/4_check-install</a>.</p>
-
 <h2 id="custom-instruction-description">Custom instruction description</h2>
-
 <p>Within the framework of this article, we will implement <a href="https://en.wikipedia.org/wiki/Multiply%E2%80%93accumulate_operation">mac</a> instruction.</p>
-
-<p><code>rv32im</code> has <code>mul</code> and <code>add</code> instructions, <code>mac</code> combines them.<br />
+<p><code>rv32im</code> has <code>mul</code> and <code>add</code> instructions, <code>mac</code> combines them.<br>
 It defined as <code>a0 := a0 + a1 * a2</code> (ordinary 3-address instruction).</p>
-
-<pre><code class="language-ruby"># Without mac (preserve registers):
-mv t0, a0      # addi r0, a0, 0	
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># Without mac (preserve registers):</span>
+mv t0, a0      <span style="color:#75715e"># addi r0, a0, 0	</span>
 mul a1, a2, a3
 add a1, a1, t0
-# With mac:
+<span style="color:#75715e"># With mac:</span>
 mac a1, a2, a3
-</code></pre>
-
-<h2 id="adding-mac-instruction-to-the-rv32im">Adding &ldquo;mac&rdquo; instruction to the rv32im</h2>
-
-<p>To add an instruction to the simulator:
-1. Describe the instruction&rsquo;s functional behavior;
-2. Add the opcode and opcode mask to &ldquo;riscv/opcodes.h&rdquo;;</p>
-
+</code></pre></div><h2 id="adding-mac-instruction-to-the-rv32im">Adding &ldquo;mac&rdquo; instruction to the rv32im</h2>
+<p>To add an instruction to the simulator:</p>
+<ol>
+<li>Describe the instruction&rsquo;s functional behavior;</li>
+<li>Add the opcode and opcode mask to &ldquo;riscv/opcodes.h&rdquo;;</li>
+</ol>
 <p>First step is accomplished by adding a <code>riscv/insns/mac.h</code> file:</p>
-
-<pre><code class="language-c++">/* file &quot;$RISCV_HOME/riscv-isa-sim/riscv/insns/mac.h&quot; */
-// 'M' extension means we require integer mul/div standard extension.
-require_extension('M');
-// RD = RD + RS1 * RS2
-reg_t tmp = sext_xlen(RS1 * RS2);
-WRITE_RD(sext_xlen(READ_REG(insn.rd()) + tmp));
-</code></pre>
-
-<p>For the second step, we use <a href="https://github.com/riscv/riscv-opcodes">riscv-opcodes</a>.</p>
-
-<pre><code class="language-bash">cd &quot;${RISCV_HOME}/riscv-opcodes&quot;
-echo -e &quot;mac rd rs1 rs2 31..25=1 14..12=0 6..2=0x1A 1..0=3\n&quot; &gt;&gt; opcodes
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c++" data-lang="c++"><span style="color:#75715e">/* file &#34;$RISCV_HOME/riscv-isa-sim/riscv/insns/mac.h&#34; */</span>
+<span style="color:#75715e">// &#39;M&#39; extension means we require integer mul/div standard extension.
+</span><span style="color:#75715e"></span>require_extension(<span style="color:#e6db74">&#39;M&#39;</span>);
+<span style="color:#75715e">// RD = RD + RS1 * RS2
+</span><span style="color:#75715e"></span>reg_t tmp <span style="color:#f92672">=</span> sext_xlen(RS1 <span style="color:#f92672">*</span> RS2);
+WRITE_RD(sext_xlen(READ_REG(insn.rd()) <span style="color:#f92672">+</span> tmp));
+</code></pre></div><p>For the second step, we use <a href="https://github.com/riscv/riscv-opcodes">riscv-opcodes</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RISCV_HOME<span style="color:#e6db74">}</span><span style="color:#e6db74">/riscv-opcodes&#34;</span>
+echo -e <span style="color:#e6db74">&#34;mac rd rs1 rs2 31..25=1 14..12=0 6..2=0x1A 1..0=3\n&#34;</span> &gt;&gt; opcodes
 make install
-</code></pre>
-
-<p>It turns out there is a third step which is not documented.
+</code></pre></div><p>It turns out there is a third step which is not documented.
 New entry must be added to the <code>riscv_insn_list</code>.</p>
-
-<pre><code class="language-bash">sed -i 's/riscv_insn_list = \\/riscv_insn_list = mac\\/g' \
-    &quot;${RISCV_HOME}/riscv-isa-sim/riscv/riscv.mk.in&quot;
-</code></pre>
-
-<p>Rebuild the simulator.</p>
-
-<pre><code class="language-bash">cd &quot;${RISCV}/riscv-isa-sim/build&quot;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">sed -i <span style="color:#e6db74">&#39;s/riscv_insn_list = \\/riscv_insn_list = mac\\/g&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>    <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RISCV_HOME<span style="color:#e6db74">}</span><span style="color:#e6db74">/riscv-isa-sim/riscv/riscv.mk.in&#34;</span>
+</code></pre></div><p>Rebuild the simulator.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">cd <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RISCV<span style="color:#e6db74">}</span><span style="color:#e6db74">/riscv-isa-sim/build&#34;</span>
 sudo make install
-</code></pre>
-
-<h2 id="testing-rv32im-brand-new-instruction">Testing rv32im brand new instruction</h2>
-
+</code></pre></div><h2 id="testing-rv32im-brand-new-instruction">Testing rv32im brand new instruction</h2>
 <p>At this stage:</p>
-
 <ul>
 <li>Compiler knows nothing about <code>mac</code>. It can not emit that instruction;</li>
 <li>Assembler knows nothing about <code>mac</code>. We can not use <code>mac</code> in inline assembly;</li>
 </ul>
-
 <p>Our last resort is manual encoding.</p>
-
-<pre><code class="language-c">#include &lt;stdio.h&gt;
-// Needed to verify results.
-int mac_c(int a, int b, int c) {
-    a += b * c; // Semantically, it is &quot;mac&quot;
-    return a;
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">#include</span> <span style="color:#75715e">&lt;stdio.h&gt;</span><span style="color:#75715e">
+</span><span style="color:#75715e"></span><span style="color:#75715e">// Needed to verify results.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">mac_c</span>(<span style="color:#66d9ef">int</span> a, <span style="color:#66d9ef">int</span> b, <span style="color:#66d9ef">int</span> c) {
+    a <span style="color:#f92672">+=</span> b <span style="color:#f92672">*</span> c; <span style="color:#75715e">// Semantically, it is &#34;mac&#34;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> a;
 }
-// Should not be inlined, because we expect arguments
-// in particular registers.
-__attribute__((noinline))
-int mac_asm(int a, int b, int c) {
-    asm __volatile__ (&quot;.word 0x02C5856B\n&quot;);
-    return a;
+<span style="color:#75715e">// Should not be inlined, because we expect arguments
+</span><span style="color:#75715e">// in particular registers.
+</span><span style="color:#75715e"></span>__attribute__((noinline))
+<span style="color:#66d9ef">int</span> mac_asm(<span style="color:#66d9ef">int</span> a, <span style="color:#66d9ef">int</span> b, <span style="color:#66d9ef">int</span> c) {
+    <span style="color:#66d9ef">asm</span> __volatile__ (<span style="color:#e6db74">&#34;.word 0x02C5856B</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>);
+    <span style="color:#66d9ef">return</span> a;
 }
-int main(int argc, char** argv) {
-    int a = 2, b = 3, c = 4;
-    printf(&quot;%d =?= %d\n&quot;, mac_c(a, b, c), mac_asm(a, b, c));
+<span style="color:#66d9ef">int</span> main(<span style="color:#66d9ef">int</span> argc, <span style="color:#66d9ef">char</span><span style="color:#f92672">**</span> argv) {
+    <span style="color:#66d9ef">int</span> a <span style="color:#f92672">=</span> <span style="color:#ae81ff">2</span>, b <span style="color:#f92672">=</span> <span style="color:#ae81ff">3</span>, c <span style="color:#f92672">=</span> <span style="color:#ae81ff">4</span>;
+    printf(<span style="color:#e6db74">&#34;%d =?= %d</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#34;</span>, mac_c(a, b, c), mac_asm(a, b, c));
 }
-</code></pre>
-
-<p>Save test program as <code>test_mac.c</code>.</p>
-
-<pre><code class="language-bash">riscv32-unknown-elf-gcc test_mac.c -O1 -march=rv32im -o test_mac
-spike --isa=RV32IM &quot;${RISCV_PK}&quot; test_mac
-</code></pre>
-
-<p>You should see <code>14 =?= 14</code> printed to stdout.<br />
+</code></pre></div><p>Save test program as <code>test_mac.c</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">riscv32-unknown-elf-gcc test_mac.c -O1 -march<span style="color:#f92672">=</span>rv32im -o test_mac
+spike --isa<span style="color:#f92672">=</span>RV32IM <span style="color:#e6db74">&#34;</span><span style="color:#e6db74">${</span>RISCV_PK<span style="color:#e6db74">}</span><span style="color:#e6db74">&#34;</span> test_mac
+</code></pre></div><p>You should see <code>14 =?= 14</code> printed to stdout.<br>
 If result differs, <code>riscv32-unknown-elf-gdb</code> can help you in troubleshooting.</p>
-
 <h2 id="mac-encoding-explained">Mac encoding explained</h2>
-
 <p>Be sure to look at <a href="https://riscv.org/specifications/">official specifications</a> if
 you aim for precise descriptions.</p>
-
 <p><code>mac</code> will mimic <code>mul</code> encoding, but use different opcode.</p>
-
-<pre><code class="language-ruby"># file &quot;riscv-opcodes/opcodes&quot;
-#                                differs
-#                                |
-#                                v
-mac rd rs1 rs2 31..25=1 14..12=0 6..2=0x1A 1..0=3
-mul rd rs1 rs2 31..25=1 14..12=0 6..2=0x0C 1..0=3
-#   ^  ^   ^   ^        ^        ^         ^
-#   |  |   |   |        |        |         |
-#   |  |   |   |        |        |         |
-#   |  |   |   |        |        |         also opcode 3 bits
-#   |  |   |   |        |        opcode 5 bits
-#   |  |   |   |        funct3 3 bits
-#   |  |   |   funct7 7 bits
-#   |  |   rs2 (src2) 5 bits
-#   |  rs1 (src1) 5 bits
-#   dest 5 bits
-</code></pre>
-
-<p>Actual encoding has different order of components and opcode is
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># file &#34;riscv-opcodes/opcodes&#34;</span>
+<span style="color:#75715e">#                                differs</span>
+<span style="color:#75715e">#                                |</span>
+<span style="color:#75715e">#                                v</span>
+mac rd rs1 rs2 <span style="color:#ae81ff">31</span><span style="color:#f92672">..</span><span style="color:#ae81ff">25</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">14</span><span style="color:#f92672">..</span><span style="color:#ae81ff">12</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">6</span><span style="color:#f92672">..</span><span style="color:#ae81ff">2</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0x1A</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">..</span><span style="color:#ae81ff">0</span><span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+mul rd rs1 rs2 <span style="color:#ae81ff">31</span><span style="color:#f92672">..</span><span style="color:#ae81ff">25</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span> <span style="color:#ae81ff">14</span><span style="color:#f92672">..</span><span style="color:#ae81ff">12</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> <span style="color:#ae81ff">6</span><span style="color:#f92672">..</span><span style="color:#ae81ff">2</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0x0C</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">..</span><span style="color:#ae81ff">0</span><span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+<span style="color:#75715e">#   ^  ^   ^   ^        ^        ^         ^</span>
+<span style="color:#75715e">#   |  |   |   |        |        |         |</span>
+<span style="color:#75715e">#   |  |   |   |        |        |         |</span>
+<span style="color:#75715e">#   |  |   |   |        |        |         also opcode 3 bits</span>
+<span style="color:#75715e">#   |  |   |   |        |        opcode 5 bits</span>
+<span style="color:#75715e">#   |  |   |   |        funct3 3 bits</span>
+<span style="color:#75715e">#   |  |   |   funct7 7 bits</span>
+<span style="color:#75715e">#   |  |   rs2 (src2) 5 bits</span>
+<span style="color:#75715e">#   |  rs1 (src1) 5 bits</span>
+<span style="color:#75715e">#   dest 5 bits</span>
+</code></pre></div><p>Actual encoding has different order of components and opcode is
 really single 7 bit segment.</p>
-
 <blockquote>
 <p>5 bits per register operand means that we have 32 addressable registers.</p>
 </blockquote>
-
-<pre><code class="language-ruby"># Encoding used for &quot;mac a0, a1, a2&quot;
-0x02C5856B [base 16]
-==
-10110001011000010101101011 [base 2]
-== 
-00000010110001011000010101101011 [base 2]
-# Group by related bit chunks:
-0000001 01100 01011 000 01010 1101011
-^       ^     ^     ^   ^     ^
-|       |     |     |   |     |
-|       |     |     |   |     opcode (6..2=0x0C 1..0=3)
-|       |     |     |   dest (10 : a0)
-|       |     |     funct3 (14..12=0)
-|       |     src1 (11 : a1)
-|       src2 (12 : a2)
-funct7 (31..25=1)
-</code></pre>
-
-<p><img src="/blog/img/reg_table.png"></p>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#75715e"># Encoding used for &#34;mac a0, a1, a2&#34;</span>
+<span style="color:#ae81ff">0x02C5856B</span> <span style="color:#f92672">[</span>base <span style="color:#ae81ff">16</span><span style="color:#f92672">]</span>
+<span style="color:#f92672">==</span>
+<span style="color:#ae81ff">10110001011000010101101011</span> <span style="color:#f92672">[</span>base <span style="color:#ae81ff">2</span><span style="color:#f92672">]</span>
+<span style="color:#f92672">==</span> 
+<span style="color:#ae81ff">00000010110001011000010101101011</span> <span style="color:#f92672">[</span>base <span style="color:#ae81ff">2</span><span style="color:#f92672">]</span>
+<span style="color:#75715e"># Group by related bit chunks:</span>
+<span style="color:#ae81ff">0000001</span> <span style="color:#ae81ff">01100</span> <span style="color:#ae81ff">01011</span> <span style="color:#ae81ff">000</span> <span style="color:#ae81ff">01010</span> <span style="color:#ae81ff">1101011</span>
+<span style="color:#f92672">^</span>       <span style="color:#f92672">^</span>     <span style="color:#f92672">^</span>     <span style="color:#f92672">^</span>   <span style="color:#f92672">^</span>     <span style="color:#f92672">^</span>
+<span style="color:#f92672">|</span>       <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>   <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>
+<span style="color:#f92672">|</span>       <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>   <span style="color:#f92672">|</span>     opcode (<span style="color:#ae81ff">6</span><span style="color:#f92672">..</span><span style="color:#ae81ff">2</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0x0C</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">..</span><span style="color:#ae81ff">0</span><span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>)
+<span style="color:#f92672">|</span>       <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>   dest (<span style="color:#ae81ff">10</span> : a0)
+<span style="color:#f92672">|</span>       <span style="color:#f92672">|</span>     <span style="color:#f92672">|</span>     funct3 (<span style="color:#ae81ff">14</span><span style="color:#f92672">..</span><span style="color:#ae81ff">12</span><span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>)
+<span style="color:#f92672">|</span>       <span style="color:#f92672">|</span>     src1 (<span style="color:#ae81ff">11</span> : a1)
+<span style="color:#f92672">|</span>       src2 (<span style="color:#ae81ff">12</span> : a2)
+funct7 (<span style="color:#ae81ff">31</span><span style="color:#f92672">..</span><span style="color:#ae81ff">25</span><span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>)
+</code></pre></div><!-- raw HTML omitted -->
 <h2 id="plugin-vs-patch">Plugin vs patch</h2>
-
 <p>There are two ways to extend GCC:</p>
-
 <ol>
 <li>Patch GCC itself</li>
 <li>Write loadable plugin for GCC</li>
 </ol>
-
-<p>Prefer plugins to GCC patches whenever possible.<br />
+<p>Prefer plugins to GCC patches whenever possible.<br>
 GCC wiki <a href="https://gcc.gnu.org/wiki/plugins">&ldquo;plugins&rdquo;</a> page described
 advantages in the &ldquo;Background&rdquo; section.</p>
-
 <p>In this guide, both methods will be covered.</p>
-
 <p>Useful links:</p>
-
 <ul>
 <li><a href="http://thinkingeek.com/2015/08/16/a-simple-plugin-for-gcc-part-1/">Simple GCC plugin</a> series of posts</li>
 <li><a href="https://gcc.gnu.org/onlinedocs/gccint/Plugins.html#Plugins">GCC plugins manual</a></li>
 </ul>
-
 <h2 id="gcc-rv32immac-plugin">GCC &ldquo;rv32imMac&rdquo; plugin</h2>
-
 <p><strong>TODO</strong></p>
-
 <h2 id="gimple-gmac-statement">GIMPLE &ldquo;gmac&rdquo; statement</h2>
-
 <p><strong>TODO</strong></p>
-
 <h2 id="the-pleasure-of-intrinsics">The pleasure of intrinsics</h2>
-
 <p><strong>TODO</strong></p>
-
 <h2 id="compiling-mac-without-intrinsic">Compiling &ldquo;mac&rdquo; without intrinsic</h2>
-
 <p><strong>TODO</strong></p>
 
     </section>

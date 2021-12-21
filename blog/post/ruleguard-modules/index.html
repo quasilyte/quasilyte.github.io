@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,111 +78,81 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#creating-an-importable-bundle">Creating an importable bundle</a></li><br>
-<li><a href="#importing-a-bundle">Importing a bundle</a></li><br>
-<li><a href="#running-the-ruleguard">Running the ruleguard</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#creating-an-importable-bundle">Creating an importable bundle</a></li><br>
+    <li><a href="#importing-a-bundle">Importing a bundle</a></li><br>
+    <li><a href="#running-the-ruleguard">Running the ruleguard</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<p><strong>Bundles</strong> is a new feature coming to the <a href="https://github.com/quasilyte/go-ruleguard">ruleguard</a>. It&rsquo;ll make it possible to re-use third-party rules without having to copy/paste them.</p>
-
+        <p><strong>Bundles</strong> is a new feature coming to the <a href="https://github.com/quasilyte/go-ruleguard">ruleguard</a>. It&rsquo;ll make it possible to re-use third-party rules without having to copy/paste them.</p>
 <h2 id="creating-an-importable-bundle">Creating an importable bundle</h2>
-
 <p>A package that exports rules must define a <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#Bundle">Bundle</a> object:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">gorules</span>
 
-<pre><code class="language-go">package gorules
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;github.com/quasilyte/go-ruleguard/dsl&#34;</span>
 
-import &quot;github.com/quasilyte/go-ruleguard/dsl&quot;
+<span style="color:#75715e">// Bundle holds the rules package metadata.
+</span><span style="color:#75715e">//
+</span><span style="color:#75715e">// In order to be importable from other gorules package,
+</span><span style="color:#75715e">// a package must define a Bundle variable.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Bundle</span> = <span style="color:#a6e22e">dsl</span>.<span style="color:#a6e22e">Bundle</span>{}
 
-// Bundle holds the rules package metadata.
-//
-// In order to be importable from other gorules package,
-// a package must define a Bundle variable.
-var Bundle = dsl.Bundle{}
-
-func boolComparison(m dsl.Matcher) {
-	m.Match(`$x == true`,
-		`$x != true`,
-		`$x == false`,
-		`$x != false`).
-		Report(`omit bool literal in expression`)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">boolComparison</span>(<span style="color:#a6e22e">m</span> <span style="color:#a6e22e">dsl</span>.<span style="color:#a6e22e">Matcher</span>) {
+	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">Match</span>(<span style="color:#e6db74">`$x == true`</span>,
+		<span style="color:#e6db74">`$x != true`</span>,
+		<span style="color:#e6db74">`$x == false`</span>,
+		<span style="color:#e6db74">`$x != false`</span>).
+		<span style="color:#a6e22e">Report</span>(<span style="color:#e6db74">`omit bool literal in expression`</span>)
 }
-</code></pre>
-
-<p>That package should be a separate <a href="https://github.com/golang/go/wiki/Modules">Go module</a>. A rules bundle is versioned by its Go module.</p>
-
+</code></pre></div><p>That package should be a separate <a href="https://github.com/golang/go/wiki/Modules">Go module</a>. A rules bundle is versioned by its Go module.</p>
 <p>It&rsquo;s possible to have several ruleguard files inside one Go module. Only one file should define a Bundle object. During a bundle import, all files will be exported.</p>
-
 <blockquote>
 <p>The metadata object is called a <code>Bundle</code> to avoid confusion with Go packages and Go modules. It&rsquo;s useful to have a dedicated word for them.</p>
 </blockquote>
-
 <h2 id="importing-a-bundle">Importing a bundle</h2>
-
 <p>To use an external rule set:</p>
-
 <ol>
 <li>Import the containing package</li>
 <li>In <code>init()</code> function, use its <strong>Bundle</strong> variable in <a href="https://godoc.org/github.com/quasilyte/go-ruleguard/dsl#ImportRules">ImportRules()</a> call</li>
 </ol>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">gorules</span>
 
-<pre><code class="language-go">package gorules
-
-import (
-	&quot;github.com/quasilyte/go-ruleguard/dsl&quot;
-	quasilyterules &quot;github.com/quasilyte/ruleguard-rules-test&quot;
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;github.com/quasilyte/go-ruleguard/dsl&#34;</span>
+	<span style="color:#a6e22e">quasilyterules</span> <span style="color:#e6db74">&#34;github.com/quasilyte/ruleguard-rules-test&#34;</span>
 )
 
-func init() {
-	// Imported rules will have a &quot;qrules&quot; prefix.
-	dsl.ImportRules(&quot;qrules&quot;, quasilyterules.Bundle)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
+	<span style="color:#75715e">// Imported rules will have a &#34;qrules&#34; prefix.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dsl</span>.<span style="color:#a6e22e">ImportRules</span>(<span style="color:#e6db74">&#34;qrules&#34;</span>, <span style="color:#a6e22e">quasilyterules</span>.<span style="color:#a6e22e">Bundle</span>)
 }
 
-// Then you can define your own rules.
+<span style="color:#75715e">// Then you can define your own rules.
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">emptyStringTest</span>(<span style="color:#a6e22e">m</span> <span style="color:#a6e22e">dsl</span>.<span style="color:#a6e22e">Matcher</span>) {
+	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">Match</span>(<span style="color:#e6db74">`len($s) == 0`</span>).
+		<span style="color:#a6e22e">Where</span>(<span style="color:#a6e22e">m</span>[<span style="color:#e6db74">&#34;s&#34;</span>].<span style="color:#a6e22e">Type</span>.<span style="color:#a6e22e">Is</span>(<span style="color:#e6db74">&#34;string&#34;</span>)).
+		<span style="color:#a6e22e">Report</span>(<span style="color:#e6db74">`maybe use $s == &#34;&#34; instead?`</span>)
 
-func emptyStringTest(m dsl.Matcher) {
-	m.Match(`len($s) == 0`).
-		Where(m[&quot;s&quot;].Type.Is(&quot;string&quot;)).
-		Report(`maybe use $s == &quot;&quot; instead?`)
-
-	m.Match(`len($s) != 0`).
-		Where(m[&quot;s&quot;].Type.Is(&quot;string&quot;)).
-		Report(`maybe use $s != &quot;&quot; instead?`)
+	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">Match</span>(<span style="color:#e6db74">`len($s) != 0`</span>).
+		<span style="color:#a6e22e">Where</span>(<span style="color:#a6e22e">m</span>[<span style="color:#e6db74">&#34;s&#34;</span>].<span style="color:#a6e22e">Type</span>.<span style="color:#a6e22e">Is</span>(<span style="color:#e6db74">&#34;string&#34;</span>)).
+		<span style="color:#a6e22e">Report</span>(<span style="color:#e6db74">`maybe use $s != &#34;&#34; instead?`</span>)
 }
-</code></pre>
-
-<p>Now all you need is to install the imported <a href="https://github.com/quasilyte/ruleguard-rules-test">github.com/quasilyte/ruleguard-rules-test</a> package. Since bundles are Go modules, it&rsquo;s as simple as installing any other Go module:</p>
-
-<pre><code class="language-bash">go get -v github.com/quasilyte/ruleguard-rules-test
-</code></pre>
-
-<p>It&rsquo;s possible to use an empty (<code>&quot;&quot;</code>) prefix, but you&rsquo;ll risk getting a name collision. If you don&rsquo;t define your own rules, then it&rsquo;s perfectly
+</code></pre></div><p>Now all you need is to install the imported <a href="https://github.com/quasilyte/ruleguard-rules-test">github.com/quasilyte/ruleguard-rules-test</a> package. Since bundles are Go modules, it&rsquo;s as simple as installing any other Go module:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">go get -v github.com/quasilyte/ruleguard-rules-test
+</code></pre></div><p>It&rsquo;s possible to use an empty (<code>&quot;&quot;</code>) prefix, but you&rsquo;ll risk getting a name collision. If you don&rsquo;t define your own rules, then it&rsquo;s perfectly
 fine to use an empty prefix.</p>
-
 <p>All ruleguard packages are named <code>gorules</code>, so you&rsquo;ll need to assign a local package name. In the example above, we used <code>quasilyterules</code> name.</p>
-
 <h2 id="running-the-ruleguard">Running the ruleguard</h2>
-
 <p>If you installed the bundle, you should be able to run your main rules file normally:</p>
-
-<pre><code class="language-bash">$ ruleguard -rules rules.go test.go 
-test.go:4:6: emptyStringTest: maybe use s == &quot;&quot; instead? (rules.go:13)
-test.go:5:6: qrules/boolComparison: omit bool literal in expression (rules1.go:8)
-</code></pre>
-
-<p>Using ruleguard from the <a href="https://github.com/go-critic/go-critic">go-critic</a> or <a href="https://github.com/golangci/golangci-lint">golangci-lint</a> stays the same. As long as bundles are installed and they can be located by the <code>go list $package_path</code>, everything should work fine.</p>
-
-<hr>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ ruleguard -rules rules.go test.go 
+test.go:4:6: emptyStringTest: maybe use s <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> instead? <span style="color:#f92672">(</span>rules.go:13<span style="color:#f92672">)</span>
+test.go:5:6: qrules/boolComparison: omit bool literal in expression <span style="color:#f92672">(</span>rules1.go:8<span style="color:#f92672">)</span>
+</code></pre></div><p>Using ruleguard from the <a href="https://github.com/go-critic/go-critic">go-critic</a> or <a href="https://github.com/golangci/golangci-lint">golangci-lint</a> stays the same. As long as bundles are installed and they can be located by the <code>go list $package_path</code>, everything should work fine.</p>
+<!-- raw HTML omitted -->
 <p>Limitations:</p>
-
 <ul>
 <li>Imported packages can&rsquo;t import other bundle packages (could be addressed later)</li>
 <li>Bundles are tied to Go modules; they might now work properly without them</li>

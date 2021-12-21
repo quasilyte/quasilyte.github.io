@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -77,44 +77,34 @@
     </header>
 
     
-    
+    <nav id="TableOfContents"></nav>
     
     <section class="post-content">
         <p>TL;DR:</p>
-
 <ul>
 <li>Write YAML as <a href="https://json5.org/">JSON5</a> (but use <code>#</code> for comments)</li>
 <li>Enforce this style with <a href="https://github.com/quasilyte/yaml5">yaml5 lint</a></li>
 </ul>
-
-<pre><code class="language-js"># JSON5? YAML?
-{a: 1, b: ['x', 'y']}
-</code></pre>
-
-<p>What you see above is a valid <a href="https://yaml.org/spec/1.2/spec.html">YAML 1.2</a> document.<br>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#a6e22e">JSON5</span><span style="color:#f92672">?</span> <span style="color:#a6e22e">YAML</span><span style="color:#f92672">?</span>
+{<span style="color:#a6e22e">a</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">b</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;x&#39;</span>, <span style="color:#e6db74">&#39;y&#39;</span>]}
+</code></pre></div><p>What you see above is a valid <a href="https://yaml.org/spec/1.2/spec.html">YAML 1.2</a> document.<!-- raw HTML omitted -->
 It uses the flow-style syntax for objects and arrays.</p>
-
-<p>If you look at the <a href="https://json5.org/">JSON5</a> feature list, you can deduce that YAML is a superset of JSON5.<br>
+<p>If you look at the <a href="https://json5.org/">JSON5</a> feature list, you can deduce that YAML is a superset of JSON5.<!-- raw HTML omitted -->
 The only difference is the single-line comment syntax.</p>
-
 <p>Yes, we can <a href="https://github.com/go-critic/go-critic/pull/966">go and re-write</a> all YAML files in a JSON5 style.</p>
-
 <p><a href="https://github.com/quasilyte/yaml5">YAML5</a> is the &ldquo;JSON with comments and trailing commas&rdquo; that some of us were waiting for. Just take YAML and write it like JSON5, the <code>yaml5 lint</code> tool can enforce our promise of not using any features outside of the JSON5 subset:</p>
-
-<pre><code class="language-bash">$ cat bad.yaml
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ cat bad.yaml
 foo:
   - a
   - key: val
 
 $ yaml5 lint bad.yaml 
 bad.yaml:1:4: used a key-value outside of an object
-bad.yaml:2:3: use a flow array syntax [] instead
+bad.yaml:2:3: use a flow array syntax <span style="color:#f92672">[]</span> instead
 bad.yaml:2:5: unquoted strings are not allowed
 bad.yaml:3:8: used a key-value outside of an object
 bad.yaml:3:10: infinity value should not be used
-</code></pre>
-
-<p>I&rsquo;m planning to implement <code>yaml5 fmt</code> tool that would pretty-print a YAML document as YAML5 document.</p>
+</code></pre></div><p>I&rsquo;m planning to implement <code>yaml5 fmt</code> tool that would pretty-print a YAML document as YAML5 document.</p>
 
     </section>
 

@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,40 +78,35 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#about-this-document">About this document</a></li><br>
-<li><a href="#documentation">Documentation</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#about-this-document">About this document</a></li><br>
+    <li><a href="#documentation">Documentation</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="about-this-document">About this document</h2>
-
-<p>This article is going to be up-to-date source of AVX-512 information in Go context.<br />
+        <h2 id="about-this-document">About this document</h2>
+<p>This article is going to be up-to-date source of AVX-512 information in Go context.<br>
 It references other posts, official documentation and other useful resources.</p>
-
-<p>It&rsquo;s short. By purpose.<br />
+<p>It&rsquo;s short. By purpose.<br>
 Only English content is referenced (original + translated).</p>
-
 <h2 id="documentation">Documentation</h2>
-
 <ul>
-<li><p><a href="https://github.com/golang/go/wiki/AVX-512-support-in-Go-assembler">AVX-512 support in Go assembler</a>:
+<li>
+<p><a href="https://github.com/golang/go/wiki/AVX-512-support-in-Go-assembler">AVX-512 support in Go assembler</a>:
 short reference that focuses on Go-specific implementation of AVX-512.
 It describes how to use all AVX-512 special features in Go assembly syntax as well as some encoder details.
-Contains some examples.</p></li>
-
-<li><p><a href="/blog/post/disassembling-go-avx512">Disassembling Go AVX-512</a>:
-how to disassemble and inspect AVX-512 machine code (given that <code>go tool objdump</code> can&rsquo;t do it).</p></li>
-
-<li><p><a href="https://github.com/intel-go/avx512counters">Hardware counters collector</a>:
+Contains some examples.</p>
+</li>
+<li>
+<p><a href="/blog/post/disassembling-go-avx512">Disassembling Go AVX-512</a>:
+how to disassemble and inspect AVX-512 machine code (given that <code>go tool objdump</code> can&rsquo;t do it).</p>
+</li>
+<li>
+<p><a href="https://github.com/intel-go/avx512counters">Hardware counters collector</a>:
 a program that runs all supported AVX-512 instructions on your machine and records turbo state perf events.
-There are pre-built example tables like <a href="https://github.com/intel-go/avx512counters/blob/master/avx512_core_i9_7900x.csv">avx512_core_i9_7900x.csv</a>.</p></li>
+There are pre-built example tables like <a href="https://github.com/intel-go/avx512counters/blob/master/avx512_core_i9_7900x.csv">avx512_core_i9_7900x.csv</a>.</p>
+</li>
 </ul>
 
     </section>

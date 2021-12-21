@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -77,86 +77,51 @@
     </header>
 
     
-    <nav id="TableOfContents">
-<ul>
-<li><a href="#intro">Intro</a></li><br>
-<li><a href="#the-go-calling-convention">The Go calling convention</a></li><br>
-<li><a href="#pointers-and-the-stackmap">Pointers and the stackmap</a></li><br>
-<li><a href="#no-local-pointers-macro">NO_LOCAL_POINTERS macro</a></li><br>
-<li><a href="#go-args-macro">GO_ARGS macro</a></li><br>
-<li><a href="#go-results-initialized-macro">GO_RESULTS_INITIALIZED macro</a></li><br>
-<li><a href="#calling-go-funcs-from-jit-code">Calling Go funcs from JIT code</a></li><br>
-<li><a href="#go-internal-abi">Go internal ABI</a></li><br>
-<li><a href="#useful-resources">Useful resources</a></li><br>
-</ul>
-</nav>
+    <nav id="TableOfContents"></nav>
     
     <section class="post-content">
-        
-
-<p><center>If you found a typo or a misspelling, please <a href="https://github.com/quasilyte/blog-src/issues/new">file an issue</a> or send a PR that fixes it.</center></p>
-
-<p><img src="https://hsto.org/webt/ep/4u/el/ep4uelswcffwgq9yfqkyuvcy5bu.png" alt="" /></p>
-
+        <!-- raw HTML omitted -->
+<p><img src="https://hsto.org/webt/ep/4u/el/ep4uelswcffwgq9yfqkyuvcy5bu.png" alt=""></p>
 <blockquote>
 <p>Original (ru): <a href="https://habr.com/ru/post/489482/">https://habr.com/ru/post/489482/</a>.</p>
 </blockquote>
-
 <h1 id="intro">Intro</h1>
-
 <p>As long as your assembler code does something simple, you&rsquo;re golden.</p>
-
 <p>As soon as you&rsquo;ll need to call a Go function from it, the first suggestion that you&rsquo;ll probably get: don&rsquo;t do it. Perhaps you would like to follow that advice, especially if you&rsquo;re unsure why you needed it in the first place.</p>
-
 <p>But what if you can&rsquo;t avoid that? Read-on, we have a cure.</p>
-
 <blockquote>
 <p>You&rsquo;ve run into a really hairy area of asm code.
 My first suggestion is not try to call from assembler into Go. &ndash; <a href="https://groups.google.com/d/msg/golang-nuts/a6NKBbL9fX0/SuMDpME-AgAJ">Ian Lance Taylor</a></p>
 </blockquote>
-
 <h1 id="the-go-calling-convention">The Go calling convention</h1>
-
 <p>The first thing that we need to understand is <a href="https://en.wikipedia.org/wiki/Calling_convention">how to pass function arguments and get its result</a>.</p>
-
 <p>I would recommend the <a href="https://github.com/golang/go/files/447163/GoFunctionsInAssembly.pdf">Go functions in assembly language</a> by <a href="https://twitter.com/MikeMunday">Michael Munday</a>.</p>
-
 <p>Normally, the calling convention is a very platform-dependent thing. We&rsquo;ll dig into <code>GOARCH=amd64</code> because this is what I&rsquo;m most familiar with.</p>
-
 <p>Here are some facts:</p>
-
 <ul>
 <li>All arguments are passed via the stack, expect the &ldquo;context&rdquo; in closures which occupies <code>DX</code> (%rdx) register.</li>
 <li>Function results are returned via the stack.</li>
 <li>Callee arguments are stored on the caller frame side.</li>
 <li>Frame allocation and de-allocation is performed by the callee. These actions are performed by the prologues and epilogues. Go assembler inserts them automatically.</li>
 </ul>
-
 <p>If there is not enough goroutine stack space, it will be extended. During that process, Go tries to fix pointers to the stack, so your program can work without knowing that anything changed.</p>
-
-<p><img src="https://hsto.org/webt/kb/jk/hy/kbjkhyjugizyb1weh2haraas7qy.png" alt="" /></p>
-
+<p><img src="https://hsto.org/webt/kb/jk/hy/kbjkhyjugizyb1weh2haraas7qy.png" alt=""></p>
 <p>This picture may become outdated if the <a href="https://github.com/golang/go/issues/18597">register-based calling convention</a> will be adopted.</p>
-
 <p>We&rsquo;ll try to call <code>gofunc</code> from the <code>asmfunc</code>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">package main
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">asmfunc</span>(<span style="color:#a6e22e">x</span> <span style="color:#66d9ef">int32</span>) (<span style="color:#66d9ef">int32</span>, <span style="color:#66d9ef">int32</span>)
 
-func asmfunc(x int32) (int32, int32)
-
-func gofunc(a1 int64, a2, a3 int32) (int32, int32) {
-	return int32(a1) + a2, int32(a1) + a3
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">gofunc</span>(<span style="color:#a6e22e">a1</span> <span style="color:#66d9ef">int64</span>, <span style="color:#a6e22e">a2</span>, <span style="color:#a6e22e">a3</span> <span style="color:#66d9ef">int32</span>) (<span style="color:#66d9ef">int32</span>, <span style="color:#66d9ef">int32</span>) {
+	<span style="color:#66d9ef">return</span> int32(<span style="color:#a6e22e">a1</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">a2</span>, int32(<span style="color:#a6e22e">a1</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">a3</span>
 }
 
-func main() {
-	v1, v2 := asmfunc(10)
-	println(v1, v2) // =&gt; 3, 11
-}
-</code></pre>
-
-<p>The <code>asmfunc</code> is defined as:</p>
-
-<pre><code class="language-x86asm">//; func asmfunc(x int32) (int32, int32)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">v1</span>, <span style="color:#a6e22e">v2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">asmfunc</span>(<span style="color:#ae81ff">10</span>)
+	println(<span style="color:#a6e22e">v1</span>, <span style="color:#a6e22e">v2</span>) <span style="color:#75715e">// =&gt; 3, 11
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>The <code>asmfunc</code> is defined as:</p>
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">//; func asmfunc(x int32) (int32, int32)
 TEXT ·asmfunc(SB), 0, $24-12
   MOVL x+0(FP), AX
   MOVQ $1, 0(SP)  //; First argument (a1 int64)
@@ -168,9 +133,7 @@ TEXT ·asmfunc(SB), 0, $24-12
   MOVL AX, ret+8(FP)  //; Return first result
   MOVL CX, ret+12(FP) //; Return second result
   RET
-</code></pre>
-
-<pre><code>$24-16 (locals=24 bytes, args=16 bytes)
+</code></pre><pre tabindex="0"><code>$24-16 (locals=24 bytes, args=16 bytes)
 
           0     8     12    16     20     SP
 locals=24 [a1:8][a2:4][a3:4][ret:4][ret:4]
@@ -179,75 +142,53 @@ locals=24 [a1:8][a2:4][a3:4][ret:4][ret:4]
         0    4          8      12     FP
 args=16 [x:4][padding:4][ret:4][ret:4]
 (ret belongs to main frame, it stores asmfunc results)
-</code></pre>
-
-<p>Note that there is 4-byte padding between the function arguments and its result for the alignment. Go requires function results to be pointer-aligned (8-byte on x64-64).</p>
-
+</code></pre><p>Note that there is 4-byte padding between the function arguments and its result for the alignment. Go requires function results to be pointer-aligned (8-byte on x64-64).</p>
 <p>Every argument is aligned, just like fields in a struct.</p>
-
 <p>If the first argument is <code>int32</code> and the second is <code>int64</code>, then the offset of the latter will be 8 instead of 4. This is more or less consistent with <code>reflect.TypeOf(T).Align()</code> result.</p>
-
 <p>Some mistakes related to the function frame size and <code>FP</code> register usage can be found with <code>go vet</code> (asmdecl).</p>
-
 <p>If you try to call <code>gofunc</code>, there should be no problems. But don&rsquo;t relax just yet.</p>
-
 <h1 id="pointers-and-the-stackmap">Pointers and the stackmap</h1>
-
 <p>Let&rsquo;s try to call a Go function with a pointer argument.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">foo</span>
 
-<pre><code class="language-go">package foo
-
-import (
-	&quot;fmt&quot;
-	&quot;testing&quot;
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;fmt&#34;</span>
+	<span style="color:#e6db74">&#34;testing&#34;</span>
 )
 
-func foo(ptr *object)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">foo</span>(<span style="color:#a6e22e">ptr</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">object</span>)
 
-type object struct {
-	x, y, z int64
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">object</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">z</span> <span style="color:#66d9ef">int64</span>
 }
 
-func printPtr(ptr *object) {
-	fmt.Println(*ptr)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">printPtr</span>(<span style="color:#a6e22e">ptr</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">object</span>) {
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#f92672">*</span><span style="color:#a6e22e">ptr</span>)
 }
 
-func TestFoo(t *testing.T) {
-	foo(&amp;object{x: 11, y: 22, z: 33})
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">TestFoo</span>(<span style="color:#a6e22e">t</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">testing</span>.<span style="color:#a6e22e">T</span>) {
+	<span style="color:#a6e22e">foo</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">object</span>{<span style="color:#a6e22e">x</span>: <span style="color:#ae81ff">11</span>, <span style="color:#a6e22e">y</span>: <span style="color:#ae81ff">22</span>, <span style="color:#a6e22e">z</span>: <span style="color:#ae81ff">33</span>})
 }
-</code></pre>
-
-<pre><code class="language-x86asm">TEXT ·foo(SB), 0, $8-8
+</code></pre></div><pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">TEXT ·foo(SB), 0, $8-8
   MOVQ ptr+0(FP), AX
   MOVQ AX, 0(SP)
   CALL ·printPtr(SB)
   RET
-</code></pre>
-
-<p>If we run that test, <a href="https://groups.google.com/d/msg/golang-nuts/a6NKBbL9fX0/MzUGGqQ9AgAJ">we&rsquo;ll get a panic</a>:</p>
-
-<pre><code>=== RUN   TestFoo
+</code></pre><p>If we run that test, <a href="https://groups.google.com/d/msg/golang-nuts/a6NKBbL9fX0/MzUGGqQ9AgAJ">we&rsquo;ll get a panic</a>:</p>
+<pre tabindex="0"><code>=== RUN   TestFoo
 runtime: frame &lt;censored&gt; untyped locals 0xc00008ff38+0x8
 fatal error: missing stackmap
-</code></pre>
-
-<p>In order to successfully find pointers on the stack, GC needs the help of so-called stackmaps. For normal Go functions, stackmaps are generated by the compiler. Assembler functions don&rsquo;t have this information.</p>
-
+</code></pre><p>In order to successfully find pointers on the stack, GC needs the help of so-called stackmaps. For normal Go functions, stackmaps are generated by the compiler. Assembler functions don&rsquo;t have this information.</p>
 <p>Well, we can have <strong>partial</strong> with the help of the &ldquo;function stubs&rdquo; (Go prototypes) with the correct types. The <a href="https://golang.org/doc/asm">documentation</a> also mentions cases where the stackmap is not necessary, but we need one in our program as it gently crashes without it.</p>
-
 <p>There are at least 3 approaches we can try to take from here:</p>
-
 <ul>
 <li>Try to make your asm function fall into the category where the stackmap is not needed (sometimes it&rsquo;s impossible).</li>
 <li>Manually build a stackmap inside the asm function body (difficult and error-prone).</li>
 <li>Use <code>NO_LOCAL_POINTERS</code> macro and pray that you know what you&rsquo;re doing.</li>
 </ul>
-
-<h1 id="no-local-pointers-macro">NO_LOCAL_POINTERS macro</h1>
-
+<h1 id="no_local_pointers-macro">NO_LOCAL_POINTERS macro</h1>
 <p>If we add the <code>NO_LOCAL_POINTERS</code> to our asm function, it&rsquo;ll pass the test:</p>
-
-<pre><code class="language-x86asm">#include &quot;funcdata.h&quot;
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">#include &quot;funcdata.h&quot;
 
 TEXT ·foo(SB), 0, $8-8
   NO_LOCAL_POINTERS
@@ -255,39 +196,23 @@ TEXT ·foo(SB), 0, $8-8
   MOVQ AX, 0(SP)
   CALL ·printPtr(SB)
   RET
-</code></pre>
-
-<p>Now we need to understand the hows and whys.</p>
-
+</code></pre><p>Now we need to understand the hows and whys.</p>
 <p>Why GC need to know which stack slots contain pointers? Let&rsquo;s assume that these pointers are coming from the caller, they are reachable from the code that called the assembler function. So it shouldn&rsquo;t be a problem that asm function local pointers are not considered to be &ldquo;live&rdquo;.</p>
-
 <p>Pointers can point to the stack objects as well as to the heap objects. When a stack resize happens, all pointers to stack values need to be fixed. This is the responsibility of the runtime to adjust the affected pointers.</p>
-
 <p>All pointers that are passed to the assembler function &ldquo;escape to the heap&rdquo; in the terms of the escape analysis, so it&rsquo;s not that simple to have a pointer to a stack-allocated value inside the assembler function.</p>
-
 <blockquote>
 <p>It&rsquo;s safe to use <code>NO_LOCAL_POINTERS</code> if all local pointers store heap-allocated addresses and they are reachable for the GC from somewhere else.</p>
 </blockquote>
-
 <p>With <a href="https://github.com/golang/proposal/blob/master/design/24543-non-cooperative-preemption.md">non-cooperative preemption</a>, it&rsquo;s good to keep in mind that <a href="https://go-review.googlesource.com/c/go/+/202337/">assembler functions with NO_LOCAL_POINTERS are not interrupted</a>.</p>
-
 <p>Another example of safe usage can be found <a href="https://github.com/golang/go/blob/d67d044310bc5cc1c26b60caf23a58602e9a1946/src/runtime/vlop_arm.s#L147-L158">inside the Go runtime</a>. Functions that are marked with <code>go:nosplit</code> will not have a stack resize. Nosplit can be used only inside <code>runtime</code> package.</p>
-
-<h1 id="go-args-macro">GO_ARGS macro</h1>
-
+<h1 id="go_args-macro">GO_ARGS macro</h1>
 <p>For asm functions that have Go prototype, <code>GO_ARGS</code> is automatically inserted by the assembler.</p>
-
 <p><code>GO_ARGS</code> is another macro from the <a href="https://golang.org/src/runtime/funcdata.h">funcdata.h</a>. It specifies that the arguments stackmap can be found inside a Go declaration.</p>
-
 <p>It didn&rsquo;t work in the past for the <a href="https://github.com/golang/go/issues/24419">functions defined in a different package</a>. Nowadays you don&rsquo;t need to manually place <code>args_stackmap</code> for the exported symbols.</p>
-
-<h1 id="go-results-initialized-macro">GO_RESULTS_INITIALIZED macro</h1>
-
+<h1 id="go_results_initialized-macro">GO_RESULTS_INITIALIZED macro</h1>
 <p>If asm function has a pointer return value and it makes calls to Go functions, it should begin with result stack slots zeroing (as they may contain garbage) followed by a <code>GO_RESULTS_INITIALIZED</code> macro call.</p>
-
 <p>Example:</p>
-
-<pre><code class="language-x86asm">//; func getg() interface{}
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">//; func getg() interface{}
 TEXT ·getg(SB), NOSPLIT, $32-16
   //; Interface consists of two pointers.
   //; Both of them need to be zeroed.
@@ -296,133 +221,104 @@ TEXT ·getg(SB), NOSPLIT, $32-16
   GO_RESULTS_INITIALIZED
   //; The function body...
   RET
-</code></pre>
-
-<p>In general, it&rsquo;s better to avoid asm functions that return a pointer result.</p>
-
+</code></pre><p>In general, it&rsquo;s better to avoid asm functions that return a pointer result.</p>
 <p>You can find more <code>GO_RESULTS_INITIALIZED</code> examples <a href="https://github.com/search?l=Unix+Assembly&amp;q=GO_RESULTS_INITIALIZED&amp;type=Code">by using a GitHub search</a>.</p>
-
 <h1 id="calling-go-funcs-from-jit-code">Calling Go funcs from JIT code</h1>
-
 <p>Now for the most exciting part: calling a Go function from a dynamically generated machine code.</p>
-
 <p>Go GC expects that all code that makes a function calls is available during the compile time. That means that <a href="https://github.com/golang/go/issues/20123">Go doesn&rsquo;t play well with JITed code</a>.</p>
-
 <p>We&rsquo;ll start by reproducing a fatal error.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// file jit.go
+</span><span style="color:#75715e"></span><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
 
-<pre><code class="language-go">// file jit.go
-package main
-
-import (
-	&quot;log&quot;
-	&quot;reflect&quot;
-	&quot;syscall&quot;
-	&quot;unsafe&quot;
+<span style="color:#f92672">import</span> (
+	<span style="color:#e6db74">&#34;log&#34;</span>
+	<span style="color:#e6db74">&#34;reflect&#34;</span>
+	<span style="color:#e6db74">&#34;syscall&#34;</span>
+	<span style="color:#e6db74">&#34;unsafe&#34;</span>
 )
 
-func main() {
-	a := funcAddr(goFunc)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">funcAddr</span>(<span style="color:#a6e22e">goFunc</span>)
 
-	code := []byte{
-		// MOVQ addr(goFunc), AX
-		0xb8, byte(a), byte(a &gt;&gt; 8), byte(a &gt;&gt; 16), byte(a &gt;&gt; 24),
-		// CALL AX
-		0xff, 0xd0,
-		// RET
-		0xc3,
+	<span style="color:#a6e22e">code</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">byte</span>{
+		<span style="color:#75715e">// MOVQ addr(goFunc), AX
+</span><span style="color:#75715e"></span>		<span style="color:#ae81ff">0xb8</span>, byte(<span style="color:#a6e22e">a</span>), byte(<span style="color:#a6e22e">a</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">8</span>), byte(<span style="color:#a6e22e">a</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">16</span>), byte(<span style="color:#a6e22e">a</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">24</span>),
+		<span style="color:#75715e">// CALL AX
+</span><span style="color:#75715e"></span>		<span style="color:#ae81ff">0xff</span>, <span style="color:#ae81ff">0xd0</span>,
+		<span style="color:#75715e">// RET
+</span><span style="color:#75715e"></span>		<span style="color:#ae81ff">0xc3</span>,
 	}
 
-	executable, err := mmapExecutable(len(code))
-	if err != nil {
-		log.Panicf(&quot;mmap: %v&quot;, err)
+	<span style="color:#a6e22e">executable</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">mmapExecutable</span>(len(<span style="color:#a6e22e">code</span>))
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Panicf</span>(<span style="color:#e6db74">&#34;mmap: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-	copy(executable, code)
-	callJIT(&amp;executable[0])
+	copy(<span style="color:#a6e22e">executable</span>, <span style="color:#a6e22e">code</span>)
+	<span style="color:#a6e22e">callJIT</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">executable</span>[<span style="color:#ae81ff">0</span>])
 }
 
-func callJIT(code *byte)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">callJIT</span>(<span style="color:#a6e22e">code</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">byte</span>)
 
-func goFunc() {
-	println(&quot;called from JIT&quot;)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">goFunc</span>() {
+	println(<span style="color:#e6db74">&#34;called from JIT&#34;</span>)
 }
 
-// Extra (scary) code is hidden under the spoiler for brevity.
-</code></pre>
-
-<p><details>
-<summary>Helper functions</summary></p>
-
-<pre><code class="language-go">func mmapExecutable(length int) ([]byte, error) {
-	const prot = syscall.PROT_READ | syscall.PROT_WRITE | syscall.PROT_EXEC
-	const flags = syscall.MAP_PRIVATE | syscall.MAP_ANON
-	return mmapLinux(0, uintptr(length), prot, flags, 0, 0)
+<span style="color:#75715e">// Extra (scary) code is hidden under the spoiler for brevity.
+</span></code></pre></div><!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">mmapExecutable</span>(<span style="color:#a6e22e">length</span> <span style="color:#66d9ef">int</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">prot</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">PROT_READ</span> | <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">PROT_WRITE</span> | <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">PROT_EXEC</span>
+	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">flags</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">MAP_PRIVATE</span> | <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">MAP_ANON</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mmapLinux</span>(<span style="color:#ae81ff">0</span>, uintptr(<span style="color:#a6e22e">length</span>), <span style="color:#a6e22e">prot</span>, <span style="color:#a6e22e">flags</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>)
 }
 
-func mmapLinux(addr, length, prot, flags, fd, off uintptr) ([]byte, error) {
-	ptr, _, err := syscall.Syscall6(
-		syscall.SYS_MMAP,
-		addr, length, prot, flags, fd, offset)
-	if err != 0 {
-		return nil, err
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">mmapLinux</span>(<span style="color:#a6e22e">addr</span>, <span style="color:#a6e22e">length</span>, <span style="color:#a6e22e">prot</span>, <span style="color:#a6e22e">flags</span>, <span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">off</span> <span style="color:#66d9ef">uintptr</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">ptr</span>, <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">Syscall6</span>(
+		<span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">SYS_MMAP</span>,
+		<span style="color:#a6e22e">addr</span>, <span style="color:#a6e22e">length</span>, <span style="color:#a6e22e">prot</span>, <span style="color:#a6e22e">flags</span>, <span style="color:#a6e22e">fd</span>, <span style="color:#a6e22e">offset</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">err</span>
 	}
-	slice := *(*[]byte)(unsafe.Pointer(&amp;reflect.SliceHeader{
-		Data: ptr,
-		Len:  int(length),
-		Cap:  int(length),
+	<span style="color:#a6e22e">slice</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span>(<span style="color:#f92672">*</span>[]<span style="color:#66d9ef">byte</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">reflect</span>.<span style="color:#a6e22e">SliceHeader</span>{
+		<span style="color:#a6e22e">Data</span>: <span style="color:#a6e22e">ptr</span>,
+		<span style="color:#a6e22e">Len</span>:  int(<span style="color:#a6e22e">length</span>),
+		<span style="color:#a6e22e">Cap</span>:  int(<span style="color:#a6e22e">length</span>),
 	}))
-	return slice, nil
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">slice</span>, <span style="color:#66d9ef">nil</span>
 }
 
-func funcAddr(fn interface{}) uintptr {
-	type emptyInterface struct {
-		typ   uintptr
-		value *uintptr
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">funcAddr</span>(<span style="color:#a6e22e">fn</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">uintptr</span> {
+	<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">emptyInterface</span> <span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">typ</span>   <span style="color:#66d9ef">uintptr</span>
+		<span style="color:#a6e22e">value</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">uintptr</span>
 	}
-	e := (*emptyInterface)(unsafe.Pointer(&amp;fn))
-	return *e.value
+	<span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#a6e22e">emptyInterface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">fn</span>))
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">value</span>
 }
-</code></pre>
-
-<p></details></p>
-
-<pre><code class="language-x86asm">// file jit_amd64.s
+</code></pre></div><!-- raw HTML omitted -->
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">// file jit_amd64.s
 TEXT ·calljit(SB), 0, $0-8
     MOVQ code+0(FP), AX
     JMP AX
-</code></pre>
-
-<p>If you build and run that program, it&rsquo;ll look like everything works fine:</p>
-
-<pre><code class="language-bash">$ go build -o jit . &amp;&amp; ./jit
+</code></pre><p>If you build and run that program, it&rsquo;ll look like everything works fine:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go build -o jit . <span style="color:#f92672">&amp;&amp;</span> ./jit
 called from JIT
-</code></pre>
-
-<p>With a single line addition to a <code>goFunc</code>, we can make our program crash:</p>
-
-<pre><code class="language-diff"> func goFunc() {
- 	println(&quot;called from JIT&quot;)
-+ 	runtime.GC()
- }
-</code></pre>
-
-<pre><code class="language-bash">$ go build -o jit . &amp;&amp; ./jit
+</code></pre></div><p>With a single line addition to a <code>goFunc</code>, we can make our program crash:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff"> func goFunc() {
+ 	println(&#34;called from JIT&#34;)
+<span style="color:#a6e22e">+ 	runtime.GC()
+</span><span style="color:#a6e22e"></span> }
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go build -o jit . <span style="color:#f92672">&amp;&amp;</span> ./jit
 called from JIT
-runtime: unexpected return pc for main.goFunc called from 0x7f9465f7c007
-stack: frame={sp:0xc00008ced0, fp:0xc00008cef0} stack=[0xc00008c000,0xc00008d000)
-000000c00008cdd0:  0000000000000000  00007f94681f7558 
+runtime: unexpected <span style="color:#66d9ef">return</span> pc <span style="color:#66d9ef">for</span> main.goFunc called from 0x7f9465f7c007
+stack: frame<span style="color:#f92672">={</span>sp:0xc00008ced0, fp:0xc00008cef0<span style="color:#f92672">}</span> stack<span style="color:#f92672">=[</span>0xc00008c000,0xc00008d000<span style="color:#f92672">)</span>
+000000c00008cdd0:  <span style="color:#ae81ff">0000000000000000</span>  00007f94681f7558 
 000000c00008cde0:  000000c000029270  000000000000000b 
-... (+ more)
-</code></pre>
-
-<p>The &ldquo;return PC&rdquo; points to a JIT code that is unknown to the runtime, hence the error:</p>
-
-<p><img src="/blog/img/jit_call1.png" alt="" /></p>
-
+... <span style="color:#f92672">(</span>+ more<span style="color:#f92672">)</span>
+</code></pre></div><p>The &ldquo;return PC&rdquo; points to a JIT code that is unknown to the runtime, hence the error:</p>
+<p><img src="/blog/img/jit_call1.png" alt=""></p>
 <p>If Go runtime doesn&rsquo;t want us to call a function from a JIT code, we&rsquo;ll call them from the places it can recognize.</p>
-
 <p>The second version of the <code>callJIT</code> will have a section that is responsible for the Go function call. Whenever we need to call a Go function we&rsquo;ll jump to that <code>gocall</code> section.</p>
-
-<pre><code class="language-x86asm">#include &quot;funcdata.h&quot;
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">#include &quot;funcdata.h&quot;
 
 TEXT ·callJIT(SB), 0, $8-8
     NO_LOCAL_POINTERS
@@ -431,58 +327,45 @@ TEXT ·callJIT(SB), 0, $8-8
 gocall:
     CALL CX
     JMP (SP)
-</code></pre>
-
-<p>Some notable changes:</p>
-
+</code></pre><p>Some notable changes:</p>
 <ul>
 <li>We need at least 8 extra frame bytes to write the origin return address</li>
 <li><code>NO_LOCAL_POINTERS</code> is needed due to the <code>CALL</code> and non-zero frame size</li>
 </ul>
-
 <p>The normal execution path for the <code>callJIT</code> is unchanged.</p>
-
 <p><code>gocall</code> handles JIT-&gt;Go calls. We expect that the caller puts the callee function address into <code>CX</code> and the origin return address into <code>(SP)</code>.</p>
-
 <p>Now we need the <code>gocall</code> label address. I used the disassembler to get that, but maybe there is a more clear way to do it.</p>
-
 <p>The modified <code>main</code> is shown below.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">funcAddr</span>(<span style="color:#a6e22e">goFunc</span>)
+<span style="color:#a6e22e">j</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">funcAddr</span>(<span style="color:#a6e22e">calljit</span>) <span style="color:#f92672">+</span> <span style="color:#ae81ff">36</span>
 
-<pre><code class="language-go">a := funcAddr(goFunc)
-j := funcAddr(calljit) + 36
+<span style="color:#a6e22e">code</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">byte</span>{
+    <span style="color:#75715e">// MOVQ funcAddr(goFunc), CX
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">0x48</span>, <span style="color:#ae81ff">0xc7</span>, <span style="color:#ae81ff">0xc1</span>, byte(<span style="color:#a6e22e">a</span>), byte(<span style="color:#a6e22e">a</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">8</span>), byte(<span style="color:#a6e22e">a</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">16</span>), byte(<span style="color:#a6e22e">a</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">24</span>),
+    <span style="color:#75715e">// MOVQ funcAddr(gocall), DI
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">0x48</span>, <span style="color:#ae81ff">0xc7</span>, <span style="color:#ae81ff">0xc7</span>, byte(<span style="color:#a6e22e">j</span>), byte(<span style="color:#a6e22e">j</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">8</span>), byte(<span style="color:#a6e22e">j</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">16</span>), byte(<span style="color:#a6e22e">j</span> <span style="color:#f92672">&gt;&gt;</span> <span style="color:#ae81ff">24</span>),
+    <span style="color:#75715e">// LEAQ 6(PC), SI
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">0x48</span>, <span style="color:#ae81ff">0x8d</span>, <span style="color:#ae81ff">0x35</span>, (<span style="color:#ae81ff">4</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">2</span>), <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>,
+    <span style="color:#75715e">// MOVQ SI, (SP)
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">0x48</span>, <span style="color:#ae81ff">0x89</span>, <span style="color:#ae81ff">0x34</span>, <span style="color:#ae81ff">0x24</span>,
+    <span style="color:#75715e">// JMP DI
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">0xff</span>, <span style="color:#ae81ff">0xe7</span>,
 
-code := []byte{
-    // MOVQ funcAddr(goFunc), CX
-    0x48, 0xc7, 0xc1, byte(a), byte(a &gt;&gt; 8), byte(a &gt;&gt; 16), byte(a &gt;&gt; 24),
-    // MOVQ funcAddr(gocall), DI
-    0x48, 0xc7, 0xc7, byte(j), byte(j &gt;&gt; 8), byte(j &gt;&gt; 16), byte(j &gt;&gt; 24),
-    // LEAQ 6(PC), SI
-    0x48, 0x8d, 0x35, (4 + 2), 0, 0, 0,
-    // MOVQ SI, (SP)
-    0x48, 0x89, 0x34, 0x24,
-    // JMP DI
-    0xff, 0xe7,
-
-    // ADDQ $framesize, SP
-    0x48, 0x83, 0xc4, (8 + 8),
-    // RET
-    0xc3,
+    <span style="color:#75715e">// ADDQ $framesize, SP
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">0x48</span>, <span style="color:#ae81ff">0x83</span>, <span style="color:#ae81ff">0xc4</span>, (<span style="color:#ae81ff">8</span> <span style="color:#f92672">+</span> <span style="color:#ae81ff">8</span>),
+    <span style="color:#75715e">// RET
+</span><span style="color:#75715e"></span>    <span style="color:#ae81ff">0xc3</span>,
 }
-</code></pre>
-
-<p>The &ldquo;call Go&rdquo; code sequence:</p>
-
+</code></pre></div><p>The &ldquo;call Go&rdquo; code sequence:</p>
 <ol>
 <li>The callee address is stored in <code>CX</code></li>
 <li>The <code>gocall</code> address is stored in <code>DI</code></li>
-<li>The return address is evaluated to <code>SI</code>, then stored to <code>(SP)</code><br>
+<li>The return address is evaluated to <code>SI</code>, then stored to <code>(SP)</code><!-- raw HTML omitted -->
 4+2 is a width of <code>MOVQ</code> and <code>JMP</code> instructions that follow the <code>LEAQ</code></li>
 <li>Then we jump to the <code>gocall</code></li>
 </ol>
-
 <p>Our function now has a frame, so we need to do a cleanup before returning. 8 bytes for our frame plus 8 bytes for the <code>BP</code> spilling.</p>
-
-<pre><code>here we store the return address for gocall
+<pre tabindex="0"><code>here we store the return address for gocall
 |
 |       Go stores the previous BP value here
 |       |
@@ -494,48 +377,28 @@ code := []byte{
 |          /     pushed by the CALL during the callJIT() call from main
 |         /
 callJIT frame, 16 bytes 
-</code></pre>
-
-<p>With that trampoline, Go runtime sees a known <code>callJIT</code> function in its call stack:</p>
-
-<p><img src="/blog/img/jit_call2.png" alt="" /></p>
-
-<pre><code class="language-bash">$ go build -o jit . &amp;&amp; ./jit
+</code></pre><p>With that trampoline, Go runtime sees a known <code>callJIT</code> function in its call stack:</p>
+<p><img src="/blog/img/jit_call2.png" alt=""></p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go build -o jit . <span style="color:#f92672">&amp;&amp;</span> ./jit
 called from JIT
-</code></pre>
-
-<p>Success!</p>
-
+</code></pre></div><p>Success!</p>
 <p>This solution can be modified to call Go functions with arguments. All you need to do is to add some extra frame space in <code>callJIT</code> to put Go function arguments there.</p>
-
 <h1 id="go-internal-abi">Go internal ABI</h1>
-
 <p><a href="https://github.com/golang/proposal/blob/master/design/27539-internal-abi.md">Go Internal ABI</a> is another hot topic.</p>
-
 <p>Long story short, Go may get a new <code>ABI</code> pretty soon. It&rsquo;s going to be versioned.</p>
-
 <p>The proposal highlighted two things:</p>
-
 <ul>
 <li>The existing assembler code will continue to work correctly.</li>
 <li>Older calling conventions will still be supported for the new code.</li>
 </ul>
-
-<p>The original Go calling convention is a part of <code>ABI0</code>.<br>
+<p>The original Go calling convention is a part of <code>ABI0</code>.<!-- raw HTML omitted -->
 The experimental calling convention is a part of <code>ABIInternal</code>.</p>
-
 <p>If we&rsquo;ll start a Go compilation with <code>-S</code> flag, it&rsquo;s possible to note that <code>ABIInternal</code> is already there (but it&rsquo;s very similar to <code>ABI0</code> right now):</p>
-
-<p><img src="https://habrastorage.org/webt/yf/cz/ox/yfczox8dzfemakdghfoit5m14iu.png" alt="" /></p>
-
+<p><img src="https://habrastorage.org/webt/yf/cz/ox/yfczox8dzfemakdghfoit5m14iu.png" alt=""></p>
 <p>When <code>ABIInternal</code> will be good enough, it&rsquo;ll be released as <code>ABI1</code> and the cycle will continue.</p>
-
 <p>The good news is that our assembler code should continue to work correctly, at least in the near future. On this optimistic note, I would like to finish this article.</p>
-
 <h1 id="useful-resources">Useful resources</h1>
-
-<p><img src="https://habrastorage.org/webt/q2/is/vu/q2isvuiycngnmodmqvefkv7bmfw.png" alt="" /></p>
-
+<p><img src="https://habrastorage.org/webt/q2/is/vu/q2isvuiycngnmodmqvefkv7bmfw.png" alt=""></p>
 <ul>
 <li><a href="https://github.com/golang/go/files/447163/GoFunctionsInAssembly.pdf">Go functions in assembly language</a></li>
 <li><a href="https://github.com/golang/proposal/blob/master/design/27539-internal-abi.md">Go internal ABI</a></li>

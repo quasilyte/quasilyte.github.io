@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,88 +78,64 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#the-missing-feature">The missing feature</a></li><br>
-<li><a href="#naive-solution">Naive solution</a></li><br>
-<li><a href="#no-allocations-with-preallocations">No allocations with preallocations</a></li><br>
-<li><a href="#list-vs-vector">List vs vector</a></li><br>
-<li><a href="#neither-list-nor-vector">Neither list, nor vector?</a></li><br>
-<li><a href="#mv-lib">mv-lib</a></li><br>
-<li><a href="#why-i-prefer-goism">Why I prefer goism</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#the-missing-feature">The missing feature</a></li><br>
+    <li><a href="#naive-solution">Naive solution</a></li><br>
+    <li><a href="#no-allocations-with-preallocations">No allocations with preallocations</a></li><br>
+    <li><a href="#list-vs-vector">List vs vector</a></li><br>
+    <li><a href="#neither-list-nor-vector">Neither list, nor vector?</a></li><br>
+    <li><a href="#mv-lib">mv-lib</a></li><br>
+    <li><a href="#why-i-prefer-goism">Why I prefer goism</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="the-missing-feature">The missing feature</h2>
-
+        <h2 id="the-missing-feature">The missing feature</h2>
 <p>Did you ever wrote a function in <strong>Emacs Lisp</strong> which should return
 more than one result?</p>
-
 <p>Emacs Lisp has no native support for multiple return values,
 but provides <code>cl-lib</code> that emulates it in a <strong>Common Lisp</strong> style.</p>
-
 <p>In this article I will show that <code>cl-values</code> is suboptimal and
 can be replaced without any sacrifices to the convenience.</p>
-
 <h2 id="naive-solution">Naive solution</h2>
-
 <p><code>cl-lib</code> implements <code>cl-values</code> in terms of <code>list</code>.
 This approach is naive because each time you return with that,
 an allocation is involved. GC will trigger more frequently
 and perfomance will degrade.</p>
-
-<pre><code class="language-lisp">(let ((lexical-binding t))
-  (benchmark-run-compiled 1000000
-    (cl-multiple-value-bind (a b c) (cl-values 1 2 3)
-    (ignore a b c)))) ;; =&gt; (0.8493319750000001 59 0.7827748330000008)
-;; ...more than 50 garbage collections,
-</code></pre>
-
-<p>We see the bottleneck now: proposed solutions should
-avoid memory allocations.<br />
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">(<span style="color:#66d9ef">let</span> ((lexical-binding <span style="color:#66d9ef">t</span>))
+  (benchmark-run-compiled <span style="color:#ae81ff">1000000</span>
+    (cl-multiple-value-bind (a b c) (cl-values <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span>)
+    (<span style="color:#66d9ef">ignore</span> a b c)))) <span style="color:#75715e">;; =&gt; (0.8493319750000001 59 0.7827748330000008)</span>
+<span style="color:#75715e">;; ...more than 50 garbage collections,</span>
+</code></pre></div><p>We see the bottleneck now: proposed solutions should
+avoid memory allocations.<br>
 In other words: no <code>list</code>, <code>cons</code>, <code>vector</code>, &hellip;</p>
-
 <h2 id="no-allocations-with-preallocations">No allocations with preallocations</h2>
-
 <p>We can still use lists and vectors if preallocation is done.
 Multiple return values are mostly consist of 2-4 elements =&gt;
 the set of required containers is fixed and known beforehand.</p>
-
-<pre><code class="language-lisp">(defvar mv--2 (make-vector 2 nil))
-(defvar mv--3 (make-vector 3 nil))
-;; ... as many as we need.
-</code></pre>
-
-<p>When 2 value tuple must be returned, <code>mv--2</code> vector
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">(defvar mv--2 (make-vector <span style="color:#ae81ff">2</span> <span style="color:#66d9ef">nil</span>))
+(defvar mv--3 (make-vector <span style="color:#ae81ff">3</span> <span style="color:#66d9ef">nil</span>))
+<span style="color:#75715e">;; ... as many as we need.</span>
+</code></pre></div><p>When 2 value tuple must be returned, <code>mv--2</code> vector
 is populated with corresponding values.
 For 3 value tuple, <code>mv--3</code> is used.
 Filled vector is returned to the caller.
 Special macro can be used to extract vector elements
 into specified bindings.</p>
-
 <p>This brings us close to the <code>cl-lib</code>, but without allocations.</p>
-
 <p>Emacs Lisp has no real multithreading, so it is safe to
 store results inside private global variable.</p>
-
 <h2 id="list-vs-vector">List vs vector</h2>
-
 <p>The choice between <code>vector</code> and <code>list</code> is not easy,
 especially if you know
 <a href="https://www.emacswiki.org/emacs/ByteCodeEngineering">Emacs bytecode</a>.</p>
-
 <p>First operation we care about is <strong>return efficiency</strong>.
 To make multi value return, preallocated list/vector
 must be filled with data.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">                          f(x, y) = x, y+1
 
-<pre><code class="language-text">                          f(x, y) = x, y+1
-
-(defvar mv--2 '(nil . nil))           (defvar mv--2 [nil nil])
+(defvar mv--2 &#39;(nil . nil))           (defvar mv--2 [nil nil])
 constants=[mv--2] maxStack=5          constants=[mv--2 0 1] maxStack=6
                                     |
 add1        &lt;x y+1&gt;                 | add1        &lt;x y+1&gt;
@@ -173,21 +149,15 @@ setcdr      &lt;x y+1 mv--2&gt;           + constant 2  &lt;x y+1 mv--2 mv--2 1&
 ret                                 + stack-ref 3 &lt;x y+1 mv--2 mv--2 1 y+1&gt;
                                     + aset        &lt;x y+1 mv--2&gt;
                                     | ret
-</code></pre>
-
-<p>Left block shows list implementation. Right block is for vector.</p>
-
+</code></pre></div><p>Left block shows list implementation. Right block is for vector.</p>
 <p>As you may see, for <code>N=2</code> case cons cell is better than vector in many ways:</p>
-
 <ul>
 <li>Bytecode is shorter</li>
 <li>Less stack space is used</li>
 <li>Smaller constant vector (no need for indexes)</li>
 </ul>
-
 <p>Second operation is <strong>return value receive</strong>.</p>
-
-<pre><code class="language-text">                          let x, y = f(...)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">                          let x, y = f(...)
 
 call ...    &lt;mv--ret2&gt;            | call ...    &lt;mv--ret2&gt;
 dup         &lt;mv--ret2 mv--ret2&gt;   | dup         &lt;mv--ret2 mv--ret2&gt;
@@ -196,133 +166,101 @@ stack-ref 1 &lt;mv--ret2 x mv--ret2&gt; + aget        &lt;mv--ret2 x&gt;
 cdr         &lt;mv--ret2 x y&gt;        + stack-ref 1 &lt;mv--ret2 x mv--ret2&gt;
                                   + constant Y  &lt;mv--ret2 x mv--ret2 1&gt;
                                   + aget        &lt;mv--ret2 x y&gt;
-</code></pre>
-
-<p>What about 3 or more return values?
+</code></pre></div><p>What about 3 or more return values?
 General algorithm for lists is:</p>
-
 <ol>
 <li>For <code>N</code> return values use dedicated preallocated list</li>
 <li>First value bound with <code>setcar</code></li>
 <li>Last value bound with <code>setcdr</code></li>
 <li>Values in between set with <code>setcar</code> AND perform <code>cdr</code></li>
 </ol>
-
 <p>Note that used list is not <strong>proper list</strong>. The last <code>cdr</code> is not <code>nil</code>.</p>
-
 <p>At <code>N=3</code> vector and list are nealy equal in efficiency, <code>N=4</code> favors vectors.
 List becomes less and less efficient as the <code>N</code> grows.
 In my experience 2-value returns cover 90% of cases.
 This means that list is a winner here.</p>
-
 <p>Another thing worth considering is ability to discard some
 of the return values. In <strong>Go</strong> you can do <code>a, _, c := f()</code>
 which assigns 1st and 3rd returned values; 2nd value is ignored.
 Generally, lists are slower here because you still need to
 traverse ignored elements.</p>
-
 <p>Next section describes another implementation option which
 is a good compromise between list and vector in terms of
 {return/assign/discard} operations perfomance.</p>
-
 <h2 id="neither-list-nor-vector">Neither list, nor vector?</h2>
-
 <p>It is possible to avoid lists and vectors completely.</p>
-
 <p>For each <strong>additional</strong> return value it is possible to use
 single global variable.</p>
-
 <p>First value is returned as usual, while others
 use <code>varset</code> (setq) to bind additional data.
 On the caller side, function result is bound to
 the first variable; other variables read from
 corresponding global variables.</p>
-
-<pre><code class="language-lisp">;; Return &quot;a&quot;, &quot;b&quot;, &quot;c&quot;:
-(progn
-  (setq mv--3 &quot;c&quot;)
-  (setq mv--2 &quot;b&quot;)
-  &quot;a&quot;)
-;; Bind results:
-(let ((x1 (f ...)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp"><span style="color:#75715e">;; Return &#34;a&#34;, &#34;b&#34;, &#34;c&#34;:</span>
+(<span style="color:#66d9ef">progn</span>
+  (<span style="color:#66d9ef">setq</span> mv--3 <span style="color:#e6db74">&#34;c&#34;</span>)
+  (<span style="color:#66d9ef">setq</span> mv--2 <span style="color:#e6db74">&#34;b&#34;</span>)
+  <span style="color:#e6db74">&#34;a&#34;</span>)
+<span style="color:#75715e">;; Bind results:</span>
+(<span style="color:#66d9ef">let</span> ((x1 (f <span style="color:#f92672">...</span>)
       (x2 mv--2)
       (x3 mv--3)))
-  ...)
-</code></pre>
-
-<p>This gives us very compact bytecode. Perfomance
+  <span style="color:#f92672">...</span>)
+</code></pre></div><p>This gives us very compact bytecode. Perfomance
 depends on many factors, but it can
 match implementation based on preallocated lists.</p>
-
 <p>Let&rsquo;s use this idea to create <code>mv-lib</code>.</p>
-
 <h2 id="mv-lib">mv-lib</h2>
-
 <p>The minimal <code>mv-lib</code> should consist of at least two macros:</p>
-
 <ol>
 <li><code>mv-ret</code> - yield a multi value</li>
 <li><code>mv-let</code> - bind multi value to local variables</li>
 </ol>
-
 <p>Like with other solutions, predefined globals are required.
 For simplicity, they have 0-based suffixes.
 That is, second return value is stored inside <code>mv--0</code> (not in <code>mv--2</code>).</p>
-
-<pre><code class="language-lisp">(defconst mv--max-count 10) ;; Arbitrary limit
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">(defconst mv--max-count <span style="color:#ae81ff">10</span>) <span style="color:#75715e">;; Arbitrary limit</span>
 
 (defun mv--var (index)
-  &quot;Get return value variable symbol by INDEX&quot;
-  (when (&gt;= index mv--max-count)
-    (error &quot;Index %d is too high (%d is max)&quot; index (1- mv--max-count)))
-  (intern (format &quot;mv--%d&quot; index)))
+  <span style="color:#e6db74">&#34;Get return value variable symbol by INDEX&#34;</span>
+  (when (<span style="color:#a6e22e">&gt;=</span> index mv--max-count)
+    (<span style="color:#66d9ef">error</span> <span style="color:#e6db74">&#34;Index %d is too high (%d is max)&#34;</span> index (<span style="color:#a6e22e">1-</span> mv--max-count)))
+  (<span style="color:#a6e22e">intern</span> (<span style="color:#a6e22e">format</span> <span style="color:#e6db74">&#34;mv--%d&#34;</span> index)))
 
 (dotimes (i mv--max-count)
-  (eval `(defvar ,(mv--var i) nil)))
-</code></pre>
-
-<p><code>mv-ret</code> and <code>mv-let</code> are convenience wrappers for code that is
+  (<span style="color:#a6e22e">eval</span> <span style="color:#f92672">`</span>(defvar <span style="color:#f92672">,</span>(mv--var i) <span style="color:#66d9ef">nil</span>)))
+</code></pre></div><p><code>mv-ret</code> and <code>mv-let</code> are convenience wrappers for code that is
 presented in previous section.</p>
-
 <p><a href="/blog/code/mv-lib.el">Full mv-lib implementation</a>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp"><span style="color:#75715e">;; Bind multiple values with some of them being ignored.</span>
+(mv-let (a _ b _) (mv-ret <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span> <span style="color:#ae81ff">4</span>)
+  (<span style="color:#a6e22e">+</span> a b)) <span style="color:#75715e">;; =&gt; 4</span>
 
-<pre><code class="language-lisp">;; Bind multiple values with some of them being ignored.
-(mv-let (a _ b _) (mv-ret 1 2 3 4)
-  (+ a b)) ;; =&gt; 4
-
-;; Compare with `cl-lib'.
-(let ((lexical-binding t))
-  (benchmark-run-compiled 1000000
-    (mv-let (a b c) (mv-ret 1 2 3)
-      (ignore a b c)))) ;; =&gt; (0.174552687 0 0.0)
-;; 0 GC runs!
-</code></pre>
-
-<blockquote>
+<span style="color:#75715e">;; Compare with `cl-lib&#39;.</span>
+(<span style="color:#66d9ef">let</span> ((lexical-binding <span style="color:#66d9ef">t</span>))
+  (benchmark-run-compiled <span style="color:#ae81ff">1000000</span>
+    (mv-let (a b c) (mv-ret <span style="color:#ae81ff">1</span> <span style="color:#ae81ff">2</span> <span style="color:#ae81ff">3</span>)
+      (<span style="color:#66d9ef">ignore</span> a b c)))) <span style="color:#75715e">;; =&gt; (0.174552687 0 0.0)</span>
+<span style="color:#75715e">;; 0 GC runs!</span>
+</code></pre></div><blockquote>
 <p>Multitple values return with zero allocations achieved</p>
 </blockquote>
-
 <p>Each <code>_</code> bind variable does not produce any code,
 they truly ignore the result.
 Important exception is the first binding. It can not
 discard the bound expression because it has side-effect
 of setting rest return values.</p>
-
 <h2 id="why-i-prefer-goism">Why I prefer goism</h2>
-
 <p>Macro can help a lot with many features, but what about
 packages or namespaces?</p>
-
 <p>It is tedious and ugly to use prefixed identifiers for <strong>everything</strong>.
 Even <strong>C</strong> has better modularity and encapsulation with
 internal linkage and opaque pointers.</p>
-
 <p>Everyone understand complications that arise with modules
 for Emacs. Luckily, there is another way.
 Some languages already have modules.
 With <a href="https://github.com/Quasilyte/goism">goism</a> it is possible
 to write <strong>Go</strong> code that is translated into <strong>Emacs Lisp</strong>.</p>
-
 <p>As a bonus, when <strong>goism</strong> will be complete, we could
 use <strong>Go</strong> libraries inside Emacs.</p>
 

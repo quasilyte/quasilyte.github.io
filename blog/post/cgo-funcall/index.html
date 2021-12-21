@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,281 +78,210 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#dwim-style-ffi">DWIM-style FFI</a></li><br>
-<li><a href="#universal-go-c-value-mapping">Universal {Go}-&gt;{C} value mapping</a></li><br>
-<li><a href="#cgo-function-metadata">CGo function metadata</a></li><br>
-<li><a href="#implementation-overview">Implementation overview</a></li><br>
-<li><a href="#warnings-and-closing-notes">Warnings and closing notes</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#dwim-style-ffi">DWIM-style FFI</a></li><br>
+    <li><a href="#universal-go-c-value-mapping">Universal {Go}-&gt;{C} value mapping</a></li><br>
+    <li><a href="#cgo-function-metadata">CGo function metadata</a></li><br>
+    <li><a href="#implementation-overview">Implementation overview</a></li><br>
+    <li><a href="#warnings-and-closing-notes">Warnings and closing notes</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="dwim-style-ffi">DWIM-style FFI</h2>
-
+        <h2 id="dwim-style-ffi">DWIM-style FFI</h2>
 <p><a href="https://golang.org/cmd/cgo/">CGo</a> is a widely adopted way of calling C functions from Go:
 low level <a href="https://en.wikipedia.org/wiki/Foreign_function_interface">C FFI</a> which
 does many things behind the scene, but exposes only minimal functionality
 that is required to interact with C.</p>
-
 <p>CGo does no implicit conversions or data copying during C functions call,
 even <code>int</code> and <code>C.int</code> are not compatible.
 Code that uses this mechanism without wrappers (<a href="https://en.wikipedia.org/wiki/Language_binding">bindings</a>) will be polluted with
 explicit slice/array copies and type conversions.</p>
-
 <p>That is perfectly fine for default behavior and FFI foundation,
 but sometimes we do not require this amount of control.
 In this cases, we want the programming environment to <a href="https://en.wikipedia.org/wiki/DWIM">do what we mean</a>.</p>
-
 <p>Imagine we have this C code:</p>
-
-<pre><code class="language-c">// Let's assume this function is very important.
-int sum(int *xs, int xs_len) {
-    int ret = 0;
-    for (int i = 0; i &lt; xs_len; ++i) {
-        ret += xs[i];
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-c" data-lang="c"><span style="color:#75715e">// Let&#39;s assume this function is very important.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">int</span> <span style="color:#a6e22e">sum</span>(<span style="color:#66d9ef">int</span> <span style="color:#f92672">*</span>xs, <span style="color:#66d9ef">int</span> xs_len) {
+    <span style="color:#66d9ef">int</span> ret <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+    <span style="color:#66d9ef">for</span> (<span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>; i <span style="color:#f92672">&lt;</span> xs_len; <span style="color:#f92672">++</span>i) {
+        ret <span style="color:#f92672">+=</span> xs[i];
     }
-    return ret;
+    <span style="color:#66d9ef">return</span> ret;
 }
-</code></pre>
-
-<p>And you wish to call it from Go.
+</code></pre></div><p>And you wish to call it from Go.
 There is <code>[]int</code> of valuable payload which must be
 aggregated with <code>sum</code> function.</p>
-
-<pre><code class="language-go">xs := []int{1, 2, 3} // Payload
-// a. This is how you may want to call that function:
-sum := cffi.Func(C.sum)
-sum(xs)
-// b. This is how you actually can call that function:
-ys := append([]int{}, xs...) // Make a copy (for safety)
-C.sum(unsafe.Pointer(&amp;ys[0]), C.int(len(ys)))
-</code></pre>
-
-<p>This article aims tries to reach <strong>a</strong>-like API,
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">xs</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>} <span style="color:#75715e">// Payload
+</span><span style="color:#75715e">// a. This is how you may want to call that function:
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">sum</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cffi</span>.<span style="color:#a6e22e">Func</span>(<span style="color:#a6e22e">C</span>.<span style="color:#a6e22e">sum</span>)
+<span style="color:#a6e22e">sum</span>(<span style="color:#a6e22e">xs</span>)
+<span style="color:#75715e">// b. This is how you actually can call that function:
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">ys</span> <span style="color:#f92672">:=</span> append([]<span style="color:#66d9ef">int</span>{}, <span style="color:#a6e22e">xs</span><span style="color:#f92672">...</span>) <span style="color:#75715e">// Make a copy (for safety)
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">C</span>.<span style="color:#a6e22e">sum</span>(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ys</span>[<span style="color:#ae81ff">0</span>]), <span style="color:#a6e22e">C</span>.int(len(<span style="color:#a6e22e">ys</span>)))
+</code></pre></div><p>This article aims tries to reach <strong>a</strong>-like API,
 as close as possible.</p>
-
 <blockquote>
 <p>Note that it is not always a desired behavior to
 pass slice as 2 separate {data, len} arguments,
 but I have selected this strategy to show something
 worthwhile in the final section of this post.</p>
 </blockquote>
-
 <h2 id="universal-go-c-value-mapping">Universal {Go}-&gt;{C} value mapping</h2>
-
 <p>If type mapping is the most boilerplate-full part, let&rsquo;s
 write a simple library that does it for us.</p>
-
 <p>Almost all primitive types have obvious C counterparts.
 For other types we can define conversion rules and apply
 them consistently.</p>
-
 <p>For starters, <code>Go2C</code> function should handle 1 type: integers.
 It takes arbitrary Go type as <code>interface{}</code> and
 returns inferred C type boxed into <code>interface{}</code>.</p>
-
-<pre><code class="language-go">package cffi
-import &quot;C&quot;
-func Go2C(x interface{}) interface{} {
-    switch x := x.(type) {
-    case int:
-        return C.int(x)
-    default:
-        panic(&quot;todo: implement more types&quot;)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">cffi</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;C&#34;</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Go2C</span>(<span style="color:#a6e22e">x</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{} {
+    <span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">x</span>.(<span style="color:#66d9ef">type</span>) {
+    <span style="color:#66d9ef">case</span> <span style="color:#66d9ef">int</span>:
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">C</span>.int(<span style="color:#a6e22e">x</span>)
+    <span style="color:#66d9ef">default</span>:
+        panic(<span style="color:#e6db74">&#34;todo: implement more types&#34;</span>)
     }
 }
-</code></pre>
-
-<p>So long it looks fine.
+</code></pre></div><p>So long it looks fine.
 Try to use it via client package and you may be surprised.</p>
-
-<pre><code class="language-go">package main
-import &quot;C&quot;
-import &quot;cffi&quot;
-func main() {
-    x := int(10)      // Clearly, an int
-    y := cffi.Go2C(x) // Dynamic type=C.int
-    z := y.(C.int)    // Panics!
-    println(z)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;C&#34;</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;cffi&#34;</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    <span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> int(<span style="color:#ae81ff">10</span>)      <span style="color:#75715e">// Clearly, an int
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cffi</span>.<span style="color:#a6e22e">Go2C</span>(<span style="color:#a6e22e">x</span>) <span style="color:#75715e">// Dynamic type=C.int
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">z</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">y</span>.(<span style="color:#a6e22e">C</span>.<span style="color:#66d9ef">int</span>)    <span style="color:#75715e">// Panics!
+</span><span style="color:#75715e"></span>    println(<span style="color:#a6e22e">z</span>)
 }
-</code></pre>
-
-<p>Exact error message may vary, but it reads like: &ldquo;panic: interface
+</code></pre></div><p>Exact error message may vary, but it reads like: &ldquo;panic: interface
 conversion: interface {} is cffi._Ctype_int, not main._Ctype_int&rdquo;.</p>
-
 <p>This is a <a href="https://github.com/golang/go/issues/13467">known issue</a>.
 Practically speaking, we can not implement <code>Go2C</code> this way properly.</p>
-
 <p>This also makes it impossible to match result types and
 do reversal, <code>C2Go</code> mapping.</p>
-
 <blockquote>
 <p>The only way to define a converter function is to
 delegate that task to the client code.
 Package that imports &ldquo;C&rdquo; does implement the conversion rules.</p>
 </blockquote>
-
 <h2 id="cgo-function-metadata">CGo function metadata</h2>
-
 <p>To define function like <code>func Call(fn &lt;?&gt;, args ...&lt;?&gt;) &lt;?&gt;</code> we need
 to have signature info of <code>fn</code> argument.</p>
-
 <p>How much information is provided by CGo?
 What kind of value <code>C.&lt;X&gt;</code> yields, given that <code>&lt;X&gt;</code> is a function?</p>
-
-<pre><code class="language-go">package main
-// int foo(void) { return 0; }
-import &quot;C&quot;
-import &quot;fmt&quot;
-func main() { fmt.Printf(&quot;%T\n&quot;, C.foo) }
-</code></pre>
-
-<p>The answer is <code>unsafe.Pointer</code>.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="color:#75715e">// int foo(void) { return 0; }
+</span><span style="color:#75715e"></span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;C&#34;</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() { <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%T\n&#34;</span>, <span style="color:#a6e22e">C</span>.<span style="color:#a6e22e">foo</span>) }
+</code></pre></div><p>The answer is <code>unsafe.Pointer</code>.
 Well, this is bad for two reasons:</p>
-
 <ol>
 <li>We can not wrap it into <code>reflect.Value</code>;</li>
 <li><code>unsafe.Pointer</code> gives zero type information;</li>
 </ol>
-
 <p>More experiments will reveal a cheesy way to get what we need.</p>
-
 <p><strong>Step1</strong>: discover CGo name mangling scheme.</p>
-
-<pre><code class="language-go">package main
-// void foo(void) {}
-import &quot;C&quot;
-func main() { C.foo(1, 2) }
-</code></pre>
-
-<p>Go will kindly reply that you called function with wrong number
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="color:#75715e">// void foo(void) {}
+</span><span style="color:#75715e"></span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;C&#34;</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() { <span style="color:#a6e22e">C</span>.<span style="color:#a6e22e">foo</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>) }
+</code></pre></div><p>Go will kindly reply that you called function with wrong number
 of arguments:</p>
-
-<pre><code class="language-text">main.go:6: too many arguments in call to _Cfunc_foo
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">main.go:6: too many arguments in call to _Cfunc_foo
 	have (number, number)
 	want ()
-</code></pre>
-
-<p>See that <code>_Cfunc_foo</code>? I think you get the pattern.</p>
-
+</code></pre></div><p>See that <code>_Cfunc_foo</code>? I think you get the pattern.</p>
 <p><strong>Step2</strong>: examine mangled symbol directly.</p>
-
-<pre><code class="language-go">package main
-// void foo(void) {}
-import &quot;C&quot;
-import &quot;fmt&quot;
-func main() { fmt.Printf(&quot;%#v\n&quot;, _Cfunc_foo) }
-</code></pre>
-
-<p>Go rejects your code: <code>main.go:5: undefined: _Cfunc_foo</code>.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="color:#75715e">// void foo(void) {}
+</span><span style="color:#75715e"></span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;C&#34;</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() { <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%#v\n&#34;</span>, <span style="color:#a6e22e">_Cfunc_foo</span>) }
+</code></pre></div><p>Go rejects your code: <code>main.go:5: undefined: _Cfunc_foo</code>.
 This is easy to fix.</p>
-
 <p><strong>Step3</strong>: figure out a fix to error above.</p>
-
-<pre><code class="language-go">package main
-// void foo(void) {}
-import &quot;C&quot;
-import &quot;fmt&quot;
-func main() { 
-    _ = C.foo() // Use &quot;foo&quot;
-    fmt.Printf(&quot;%#v\n&quot;, _Cfunc_foo) 
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="color:#75715e">// void foo(void) {}
+</span><span style="color:#75715e"></span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;C&#34;</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;fmt&#34;</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() { 
+    <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">C</span>.<span style="color:#a6e22e">foo</span>() <span style="color:#75715e">// Use &#34;foo&#34;
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Printf</span>(<span style="color:#e6db74">&#34;%#v\n&#34;</span>, <span style="color:#a6e22e">_Cfunc_foo</span>) 
 }
-</code></pre>
-
-<p>This snippet actually gets us closer to the solution.
+</code></pre></div><p>This snippet actually gets us closer to the solution.
 Expression <code>_Cfunc_foo</code> is not equivalent to <code>C.foo</code> as it
 gives us <code>func() main._Ctype_void</code> type.</p>
-
 <h2 id="implementation-overview">Implementation overview</h2>
-
 <p>Implementation requirements:</p>
-
 <ol>
 <li>Function is callable via its symbol, like <code>f()</code>, where <code>f</code> is a symbol;</li>
 <li>Ingoing and outgoing arguments are automatically converted;</li>
 </ol>
-
 <p>First requirement can be fulfilled only by global (possibly dot-imported) function
 or closure variable.
 Second requirement, due to restrictions outlined above, is possible
 with a help of external state. This state can be global or captured (with closures).</p>
-
-<pre><code class="language-go">package main
-// int add1(int x) { return x + 1; }
-import &quot;C&quot;
-import &quot;cffi&quot;
-var add1 cffi.Func
-func init() {
-    _ = C.add1(0) // [I]
-
-    invoker := cffi.NewInvoker( // [II]
-        // Go -&gt; C
-        func(x interface{}) interface{} {
-            return C.int(x.(int))
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+<span style="color:#75715e">// int add1(int x) { return x + 1; }
+</span><span style="color:#75715e"></span><span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;C&#34;</span>
+<span style="color:#f92672">import</span> <span style="color:#e6db74">&#34;cffi&#34;</span>
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">add1</span> <span style="color:#a6e22e">cffi</span>.<span style="color:#a6e22e">Func</span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">init</span>() {
+    <span style="color:#a6e22e">_</span> = <span style="color:#a6e22e">C</span>.<span style="color:#a6e22e">add1</span>(<span style="color:#ae81ff">0</span>) <span style="color:#75715e">// [I]
+</span><span style="color:#75715e"></span>
+    <span style="color:#a6e22e">invoker</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">cffi</span>.<span style="color:#a6e22e">NewInvoker</span>( <span style="color:#75715e">// [II]
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// Go -&gt; C
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">x</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{} {
+            <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">C</span>.int(<span style="color:#a6e22e">x</span>.(<span style="color:#66d9ef">int</span>))
         },
-        // C -&gt; Go
-        func (x interface{}) interface{} {
-            return int(x.(C.int))
+        <span style="color:#75715e">// C -&gt; Go
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">x</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{} {
+            <span style="color:#66d9ef">return</span> int(<span style="color:#a6e22e">x</span>.(<span style="color:#a6e22e">C</span>.<span style="color:#66d9ef">int</span>))
         }
     )
 
-    add1 = cffi.Wrap(invoker, _Cfunc_add1) // [III]
-}
+    <span style="color:#a6e22e">add1</span> = <span style="color:#a6e22e">cffi</span>.<span style="color:#a6e22e">Wrap</span>(<span style="color:#a6e22e">invoker</span>, <span style="color:#a6e22e">_Cfunc_add1</span>) <span style="color:#75715e">// [III]
+</span><span style="color:#75715e"></span>}
 
-func main() {
-    println(add1(50)) // [IV]
-}
-</code></pre>
-
-<p><strong>(I)</strong> is needed if <code>add1</code> is never called via <code>C.add1</code> symbol.
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+    println(<span style="color:#a6e22e">add1</span>(<span style="color:#ae81ff">50</span>)) <span style="color:#75715e">// [IV]
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p><strong>(I)</strong> is needed if <code>add1</code> is never called via <code>C.add1</code> symbol.
 We will not get <code>_Cfunc_add1</code> without it.</p>
-
 <p><strong>(II)</strong> invoker instance should take care of values conversions
 and universal call evaluation.</p>
-
 <p><strong>(III)</strong> actual function pointer is wrapped into a closure
 that holds invoker.</p>
-
 <p><strong>(IV)</strong> prepared closure can be used in a desired way.</p>
-
 <p>Invoker can handle 1-&gt;N value mapping.
 For example, it can be legal to return <code>[]interface{}</code> for
 Go values that should be unwrapped into 2 C function arguments.
 Slices are such example (we ignore <code>cap</code> on purpose).</p>
-
-<pre><code class="language-go">func (x interface{}) interface{} {
-    switch x := x.(type) {
-    case []int:
-        y := make([]C.int, len(x))
-        for i := range x {
-            y[i] = C.int(x[i])
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">x</span> <span style="color:#66d9ef">interface</span>{}) <span style="color:#66d9ef">interface</span>{} {
+    <span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">x</span>.(<span style="color:#66d9ef">type</span>) {
+    <span style="color:#66d9ef">case</span> []<span style="color:#66d9ef">int</span>:
+        <span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> make([]<span style="color:#a6e22e">C</span>.<span style="color:#66d9ef">int</span>, len(<span style="color:#a6e22e">x</span>))
+        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">x</span> {
+            <span style="color:#a6e22e">y</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#a6e22e">C</span>.int(<span style="color:#a6e22e">x</span>[<span style="color:#a6e22e">i</span>])
         }
-        ptr := (*C.int)(unsafe.Pointer(&amp;y[0]))
-        return []interface{}{ptr, C.int(len(x))}
+        <span style="color:#a6e22e">ptr</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#a6e22e">C</span>.<span style="color:#66d9ef">int</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">y</span>[<span style="color:#ae81ff">0</span>]))
+        <span style="color:#66d9ef">return</span> []<span style="color:#66d9ef">interface</span>{}{<span style="color:#a6e22e">ptr</span>, <span style="color:#a6e22e">C</span>.int(len(<span style="color:#a6e22e">x</span>))}
 
-    // ... handle other types
-    }
+    <span style="color:#75715e">// ... handle other types
+</span><span style="color:#75715e"></span>    }
 }
-</code></pre>
-
-<p>If you want to see implementation sources, inspect <a href="https://github.com/Quasilyte/cffi">cffi</a> library.</p>
-
+</code></pre></div><p>If you want to see implementation sources, inspect <a href="https://github.com/Quasilyte/cffi">cffi</a> library.</p>
 <h2 id="warnings-and-closing-notes">Warnings and closing notes</h2>
-
 <p><strong>Performance</strong>.</p>
-
 <p><code>cffi</code> library solution involves many extra overhead compared to
 simple CGo call, which itself is far more expensive than normal Go
 function call.</p>
-
 <p><strong>Portability</strong>.</p>
-
 <p>Using CGo alone can hurt application portability.
 Granted, using CGo oddities like name mangled function
 objects slaughters program portability completely.

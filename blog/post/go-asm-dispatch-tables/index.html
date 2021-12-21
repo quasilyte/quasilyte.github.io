@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,53 +78,39 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#dispatch-tables">Dispatch tables</a></li><br>
-<li><a href="#threaded-code-in-intel-syntax">Threaded code in Intel syntax</a></li><br>
-<li><a href="#go-implementation">Go implementation</a></li><br>
-<li><a href="#calling-eval-from-go">Calling eval from Go</a></li><br>
-<li><a href="#pure-go-solution">Pure Go solution</a></li><br>
-<li><a href="#why-additional-movq-in-next-op">Why additional MOVQ in next_op?</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#dispatch-tables">Dispatch tables</a></li><br>
+    <li><a href="#threaded-code-in-intel-syntax">Threaded code in Intel syntax</a></li><br>
+    <li><a href="#go-implementation">Go implementation</a></li><br>
+    <li><a href="#calling-eval-from-go">Calling eval from Go</a></li><br>
+    <li><a href="#pure-go-solution">Pure Go solution</a></li><br>
+    <li><a href="#why-additional-movq-in-next_op">Why additional MOVQ in next_op?</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="dispatch-tables">Dispatch tables</h2>
-
+        <h2 id="dispatch-tables">Dispatch tables</h2>
 <p>When you want to execute particular code path depending on some kind
 of tag/opcode or other integer value that can be easily mapped into index,
 dispatch tables can speed things up compared to the sequence of
 comparisons and conditional jumps.</p>
-
-<p>In interpreters, this technique is often used as an alternative to switch-based dispatch.<br />
+<p>In interpreters, this technique is often used as an alternative to switch-based dispatch.<br>
 It&rsquo;s called direct threading in that domain. Each opcode corresponds to table index that contains machine
 code address that can execute operation specified by the opcode.</p>
-
 <blockquote>
-<p>Note that a few <code>CMP</code> and jumps can perform better than small dispatch tables.<br />
+<p>Note that a few <code>CMP</code> and jumps can perform better than small dispatch tables.<br>
 With big N, tables win consistently.</p>
 </blockquote>
-
 <h2 id="threaded-code-in-intel-syntax">Threaded code in Intel syntax</h2>
-
 <p>Suppose we&rsquo;re implementing some virtual machine for a toy programming language.</p>
-
 <p>Here is it&rsquo;s specification:</p>
-
 <ul>
 <li>Has one implicit operand: accumulator register. Mapped to <code>AX</code> (<code>rax</code>).</li>
 <li>Bytecode pointer stored in <code>CX</code> (<code>rcx</code>). It&rsquo;s a program counter.</li>
 <li>Supported operations are: <code>add1</code>, <code>sub1</code>, and <code>zero</code>.</li>
 </ul>
-
 <p>With <a href="https://www.nasm.us/">nasm</a> and Intel syntax, our code could look like this:</p>
-
-<pre><code class="language-x86asm">;; Dispatch table itself.
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">;; Dispatch table itself.
 $op_labels:
   dq op_exit ;; Stop the evaluation
   dq op_add1 ;; Add 1 to RAX
@@ -156,17 +142,12 @@ op_sub1:
 op_zero:
   xor rax, rax ;; Or `mov rax, 0`
   next_op
-</code></pre>
-
-<p>Now, the question is: how to do exactly the same thing in Go assembly?</p>
-
+</code></pre><p>Now, the question is: how to do exactly the same thing in Go assembly?</p>
 <h2 id="go-implementation">Go implementation</h2>
-
 <p>In Go assembly, it&rsquo;s not possible to have global labels.
 It&rsquo;s also not possible to store label address into anything.
 <code>TEXT</code> blocks are our replacements here.</p>
-
-<pre><code class="language-x86asm">//; The $sym syntax is required to get symbol address, &quot;literal value&quot;.
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">//; The $sym syntax is required to get symbol address, &quot;literal value&quot;.
 //; op_exit, op_add1 and op_sub1 are declared as TEXT blocks, like normal functions.
 DATA op_labels&lt;&gt;+0(SB)/8, $op_exit(SB)
 DATA op_labels&lt;&gt;+8(SB)/8, $op_add1(SB)
@@ -174,22 +155,16 @@ DATA op_labels&lt;&gt;+16(SB)/8, $op_sub1(SB)
 DATA op_labels&lt;&gt;+24(SB)/8, $op_zero(SB)
 //; 4 table entries, size is 4*8.
 GLOBL op_labels&lt;&gt;(SB), (RODATA|NOPTR), $32
-</code></pre>
-
-<p>Macros are akin to C.<br />
+</code></pre><p>Macros are akin to C.<br>
 Multiline macros require newline escapes.</p>
-
-<pre><code class="language-x86asm">#define next_op \
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">#define next_op \
   MOVBQZX (CX), DX \
   ADDQ $1, CX \
   MOVQ $op_labels&lt;&gt;(SB), DI \
   JMP (DI)(DX*8)
-</code></pre>
-
-<p>You may notice that there is one excessive <code>MOVQ</code> there.<br />
+</code></pre><p>You may notice that there is one excessive <code>MOVQ</code> there.<br>
 There is an explanation <a href="#why-additional-movq-in-next-op">in the end of the article</a>.</p>
-
-<pre><code class="language-x86asm">//; We are going to go one step further and return AX value to the caller.
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">//; We are going to go one step further and return AX value to the caller.
 TEXT op_exit(SB), NOSPLIT, $0-0
   MOVQ AX, ret+8(FP)
   RET
@@ -205,125 +180,92 @@ TEXT op_sub1(SB), NOSPLIT, $0-0
 TEXT op_zero(SB), NOSPLIT, $0-0
   XORQ AX, AX
   next_op
-</code></pre>
-
-<blockquote>
+</code></pre><blockquote>
 <p>All routines defined above have zero size frame and parameters space.
 This is to emphasise that those functions are not <code>CALL</code>&lsquo;ed but rather <code>JMP</code>&lsquo;ed into.</p>
 </blockquote>
-
 <p>The last thing is entry point, <code>eval</code> function.
 It&rsquo;s signature in Go would look like this:</p>
-
-<pre><code class="language-go">// eval executes opbytes and returns accumulator value after evaluation ends.
-// opbytes must have trailing 0 byte (opExit).
-func eval(opbytes *byte) int64
-</code></pre>
-
-<p>For asm, it&rsquo;s important to consider stack frame size and parameters width.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// eval executes opbytes and returns accumulator value after evaluation ends.
+</span><span style="color:#75715e">// opbytes must have trailing 0 byte (opExit).
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">eval</span>(<span style="color:#a6e22e">opbytes</span> <span style="color:#f92672">*</span><span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">int64</span>
+</code></pre></div><p>For asm, it&rsquo;s important to consider stack frame size and parameters width.
 These are shared among all opcode executing routines.
 We don&rsquo;t need stack frame, only 16 bytes for input pointer and output int64.
 (Our code is for 64-bit platform only, but you can make it more portable.)</p>
-
-<pre><code class="language-x86asm">TEXT ·eval(SB), NOSPLIT, $0-16
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">TEXT ·eval(SB), NOSPLIT, $0-16
   MOVQ opbytes+0(FP), CX //; Set up program counter (PC)
   next_op                //; Start the evaluation
-</code></pre>
-
-<p>See <a href="/blog/code/eval/eval_amd64.s">eval_amd64.s</a> for complete asm code.</p>
-
+</code></pre><p>See <a href="/blog/code/eval/eval_amd64.s">eval_amd64.s</a> for complete asm code.</p>
 <h2 id="calling-eval-from-go">Calling eval from Go</h2>
-
 <p>Main function can look like this:</p>
-
-<pre><code class="language-go">func main() {
-	const (
-		opExit = iota
-		opAdd1
-		opSub1
-		opZero
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#66d9ef">const</span> (
+		<span style="color:#a6e22e">opExit</span> = <span style="color:#66d9ef">iota</span>
+		<span style="color:#a6e22e">opAdd1</span>
+		<span style="color:#a6e22e">opSub1</span>
+		<span style="color:#a6e22e">opZero</span>
 	)
-	prog := []byte{
-		opZero,
-		opAdd1,
-		opAdd1,
-		opSub1,
-		opAdd1,
-		opExit,
+	<span style="color:#a6e22e">prog</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">byte</span>{
+		<span style="color:#a6e22e">opZero</span>,
+		<span style="color:#a6e22e">opAdd1</span>,
+		<span style="color:#a6e22e">opAdd1</span>,
+		<span style="color:#a6e22e">opSub1</span>,
+		<span style="color:#a6e22e">opAdd1</span>,
+		<span style="color:#a6e22e">opExit</span>,
 	}
-	fmt.Println(eval(&amp;prog[0]))
+	<span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Println</span>(<span style="color:#a6e22e">eval</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">prog</span>[<span style="color:#ae81ff">0</span>]))
 }
-</code></pre>
-
-<p>Constants defined purely for convenience reasons.
+</code></pre></div><p>Constants defined purely for convenience reasons.
 It is important to keep definitions in sync with asm implementation.
 Code generation can help here.</p>
-
 <p>See <a href="/blog/code/eval/eval.go">eval.go</a> for complete Go code.</p>
-
 <p>Put <code>eval.go</code> and <code>eval_amd64.s</code> in a new directory and run it:</p>
-
-<pre><code class="language-bash">$ go build -o eval.exe . &amp;&amp; ./eval.exe
-2
-</code></pre>
-
-<h2 id="pure-go-solution">Pure Go solution</h2>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go build -o eval.exe . <span style="color:#f92672">&amp;&amp;</span> ./eval.exe
+<span style="color:#ae81ff">2</span>
+</code></pre></div><h2 id="pure-go-solution">Pure Go solution</h2>
 <p>Without assembly, dispatching would require loop+switch:</p>
-
-<pre><code class="language-go">func eval(opbytes []byte) int64 {
-	acc := int64(0)
-	pc := 0
-	// It's not always the case that instruction consume exactly 1 byte.
-	// Some instructions may expect immediate bytes right after the opcode.
-	// This is why we're maintaining pc manually instead of using range over
-	// the opbytes. If you have fixed-length instructions, range loop
-	// will be more efficient because it may eliminate all boundary
-	// checks into opbytes.
-	for {
-		switch opbytes[pc] {
-		case opExit:
-			return acc
-		case opAdd1:
-			acc++
-			pc++
-		case opSub1:
-			acc--
-			pc++
-		case opZero:
-			acc = 0
-			pc++
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">eval</span>(<span style="color:#a6e22e">opbytes</span> []<span style="color:#66d9ef">byte</span>) <span style="color:#66d9ef">int64</span> {
+	<span style="color:#a6e22e">acc</span> <span style="color:#f92672">:=</span> int64(<span style="color:#ae81ff">0</span>)
+	<span style="color:#a6e22e">pc</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#75715e">// It&#39;s not always the case that instruction consume exactly 1 byte.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Some instructions may expect immediate bytes right after the opcode.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// This is why we&#39;re maintaining pc manually instead of using range over
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// the opbytes. If you have fixed-length instructions, range loop
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// will be more efficient because it may eliminate all boundary
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// checks into opbytes.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">for</span> {
+		<span style="color:#66d9ef">switch</span> <span style="color:#a6e22e">opbytes</span>[<span style="color:#a6e22e">pc</span>] {
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">opExit</span>:
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">acc</span>
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">opAdd1</span>:
+			<span style="color:#a6e22e">acc</span><span style="color:#f92672">++</span>
+			<span style="color:#a6e22e">pc</span><span style="color:#f92672">++</span>
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">opSub1</span>:
+			<span style="color:#a6e22e">acc</span><span style="color:#f92672">--</span>
+			<span style="color:#a6e22e">pc</span><span style="color:#f92672">++</span>
+		<span style="color:#66d9ef">case</span> <span style="color:#a6e22e">opZero</span>:
+			<span style="color:#a6e22e">acc</span> = <span style="color:#ae81ff">0</span>
+			<span style="color:#a6e22e">pc</span><span style="color:#f92672">++</span>
 		}
 	}
-	return 0
+	<span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span>
 }
-</code></pre>
-
-<p>This is not direct threading anymore.</p>
-
+</code></pre></div><p>This is not direct threading anymore.</p>
 <p>If number of opcodes is high enough, table dispatch will be consistently faster on most machines.
 The recomendation is, as usual: measure before making final decisions.</p>
-
 <p>There is also indirect threading, but it&rsquo;s usually measurably slower due to function calls.</p>
-
-<h2 id="why-additional-movq-in-next-op">Why additional MOVQ in next_op?</h2>
-
+<h2 id="why-additional-movq-in-next_op">Why additional MOVQ in next_op?</h2>
 <p>Direct translation of <code>next_op</code> would be:</p>
-
-<pre><code class="language-x86asm">#define next_op \
+<pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">#define next_op \
   MOVBQZX (CX), DX \
   ADDQ $1, CX \
   JMP $op_labels&lt;&gt;(SB)(DX*8)
-</code></pre>
-
-<p>This way, it would fully match nasm implementation.</p>
-
+</code></pre><p>This way, it would fully match nasm implementation.</p>
 <p>But unfortunately, this is not a valid Go asm syntax.</p>
-
-<p>You can&rsquo;t use index expressions while using pseudo register.<br />
+<p>You can&rsquo;t use index expressions while using pseudo register.<br>
 And you can&rsquo;t access global data without <code>SB</code> pseudo register.</p>
-
-<p>This could be fixed in future, although the probability is pretty low.<br />
+<p>This could be fixed in future, although the probability is pretty low.<br>
 Weird syntax is derived from plan9 asm and is shared among multiple architectures.</p>
 
     </section>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>[static-analysis] on Iskander (Alex) Sharipov technical blog</title>
@@ -6,32 +6,29 @@
     <description>Recent content in [static-analysis] on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 21 Dec 2020 00:54:25 +0300</lastBuildDate>
-    
-	<atom:link href="https://quasilyte.dev/blog/tags/static-analysis/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Mon, 21 Dec 2020 00:54:25 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/static-analysis/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ruleguard rules package management</title>
       <link>https://quasilyte.dev/blog/post/ruleguard-modules/</link>
-      <pubDate>Mon, 21 Dec 2020 00:54:25 +0300</pubDate>
+      <pubDate>Mon, 21 Dec 2020 00:54:25 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/ruleguard-modules/</guid>
       <description>Bundles is a new feature coming to the ruleguard. It&amp;rsquo;ll make it possible to re-use third-party rules without having to copy/paste them.
 Creating an importable bundle A package that exports rules must define a Bundle object:
-package gorules import &amp;quot;github.com/quasilyte/go-ruleguard/dsl&amp;quot; // Bundle holds the rules package metadata. // // In order to be importable from other gorules package, // a package must define a Bundle variable. var Bundle = dsl.</description>
+package gorules import &amp;#34;github.com/quasilyte/go-ruleguard/dsl&amp;#34; // Bundle holds the rules package metadata. // // In order to be importable from other gorules package, // a package must define a Bundle variable. var Bundle = dsl.Bundle{} func boolComparison(m dsl.</description>
     </item>
     
     <item>
       <title>ruleguard: dynamic inspection rules for Go</title>
       <link>https://quasilyte.dev/blog/post/ruleguard/</link>
-      <pubDate>Wed, 08 Jan 2020 21:54:02 +0300</pubDate>
+      <pubDate>Wed, 08 Jan 2020 21:54:02 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/ruleguard/</guid>
-      <description>If you found a typo or a misspelling, please file an issue or send a PR that fixes it.
- Original (ru): https://habr.com/post/481696/.
+      <description>Original (ru): https://habr.com/post/481696/.
  This article introduces a new static analysis library (and CLI utility) go-ruleguard. It&amp;rsquo;s like a gogrep that is adapted for the use inside your CI pipeline.
-You describe static analysis rules in terms of a special Go-like DSL. During the startup, ruleguard turns these definitions into a set of inspections to be executed.</description>
+You describe static analysis rules in terms of a special Go-like DSL. During the startup, ruleguard turns these definitions into a set of inspections to be executed.
+As a bonus, we&amp;rsquo;ll also talk about go/analysis and it&amp;rsquo;s predecessors.
+Static analysis extensibility There is a lot of Go linters, but only a few of them can be extended.</description>
     </item>
     
   </channel>

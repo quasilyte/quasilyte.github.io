@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,56 +78,41 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#symbol-visibility">Symbol visibility</a></li><br>
-<li><a href="#closures-and-immediately-invoked-function-expressions">Closures and immediately-invoked function expressions</a></li><br>
-<li><a href="#performance">Performance</a></li><br>
-<li><a href="#potential-problems">Potential problems</a></li><br>
-<li><a href="#conclusion">Conclusion</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#symbol-visibility">Symbol visibility</a></li><br>
+    <li><a href="#closures-and-immediately-invoked-function-expressions">Closures and immediately-invoked function expressions</a></li><br>
+    <li><a href="#performance">Performance</a></li><br>
+    <li><a href="#potential-problems">Potential problems</a></li><br>
+    <li><a href="#conclusion">Conclusion</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="symbol-visibility">Symbol visibility</h2>
-
+        <h2 id="symbol-visibility">Symbol visibility</h2>
 <p>Default symbol visibility should be as narrow as possible.
 This means that you use globals with internal linkage instead of external,
 local variables rather than globals, hide class-related constants inside
 it&rsquo;s scope, and so on.</p>
-
 <p>If function is only called inside particular function,
 it should become a <a href="https://en.wikipedia.org/wiki/Nested_function">nested function</a>.</p>
-
 <p>Most of these rely on the language support.</p>
-
 <p>Go has quite simple model of scopes and symbol visibility.
 User-defined identifier can be local or package-local (global).
 Package level identifiers can be exported or unexported.</p>
-
 <ul>
 <li>No <code>static</code> storage class for local variables.</li>
 <li>Function declarations can only appear at top level. No nested functions.</li>
 </ul>
-
 <p>As a consequence, you end up using globals for lookup tables,
 compiled regular expressions and other objects that should
 be initialized once, and then used during every function call.</p>
-
 <p>Why such encapsulation matters is not a topic of this post.
 Instead, this article is focused on the working technique overview.
 Benchmarks and quirks list are included.</p>
-
 <h2 id="closures-and-immediately-invoked-function-expressions">Closures and immediately-invoked function expressions</h2>
-
 <p>Go permits top level dynamic initialization.
 We are interested in <a href="https://en.wikipedia.org/wiki/Immediately-invoked_function_expression">IIFE</a>
 in combination with closures.</p>
-
 <p>Suppose someone developed <code>describeString</code> function listed below.
 It is not overly complex, but in order to define it,
 programmer also introduced <code>hasVowel</code> helper function,
@@ -135,139 +120,111 @@ which requires <code>vowels</code> global variable.
 <code>describeString</code> has to check a string against
 regular expression, so it was assigned to <code>golangRE</code>,
 this removes a need to compile regexp during each function call.</p>
-
-<pre><code class="language-go">var vowels = map[rune]bool{
-    'a': true, 'e': true, 'i': true,
-    'o': true, 'u': true, 'y': true,
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">vowels</span> = <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">rune</span>]<span style="color:#66d9ef">bool</span>{
+    <span style="color:#e6db74">&#39;a&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;e&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;i&#39;</span>: <span style="color:#66d9ef">true</span>,
+    <span style="color:#e6db74">&#39;o&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;u&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;y&#39;</span>: <span style="color:#66d9ef">true</span>,
 }
-var golangRE = regexp.MustCompile(`\b[Gg]o(?:lang)?\b`)
-func hasVowel(s string) bool {
-    for _, c := range s {
-        if vowels[c] {
-            return true
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">golangRE</span> = <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\b[Gg]o(?:lang)?\b`</span>)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">hasVowel</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">bool</span> {
+    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">s</span> {
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">vowels</span>[<span style="color:#a6e22e">c</span>] {
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
         }
     }
-    return false
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
 }
-func describeString(s string) string {
-    var attrs []string
-    if hasVowel(s) {
-        attrs = append(attrs, &quot;has vowel letter&quot;)
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">describeString</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">attrs</span> []<span style="color:#66d9ef">string</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">hasVowel</span>(<span style="color:#a6e22e">s</span>) {
+        <span style="color:#a6e22e">attrs</span> = append(<span style="color:#a6e22e">attrs</span>, <span style="color:#e6db74">&#34;has vowel letter&#34;</span>)
     }
-    if golangRE.MatchString(s) {
-        attrs = append(attrs, &quot;may be about Go language&quot;)
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">golangRE</span>.<span style="color:#a6e22e">MatchString</span>(<span style="color:#a6e22e">s</span>) {
+        <span style="color:#a6e22e">attrs</span> = append(<span style="color:#a6e22e">attrs</span>, <span style="color:#e6db74">&#34;may be about Go language&#34;</span>)
     }
-    attrs = append(attrs, fmt.Sprintf(&quot;has length of %d&quot;, len(s)))
-    return strings.Join(attrs, &quot;; &quot;)
+    <span style="color:#a6e22e">attrs</span> = append(<span style="color:#a6e22e">attrs</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;has length of %d&#34;</span>, len(<span style="color:#a6e22e">s</span>)))
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">attrs</span>, <span style="color:#e6db74">&#34;; &#34;</span>)
 }
-</code></pre>
-
-<p>So far, <strong>4</strong> global symbols for single function.
+</code></pre></div><p>So far, <strong>4</strong> global symbols for single function.
 With closures and IIFE we can reduce this number to <strong>1</strong>.</p>
-
-<pre><code class="language-go">var describeString = func() func(string) string {
-    vowels := map[rune]bool{
-        'a': true, 'e': true, 'i': true,
-        'o': true, 'u': true, 'y': true,
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">describeString</span> = <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">func</span>(<span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+    <span style="color:#a6e22e">vowels</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">rune</span>]<span style="color:#66d9ef">bool</span>{
+        <span style="color:#e6db74">&#39;a&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;e&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;i&#39;</span>: <span style="color:#66d9ef">true</span>,
+        <span style="color:#e6db74">&#39;o&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;u&#39;</span>: <span style="color:#66d9ef">true</span>, <span style="color:#e6db74">&#39;y&#39;</span>: <span style="color:#66d9ef">true</span>,
     }
-    golangRE := regexp.MustCompile(`\b[Gg]o(?:lang)?\b`)
-    hasVowel := func(s string) bool {
-        for _, c := range s {
-            if vowels[c] {
-                return true
+    <span style="color:#a6e22e">golangRE</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">regexp</span>.<span style="color:#a6e22e">MustCompile</span>(<span style="color:#e6db74">`\b[Gg]o(?:lang)?\b`</span>)
+    <span style="color:#a6e22e">hasVowel</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">bool</span> {
+        <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">s</span> {
+            <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">vowels</span>[<span style="color:#a6e22e">c</span>] {
+                <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span>
             }
         }
-        return false
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
     }
 
-    return func(s string) string {
-        var attrs []string
-        if hasVowel(s) {
-            attrs = append(attrs, &quot;has vowel letter&quot;)
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">func</span>(<span style="color:#a6e22e">s</span> <span style="color:#66d9ef">string</span>) <span style="color:#66d9ef">string</span> {
+        <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">attrs</span> []<span style="color:#66d9ef">string</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">hasVowel</span>(<span style="color:#a6e22e">s</span>) {
+            <span style="color:#a6e22e">attrs</span> = append(<span style="color:#a6e22e">attrs</span>, <span style="color:#e6db74">&#34;has vowel letter&#34;</span>)
         }
-        if golangRE.MatchString(s) {
-            attrs = append(attrs, &quot;may be about Go language&quot;)
+        <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">golangRE</span>.<span style="color:#a6e22e">MatchString</span>(<span style="color:#a6e22e">s</span>) {
+            <span style="color:#a6e22e">attrs</span> = append(<span style="color:#a6e22e">attrs</span>, <span style="color:#e6db74">&#34;may be about Go language&#34;</span>)
         }
-        attrs = append(attrs, fmt.Sprintf(&quot;has length of %d&quot;, len(s)))
-        return strings.Join(attrs, &quot;; &quot;)
+        <span style="color:#a6e22e">attrs</span> = append(<span style="color:#a6e22e">attrs</span>, <span style="color:#a6e22e">fmt</span>.<span style="color:#a6e22e">Sprintf</span>(<span style="color:#e6db74">&#34;has length of %d&#34;</span>, len(<span style="color:#a6e22e">s</span>)))
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">strings</span>.<span style="color:#a6e22e">Join</span>(<span style="color:#a6e22e">attrs</span>, <span style="color:#e6db74">&#34;; &#34;</span>)
     }
-}() // &lt;- Note this.
-</code></pre>
-
-<p>Note that inner closure body is identical to initial <code>describeString</code> implementation.
+}() <span style="color:#75715e">// &lt;- Note this.
+</span></code></pre></div><p>Note that inner closure body is identical to initial <code>describeString</code> implementation.
 The rest of this post describes provided solution characteristics.</p>
-
 <h2 id="performance">Performance</h2>
-
 <p>As you may guess there are some performance penalties.</p>
-
 <p>Two main differences between normal function and closure-based approaches:</p>
-
 <ol>
 <li>Initialization time. IIFE will be evaluated during package initialization, at run-time.</li>
 <li>Function call overhead. IIFE closure calls are never inlined.</li>
 </ol>
-
 <p>The exact numbers are hard to predict, but you may expect about <strong>1-5%</strong> slowdown.
 This may be important if your application is very performance-critical <em>and</em> that
 function is called inside a tight loop.</p>
-
 <p>You can use <a href="/blog/code/closure_test.go">linked benchmark</a> to have an approximation.
 Example results are provided in the next snippet.</p>
-
-<pre><code class="language-text">$ go test -bench=.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-text" data-lang="text">$ go test -bench=.
 BenchmarkNormalFunc-4   	   20000	     90200 ns/op
 BenchmarkClosure-4      	   20000	     94576 ns/op
 
 $ benchstat func.txt closure.txt 
 name          old time/op  new time/op  delta
 NormalFunc-4  88.6µs ± 1%  89.3µs ± 2%  +0.85%  (p=0.015 n=10+10)
-</code></pre>
-
-<h2 id="potential-problems">Potential problems</h2>
-
+</code></pre></div><h2 id="potential-problems">Potential problems</h2>
 <p>This article would be incomplete without a list of known problems with
 proposed solution.</p>
-
 <blockquote>
 <p>Problem 1 - no parameter names hint.</p>
 </blockquote>
-
 <p>With normal function call hint may look like <code>func(s string) string</code>,
 while our closure will get <code>func(string) string</code>.</p>
-
 <p>You can fix that with simple change.</p>
-
-<pre><code class="language-diff"> 
--var describeString = func() func(string) string {
-+var describeString = func() func(name string) string {
-        vowels := map[rune]bool{
-                'a': true, 'e': true, 'i': true,
-                'o': true, 'u': true, 'y': true,
-</code></pre>
-
-<p>Hovewer, this will force you to break DRY principle, albeit slightly.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff"> 
+<span style="color:#f92672">-var describeString = func() func(string) string {
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+var describeString = func() func(name string) string {
+</span><span style="color:#a6e22e"></span>        vowels := map[rune]bool{
+                &#39;a&#39;: true, &#39;e&#39;: true, &#39;i&#39;: true,
+                &#39;o&#39;: true, &#39;u&#39;: true, &#39;y&#39;: true,
+</code></pre></div><p>Hovewer, this will force you to break DRY principle, albeit slightly.
 The main disadvantage that you have to change parameter names in two
 places instead of one.</p>
-
 <p>From the other point of view it is an additional flexibility,
 because you can use longer, expressive names for the &ldquo;public&rdquo; parameters and
 shorter identifier for the implementation itself.</p>
-
 <blockquote>
 <p>Problem 2 - function variable is mutable.</p>
 </blockquote>
-
 <p>For unexported functions this is not a problem,
 but if symbol is exported, users may re-assign variable for
 something else. They do not have this opportunity with
 functions that are defined in a normal way.</p>
-
 <h2 id="conclusion">Conclusion</h2>
-
 <p>Closure-based encapsulation is an old trick.
 JavaScript programmers use it along with IIFE all the time.</p>
-
 <p>If you have a question: &ldquo;do I have to?&rdquo;,
 the answer is &ldquo;no&rdquo; of course.
 But when you seek for additional patterns to reduce code

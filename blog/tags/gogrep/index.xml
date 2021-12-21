@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>[gogrep] on Iskander (Alex) Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/gogrep/</link>
+    <description>Recent content in [gogrep] on Iskander (Alex) Sharipov technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 21 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/gogrep/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Profile-guided code search</title>
+      <link>https://quasilyte.dev/blog/post/profile-guided-gogrep/</link>
+      <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/profile-guided-gogrep/</guid>
+      <description>Original (ru): https://habr.com/ru/post/596755/.
+ If you combine a structural code search of gogrep and CPU profile filtering with perf-heatmap, you&amp;rsquo;ll get a profile-guided code search.
+This combo lets you find complex code patterns that occur only on the &amp;ldquo;hot&amp;rdquo; code path, so optimizing them can be worthwhile.
+perf-heatmap can also be used by a text editor to display the source code lines performance heat levels as shown below.
+Introduction Let&amp;rsquo;s start with a question why would you ever want to do this.</description>
+    </item>
+    
+  </channel>
+</rss>

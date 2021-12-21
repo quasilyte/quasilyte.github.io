@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>[shortread] on Iskander (Alex) Sharipov technical blog</title>
@@ -6,15 +6,11 @@
     <description>Recent content in [shortread] on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 15 Jun 2021 00:48:18 +0300</lastBuildDate>
-    
-	<atom:link href="https://quasilyte.dev/blog/tags/shortread/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Tue, 15 Jun 2021 00:48:18 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/shortread/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>A single point of exit</title>
       <link>https://quasilyte.dev/blog/post/single-exit/</link>
-      <pubDate>Tue, 15 Jun 2021 00:48:18 +0300</pubDate>
+      <pubDate>Tue, 15 Jun 2021 00:48:18 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/single-exit/</guid>
       <description>There are other similar articles, like Why you shouldn&amp;rsquo;t use func main in Go. This post addresses the issue from a slightly different angle.
@@ -27,31 +23,30 @@ func main() { x, err := doSomething() defer x.</description>
     <item>
       <title>ruleguard rules package management</title>
       <link>https://quasilyte.dev/blog/post/ruleguard-modules/</link>
-      <pubDate>Mon, 21 Dec 2020 00:54:25 +0300</pubDate>
+      <pubDate>Mon, 21 Dec 2020 00:54:25 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/ruleguard-modules/</guid>
       <description>Bundles is a new feature coming to the ruleguard. It&amp;rsquo;ll make it possible to re-use third-party rules without having to copy/paste them.
 Creating an importable bundle A package that exports rules must define a Bundle object:
-package gorules import &amp;quot;github.com/quasilyte/go-ruleguard/dsl&amp;quot; // Bundle holds the rules package metadata. // // In order to be importable from other gorules package, // a package must define a Bundle variable. var Bundle = dsl.</description>
+package gorules import &amp;#34;github.com/quasilyte/go-ruleguard/dsl&amp;#34; // Bundle holds the rules package metadata. // // In order to be importable from other gorules package, // a package must define a Bundle variable. var Bundle = dsl.Bundle{} func boolComparison(m dsl.</description>
     </item>
     
     <item>
       <title>YAML is your JSON5</title>
       <link>https://quasilyte.dev/blog/post/yaml5/</link>
-      <pubDate>Thu, 10 Sep 2020 22:01:24 +0300</pubDate>
+      <pubDate>Thu, 10 Sep 2020 22:01:24 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/yaml5/</guid>
       <description>TL;DR:
- Write YAML as JSON5 (but use # for comments) Enforce this style with yaml5 lint  # JSON5? YAML? {a: 1, b: [&#39;x&#39;, &#39;y&#39;]}  What you see above is a valid YAML 1.2 document.
-It uses the flow-style syntax for objects and arrays.
-If you look at the JSON5 feature list, you can deduce that YAML is a superset of JSON5.
-The only difference is the single-line comment syntax.</description>
+ Write YAML as JSON5 (but use # for comments) Enforce this style with yaml5 lint  # JSON5? YAML? {a: 1, b: [&amp;#39;x&amp;#39;, &amp;#39;y&amp;#39;]} What you see above is a valid YAML 1.2 document.It uses the flow-style syntax for objects and arrays.
+If you look at the JSON5 feature list, you can deduce that YAML is a superset of JSON5.The only difference is the single-line comment syntax.
+Yes, we can go and re-write all YAML files in a JSON5 style.</description>
     </item>
     
     <item>
       <title>Step driven evaluation</title>
       <link>https://quasilyte.dev/blog/post/step-pattern/</link>
-      <pubDate>Wed, 27 Feb 2019 22:15:32 +0300</pubDate>
+      <pubDate>Wed, 27 Feb 2019 22:15:32 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/step-pattern/</guid>
       <description>If you heard about table driven tests, the idea described in this article will be easier to grasp, since it&amp;rsquo;s the same technique, but used outside of the tests.
@@ -62,7 +57,7 @@ Suppose you have a function that executes a lot of other functions. This functio
     <item>
       <title>log.Fatal vs log.Panic</title>
       <link>https://quasilyte.dev/blog/post/log-fatal-vs-log-panic/</link>
-      <pubDate>Tue, 08 Jan 2019 01:46:18 +0300</pubDate>
+      <pubDate>Tue, 08 Jan 2019 01:46:18 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/log-fatal-vs-log-panic/</guid>
       <description>Update: probably the best alternative to log.Fatalf inside main is log.Printf followed by a return statement. If your main function contains a lot of such exit points, consider using a step driven evaluation pattern.

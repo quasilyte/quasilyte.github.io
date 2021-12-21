@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Profile-guided code search &middot; Iskander (Alex) Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about systems programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.91.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">Technical blog about systems programming and related topics</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Profile-guided code search</h1>
+        <div class="post-meta">
+            <time datetime="21 December 2021">
+                21 December 2021
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#introduction">Introduction</a></li><br>
+    <li><a href="#collecting-a-cpu-profile">Collecting a CPU profile</a></li><br>
+    <li><a href="#perf-heatmap">perf-heatmap</a></li><br>
+    <li><a href="#gogrep--heatmap">gogrep + heatmap</a></li><br>
+    <li><a href="#how-heatmap-is-integrated">How heatmap is integrated</a></li><br>
+    <li><a href="#vs-code-extension">VS Code extension</a></li><br>
+    <li><a href="#profile-symbols-mapping">Profile symbols mapping</a></li><br>
+    <li><a href="#final-thoughts">Final thoughts</a></li><br>
+  </ul>
+</nav>
+    
+    <section class="post-content">
+        <!-- raw HTML omitted -->
+<blockquote>
+<p>Original (ru): <a href="https://habr.com/ru/post/596755/">https://habr.com/ru/post/596755/</a>.</p>
+</blockquote>
+<p>If you combine a structural code search of <a href="https://github.com/quasilyte/gogrep">gogrep</a> and CPU profile filtering with <a href="https://github.com/quasilyte/perf-heatmap">perf-heatmap</a>, you&rsquo;ll get a profile-guided code search.</p>
+<p>This combo lets you find complex code patterns that occur only on the &ldquo;hot&rdquo; code path, so optimizing them can be worthwhile.</p>
+<p>perf-heatmap can also be used by a text editor to display the source code lines performance heat levels as shown below.</p>
+<p><img src="https://habrastorage.org/webt/a9/xv/tb/a9xvtbb0_gzuvebzlobcw9wyjb4.jpeg" alt=""></p>
+<!-- raw HTML omitted -->
+<h2 id="introduction">Introduction</h2>
+<p>Let&rsquo;s start with a question why would you ever want to do this. We have good tools to work with CPU profiles after all, <code>go tool pprof</code> has great web UI and it&rsquo;s available for everyone.</p>
+<p>When using pprof, it&rsquo;s easy to know that <code>f()</code> function takes a lot of time. It&rsquo;s also possible to learn the paths that lead to that <code>f</code> function calls. It&rsquo;s less obvious to see what combination of arguments these calls imply though. And sometimes you want to have more semantics than just per-function aggregation.</p>
+<p>Let me show an example. Suppose that <code>fmt.Errorf</code> happened to enter the top-20 functions that consume the CPU. gogrep+heatmap make it possible to find <code>fmt.Errorf</code> calls of one argument that happen on these hot spots which collectively make this function reach the top-20. If <code>fmt.Errorf</code> is called with only one argument, perhaps we can replace that call with something like <code>errors.New</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff"><span style="color:#f92672">- return fmt.Errorf(&#34;can&#39;t open database&#34;)
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+ return errors.New(&#34;can&#39;t open database&#34;)
+</span></code></pre></div><p>Or, even better, we can use a once-allocated error object, since the error message content is constant.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// Global scope.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">errOpenDatabase</span> = <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">New</span>(<span style="color:#e6db74">&#34;can&#39;t open database&#34;</span>)
+
+<span style="color:#75715e">// Somewhere inside a hot function.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errOpenDatabase</span>
+</code></pre></div><p>Well, the gogrep pattern for this 1-arg call is really simple, <code>fmt.Errorf($_)</code>. Now we need to filter the results to be aligned with the CPU profile insights we had above.</p>
+<p>But first things first, we need to collect a CPU profile.</p>
+<h2 id="collecting-a-cpu-profile">Collecting a CPU profile</h2>
+<p>There are different CPU profile collecting patterns:</p>
+<ol>
+<li>Collecting a profile via benchmarks when running them with <code>-cpuprofile</code> argument</li>
+<li>Recording a profile for a running service/daemon program for a period of time</li>
+<li>Recording a profile for a CLI program from start to the end</li>
+</ol>
+<p>The (1) pattern is not very reliable as the results would heavily depend on the quality of the benchmarks. The second option is good as it may include a span of the real app workload reflected in a profile. So important things could get to the top of the profile. The third option is OK as long as you&rsquo;re running a program on an average or most common input which is not too artificial.</p>
+<p>For simplicity, I&rsquo;ll stick to the benchmarking option, so you can reproduce my results without any hassle.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Note: a cpu.out file will be created in a current directory.</span>
+<span style="color:#75715e"># This command can take a few minutes to complete.</span>
+$ go test -cpuprofile cpu.out -bench . -timeout 20m -count <span style="color:#ae81ff">2</span> bytes
+</code></pre></div><p>Go exports CPU profiles in <a href="https://github.com/google/pprof/blob/6f57359322fd9ce2d6dabde5b733714463416b6f/proto/profile.proto">profile.proto</a> format.</p>
+<p>We can parse them using the <a href="https://pkg.go.dev/github.com/google/pprof/profile">github.com/google/pprof/profile</a> library.</p>
+<h2 id="perf-heatmap">perf-heatmap</h2>
+<p>The <a href="https://github.com/quasilyte/perf-heatmap.git">perf-heatmap</a> package creates a special index from a CPU profile in <code>profile.proto</code> format.</p>
+<p>It&rsquo;s bundled with a simple CLI tool <code>cmd/perf-heatmap</code> that has two main commands:</p>
+<ul>
+<li><code>perf-heatmap json cpu.out</code> build and print the heatmap index in the JSON format</li>
+<li><code>perf-heatmap stat cpu.out</code> like the json command, but dumps in debug format</li>
+</ul>
+<p>If you have Go installed, this command will install that program:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go install github.com/quasilyte/perf-heatmap/cmd/perf-heatmap@latest
+</code></pre></div><p>All samples that are contained inside the <code>cpu.out</code> are pointing to the code locations that were executed at least once. But that alone is not enough to consider these locations to be &ldquo;hot&rdquo;.</p>
+<p>perf-heatmap has <code>-threshold</code> option that tells it to keep only some percentage of the line-aggregated values. For example, a threshold of 0.5 keeps the top 50%. A threshold of 1.0 would include all samples and threshold of 0.1 would keep only the hottest 10%.</p>
+<p>The lines that made it into the topN% will be divided into the 5 classes: from the least hot ones to the hottest ones.</p>
+<p>All data points that are kept (topN%) are considered hot, but they&rsquo;ll have different score levels (heat levels from 1 to 5, inclusively). Every line is annotated with two levels: local (per-file) and global (whole program). Most of the time we care about the global level the most.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Dump the heatmap index info for the CPU profile,</span>
+<span style="color:#75715e"># filter the output to only include the buffer.go file data.</span>
+$ perf-heatmap stat -filename buffer.go cpu.out
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.Write <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  168:   0.34s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+    line  170:   0.56s L<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+    line  172:   0.44s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+    line  174:   3.97s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.Grow <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  161:   0.11s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.Read <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  298:   0.05s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  299:   0.25s L<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+    line  307:   3.34s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+    line  308:   0.06s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">1</span>
+    line  309:   0.18s L<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+    line  310:   0.14s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.grow <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  117:   0.04s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  118:   0.01s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  120:   0.04s L<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  128:   0.01s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  132:   0.01s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  137:   0.19s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+    line  142:   0.16s L<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+    line  143:   0.05s L<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  148:   0.01s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.tryGrowByReslice <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  107:   1.26s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+    line  108:   0.27s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+  func bytes.makeSlice <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  229:   0.16s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.empty <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line   69:   0.25s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.WriteByte <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  263:   0.66s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+    line  265:   0.88s L<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+    line  269:   1.11s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+    line  270:   0.86s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.readSlice <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  418:   0.05s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+    line  419:   0.97s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+    line  420:   0.01s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.Len <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line   73:   0.01s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.ReadString <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  438:   1.03s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+    line  439:   3.30s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.WriteRune <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line  277:   0.25s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+    line  283:   0.22s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+    line  284:   0.36s L<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+    line  288:   2.51s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span>
+    line  289:   0.54s L<span style="color:#f92672">=</span><span style="color:#ae81ff">4</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">3</span>
+    line  290:   0.17s L<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">2</span>
+  func bytes.<span style="color:#f92672">(</span>Buffer<span style="color:#f92672">)</span>.String <span style="color:#f92672">(</span>$GOROOT/src/bytes/buffer.go<span style="color:#f92672">)</span>:
+    line   65:   0.04s L<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span> G<span style="color:#f92672">=</span><span style="color:#ae81ff">0</span>
+</code></pre></div><ul>
+<li><code>L</code> is a local heat level</li>
+<li><code>G</code> is a global heat level</li>
+</ul>
+<h2 id="gogrep--heatmap">gogrep + heatmap</h2>
+<p>Now let&rsquo;s install a gogrep that includes heatmap support:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go install github.com/quasilyte/gogrep/cmd/gogrep@latest
+</code></pre></div><p>Let&rsquo;s run some queries over the <code>bytes</code> package:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash"><span style="color:#75715e"># Enter the &#34;bytes&#34; package source dir.</span>
+$ cd <span style="color:#66d9ef">$(</span>go env GOROOT<span style="color:#66d9ef">)</span>/src/bytes
+
+<span style="color:#75715e"># Find all append calls that are located on a hot path</span>
+<span style="color:#75715e"># with respect to the collected CPU profile.</span>
+$ gogrep -heatmap cpu.out . <span style="color:#e6db74">&#39;append($*_)&#39;</span> <span style="color:#e6db74">&#39;$$.IsHot()&#39;</span>
+bytes.go:487: 				spans <span style="color:#f92672">=</span> append<span style="color:#f92672">(</span>spans, span<span style="color:#f92672">{</span>start, i<span style="color:#f92672">})</span>
+bytes.go:500: 		spans <span style="color:#f92672">=</span> append<span style="color:#f92672">(</span>spans, span<span style="color:#f92672">{</span>start, len<span style="color:#f92672">(</span>s<span style="color:#f92672">)})</span>
+bytes.go:626: 			<span style="color:#66d9ef">return</span> append<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">)</span>, s...<span style="color:#f92672">)</span>
+bytes.go:656: 			<span style="color:#66d9ef">return</span> append<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">)</span>, s...<span style="color:#f92672">)</span>
+bytes.go:702: 			b <span style="color:#f92672">=</span> append<span style="color:#f92672">(</span>b, byte<span style="color:#f92672">(</span>c<span style="color:#f92672">))</span>
+bytes.go:710: 				b <span style="color:#f92672">=</span> append<span style="color:#f92672">(</span>b, replacement...<span style="color:#f92672">)</span>
+bytes.go:715: 		b <span style="color:#f92672">=</span> append<span style="color:#f92672">(</span>b, s<span style="color:#f92672">[</span>i:i+wid<span style="color:#f92672">]</span>...<span style="color:#f92672">)</span>
+found <span style="color:#ae81ff">7</span> matches
+</code></pre></div><p>Perhaps you&rsquo;re not very familiar with gogrep and <a href="https://github.com/quasilyte/go-ruleguard">ruleguard</a> idioms, so let me give you a couple of hints:</p>
+<ul>
+<li><code>$*_</code> means from 0 to N matches of arbitrary expressions (so it&rsquo;s &ldquo;any args&rdquo; above)</li>
+<li><code>$$</code> is a special variable available in the filter that references the entire match, like <code>$0</code> in regexp</li>
+</ul>
+<p>By default, gogrep uses a threshold value of <code>0.5</code>. It&rsquo;s possible to override that value using the <code>-heatmap-threshold</code> parameter.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ gogrep -heatmap cpu.out -heatmap-threshold 0.1 . <span style="color:#e6db74">&#39;append($*_)&#39;</span> <span style="color:#e6db74">&#39;$$.IsHot()&#39;</span>
+bytes.go:487: 				spans <span style="color:#f92672">=</span> append<span style="color:#f92672">(</span>spans, span<span style="color:#f92672">{</span>start, i<span style="color:#f92672">})</span>
+bytes.go:500: 		spans <span style="color:#f92672">=</span> append<span style="color:#f92672">(</span>spans, span<span style="color:#f92672">{</span>start, len<span style="color:#f92672">(</span>s<span style="color:#f92672">)})</span>
+bytes.go:626: 			<span style="color:#66d9ef">return</span> append<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">)</span>, s...<span style="color:#f92672">)</span>
+bytes.go:656: 			<span style="color:#66d9ef">return</span> append<span style="color:#f92672">([]</span>byte<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">)</span>, s...<span style="color:#f92672">)</span>
+found <span style="color:#ae81ff">4</span> matches
+</code></pre></div><p>And by the way, this is how you can find all 1-arg calls of <code>fmt.Errorf()</code> with heatmap filtering:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ gogrep -heatmap cpu.out . <span style="color:#e6db74">&#39;fmt.Errorf($format)&#39;</span> <span style="color:#e6db74">&#39;$format.IsHot()&#39;</span>
+</code></pre></div><p>I used the named var <code>$format</code> on purpose, to demonstrate that filters can be applied to any variable, not just <code>$$</code>.</p>
+<blockquote>
+<p>asciinema screencast: <a href="https://asciinema.org/a/j8JM8prOFscPPCXJJPXpYwjil">asciinema.org/a/j8JM8prOFscPPCXJJPXpYwjil</a></p>
+</blockquote>
+<h2 id="how-heatmap-is-integrated">How heatmap is integrated</h2>
+<p>Suppose that <code>&lt;var&gt;.IsHot()</code> is just some <code>func isHot(var gogrepVar) bool</code> function.</p>
+<p><code>gogrepVar</code> captures an AST which matched a pattern. For <code>$$</code> that is an entire tree while named variables like <code>$x</code> can capture a subtree. Technically speaking, it&rsquo;s always some <code>ast.Node</code> object plus a &ldquo;variable name&rdquo;.</p>
+<p><code>isHot(v)</code> gets a source code lines range like <code>[fromLine, toLine]</code> using the <code>ast.Node</code> position info. Then we&rsquo;re calling <a href="https://pkg.go.dev/github.com/quasilyte/perf-heatmap/heatmap#Index.QueryLineRange">Index.QueryLineRange(&hellip;, fromLine, toLine)</a>. If that range contains at least one data point that passes the specified threshold (e.g. 0.5), then <code>isHot(v)</code> would return true.</p>
+<h2 id="vs-code-extension">VS Code extension</h2>
+<p><a href="https://marketplace.visualstudio.com/items?itemName=quasilyte.perf-heatmap">perf-heatmap extension on marketplace.visualstudio.com</a></p>
+<p>It&rsquo;s not necessary to install the <code>perf-heatmap</code> binary to use an extension. I have compiled the perf-heatmap package to JS using the <a href="https://github.com/gopherjs/gopherjs">gopherjs</a>, so the extension can parse the profile and build indexes on its own.</p>
+<p>How to use the extension:</p>
+<ol>
+<li>CPU profile should be loaded into the memory first. Use <code>perf-heatmap.loadProfile</code> to do that.</li>
+<li>When profile is indexed, any opened Go file can be annotated. Use <code>perf-heatmap.annotateLocalLevels</code> and <code>perf-heatmap.annotateGlobalLevels</code> commands to do that.</li>
+</ol>
+<p>These commands can be found using the command palette window (<code>ctrl+shift+p</code> <code>workbench.action.showCommands</code>).</p>
+<p><img src="https://habrastorage.org/webt/ad/w-/bc/adw-bc8dt_sej_rqm5hvshmzsw4.jpeg" alt=""></p>
+<blockquote>
+<p>I created this plugin as a proof-of-concept. It&rsquo;s not that useful and convenient to use right now. You may help to improve it by <a href="https://github.com/quasilyte/vscode-perf-heatmap">contributing to it</a>.</p>
+</blockquote>
+<h2 id="profile-symbols-mapping">Profile symbols mapping</h2>
+<p>In the most trivial situation, the CPU profile contains identical paths and there are no problems in mapping them with sources. We can use absolute paths matching in this situation.</p>
+<p>If, however, a profiled binary was built on some build agent machine, its symbol paths can be different. For example, a filename would be <code>/usr/blah/build438/go/src/bytes/buffer.go</code> instead of <code>/home/quasilyte/go/src/bytes/buffer.go</code>.</p>
+<p>This issue can be solved using the trim-prefix hack when we either try to infer a common prefix (unreliable) or ask the user to provide it (inconvenient, bad UX).</p>
+<p>In order to avoid this issue completely, heatmap uses a set of keys that are enough to somewhat reliably identify the source file without resorting to file system paths.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Key</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#75715e">// TypeName is a receiver type name for methods.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// For functions it should be empty.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">TypeName</span> <span style="color:#66d9ef">string</span>
+
+	<span style="color:#75715e">// FuncName is a Go function name.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// For methods, TypeName+FuncName compose a full method name.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">FuncName</span> <span style="color:#66d9ef">string</span>
+
+	<span style="color:#75715e">// Filename is a base part of the full file path.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">Filename</span> <span style="color:#66d9ef">string</span>
+
+	<span style="color:#75715e">// PkgName is the name of the package that defines this symbol.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">PkgName</span> <span style="color:#66d9ef">string</span>
+}
+</code></pre></div><p>Suppose that our key is <code>Key{&quot;Buffer&quot;, &quot;Write&quot;, &quot;buffer.go&quot;, &quot;bytes&quot;}</code>, then we can perform the following queries:</p>
+<ul>
+<li><code>QueryLine(key, 10) =&gt; HeatLevel</code></li>
+<li><code>QueryLineRange(key, 20, 40) =&gt; []HeatLevel</code></li>
+</ul>
+<p>HeatLevel - is a simple pair <code>{LocalHeatLevel, GlobalHeatLevel}</code>.</p>
+<p>For source lines that have no samples or their values are lower than a threshold, their scores will be equal to 0.</p>
+<h2 id="final-thoughts">Final thoughts</h2>
+<p><img src="https://github.com/quasilyte/perf-heatmap/raw/master/_docs/logo_small.png" alt=""></p>
+<p>gogrep+heatmap can extend your arsenal of performance investigation tools. It&rsquo;ll help you when other tools were not enough. Just like flamegraphs can give you extra insights in some cases, using heatmaps with gogrep can be a more productive way for some situations.</p>
+<p>Before a goodbye, I&rsquo;ll share yet another example.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ gogrep --heatmap cpu.out . <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#39;var $b bytes.Buffer; $*_; return $b.$m()&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#39;$m.Text() == &#34;String&#34; &amp;&amp; $m.IsHot()&#39;</span>
+</code></pre></div><p>A query above finds localized usages of the <code>bytes.Buffer</code> that end with a call to its <code>String()</code> method. In some cases, using <code>strings.Builder</code> can be better here.</p>
+<p>Rather than using a <code>$b.String()</code> inside a pattern, I introduced a <code>$m</code> variable to make it possible to reference it from the filters. We&rsquo;re binding <code>IsHot()</code> to <code>$m</code> instead of <code>$$</code> (which would be a multi-line, multi-statement match).</p>
+<p>Using pprof in this case could show that <code>bytes.(*Buffer).String</code> is a hot function, but this information itself is not very actionable. With gogrep, we can locate a code that can be improved by a transition from <code>bytes.Buffer</code> to <code>strings.Builder</code>.</p>
+<p>I hope that you&rsquo;ll have a lot of fun with this thing, just like I did.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/gogrep">[gogrep] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/habr-translation">[habr-translation] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Profile-guided%20code%20search&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fprofile-guided-gogrep%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fprofile-guided-gogrep%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fprofile-guided-gogrep%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that got lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2021 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

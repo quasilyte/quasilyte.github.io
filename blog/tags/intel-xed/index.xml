@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>[Intel XED] on Iskander (Alex) Sharipov technical blog</title>
@@ -6,22 +6,18 @@
     <description>Recent content in [Intel XED] on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 08 Jun 2018 13:29:13 +0300</lastBuildDate>
-    
-	<atom:link href="https://quasilyte.dev/blog/tags/intel-xed/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Fri, 08 Jun 2018 13:29:13 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/intel-xed/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Disassembling Go AVX-512</title>
       <link>https://quasilyte.dev/blog/post/disassembling-go-avx512/</link>
-      <pubDate>Fri, 08 Jun 2018 13:29:13 +0300</pubDate>
+      <pubDate>Fri, 08 Jun 2018 13:29:13 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/disassembling-go-avx512/</guid>
       <description>The problem Go 1.11 got updated assembler that supports AVX-512, but disassembler is left unchanged.
 In other words, go tool asm speaks AVX-512, go tool objdump does not.
 Suppose we have this avx.s file:
-TEXT ·avxCheck(SB), 0, $0 VPOR X0, X1, X2 //; AVX1 VPOR Y0, Y1, Y2 //; AVX2 VPORD.BCST (DX), Z1, K2, Z2 //; AVX-512 RET  You will be surprised after assemble+disassemble attempt:
-$ go tool asm avx.</description>
+TEXT ·avxCheck(SB), 0, $0 VPOR X0, X1, X2 //; AVX1 VPOR Y0, Y1, Y2 //; AVX2 VPORD.BCST (DX), Z1, K2, Z2 //; AVX-512 RET You will be surprised after assemble+disassemble attempt:
+$ go tool asm avx.s $ go tool objdump avx.</description>
     </item>
     
   </channel>

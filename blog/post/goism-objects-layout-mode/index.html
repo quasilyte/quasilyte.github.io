@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -78,227 +78,162 @@
 
     
     <nav id="TableOfContents">
-<ul>
-<li>
-<ul>
-<li><a href="#introduction">Introduction</a></li><br>
-<li><a href="#struct-representation">Struct representation</a></li><br>
-<li><a href="#arrays-strings-and-slices">Arrays, strings and slices</a></li><br>
-<li><a href="#general-boxing">General boxing</a></li><br>
-<li><a href="#pointers-reference-types">Pointers: reference types</a></li><br>
-<li><a href="#pointers-non-reference-types">Pointers: non-reference types</a></li><br>
-<li><a href="#pointers-array-slice-element-address">Pointers: array/slice element address</a></li><br>
-<li><a href="#escape-analysis">Escape analysis</a></li><br>
-</ul></li><br>
-</ul>
+  <ul>
+    <li><a href="#introduction">Introduction</a></li><br>
+    <li><a href="#struct-representation">Struct representation</a></li><br>
+    <li><a href="#arrays-strings-and-slices">Arrays, strings and slices</a></li><br>
+    <li><a href="#general-boxing">General boxing</a></li><br>
+    <li><a href="#pointers-reference-types">Pointers: reference types</a></li><br>
+    <li><a href="#pointers-non-reference-types">Pointers: non-reference types</a></li><br>
+    <li><a href="#pointers-arrayslice-element-address">Pointers: array/slice element address</a></li><br>
+    <li><a href="#escape-analysis">Escape analysis</a></li><br>
+  </ul>
 </nav>
     
     <section class="post-content">
-        
-
-<h2 id="introduction">Introduction</h2>
-
+        <h2 id="introduction">Introduction</h2>
 <p><a href="https://github.com/Quasilyte/goism">Goism</a> project requires Go pointers
 emulation inside Emacs Lisp code.</p>
-
 <p>This document describes how to achive (almost) full functionality with
 potential to have optimizations that eliminate some of the
 emulation-related overhead.</p>
-
 <p>The actual implementation can diverge.
 Only initial design is outlined.</p>
-
 <h2 id="struct-representation">Struct representation</h2>
-
-<p>Go structures represented by <strong>lists</strong>.<br />
+<p>Go structures represented by <strong>lists</strong>.<br>
 Empty struct run-time value is unspecified, but it satisfies Go spec requirements.</p>
-
-<pre><code class="language-go">type a1 struct { f1 int }
-// a1{1}
-// (list 1)
-
-type a2 struct { f1, f2, f3, f4 int }
-// a2{1, 2, 3, 4}
-// (list 1 2 3 4)
-</code></pre>
-
-<p>For the very small (1-3 fields) objects lists are a better choice than vectors,
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">a1</span> <span style="color:#66d9ef">struct</span> { <span style="color:#a6e22e">f1</span> <span style="color:#66d9ef">int</span> }
+<span style="color:#75715e">// a1{1}
+</span><span style="color:#75715e">// (list 1)
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">a2</span> <span style="color:#66d9ef">struct</span> { <span style="color:#a6e22e">f1</span>, <span style="color:#a6e22e">f2</span>, <span style="color:#a6e22e">f3</span>, <span style="color:#a6e22e">f4</span> <span style="color:#66d9ef">int</span> }
+<span style="color:#75715e">// a2{1, 2, 3, 4}
+</span><span style="color:#75715e">// (list 1 2 3 4)
+</span></code></pre></div><p>For the very small (1-3 fields) objects lists are a better choice than vectors,
 but generally, vectors are more memory-efficient and provide faster random access.</p>
-
 <p><a href="#pointers">Pointers</a> section explains why lists were selected over the vectors
 as default representation.</p>
-
 <p>For unexported struct types, optimizer is permitted to use &ldquo;best fit&rdquo; data type
 for run-time values.
 This is the reason why it is important to forbid usage of unexported types inside
 Emacs Lisp domain.</p>
-
 <h2 id="arrays-strings-and-slices">Arrays, strings and slices</h2>
-
 <p>Arrays represented by Emacs Lisp <strong>vectors</strong>.</p>
-
-<p>Strings are Emacs Lisp <strong>unibyte strings</strong>. Literals are UTF-8 encoded.<br />
-Strings created by Go code considered immutable.<br />
+<p>Strings are Emacs Lisp <strong>unibyte strings</strong>. Literals are UTF-8 encoded.<br>
+Strings created by Go code considered immutable.<br>
 Immutability is not enforced during the execution.</p>
-
 <p>Slices are implemented by a struct of <code>length</code>, <code>capacity</code>, <code>offset</code> and <code>data</code> fields.
 The purpose of first two fields is self-explanatory.
 The <code>offset</code> is used during index calculations; needed for re-sliced slices.
 <code>data</code> is the underlying vector.
 Field order described here is not mandatory.</p>
-
-<pre><code class="language-go">[3]int{1, 2, 3}       // [1 2 3]
-[]int{1, 2, 3}        // (3 3 0 [1 2 3])
-([3]int{1, 2, 3})[1:] // (2 2 1 [1 2 3])
-&quot;abc&quot;                 // &quot;abc&quot;
-&quot;π&quot;                   // &quot;\317\200&quot;
-</code></pre>
-
-<p>Arrays, strings and slices are reference types in Emacs Lisp.</p>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go">[<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}       <span style="color:#75715e">// [1 2 3]
+</span><span style="color:#75715e"></span>[]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>}        <span style="color:#75715e">// (3 3 0 [1 2 3])
+</span><span style="color:#75715e"></span>([<span style="color:#ae81ff">3</span>]<span style="color:#66d9ef">int</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>, <span style="color:#ae81ff">3</span>})[<span style="color:#ae81ff">1</span>:] <span style="color:#75715e">// (2 2 1 [1 2 3])
+</span><span style="color:#75715e"></span><span style="color:#e6db74">&#34;abc&#34;</span>                 <span style="color:#75715e">// &#34;abc&#34;
+</span><span style="color:#75715e"></span><span style="color:#e6db74">&#34;π&#34;</span>                   <span style="color:#75715e">// &#34;\317\200&#34;
+</span></code></pre></div><p>Arrays, strings and slices are reference types in Emacs Lisp.</p>
 <h2 id="general-boxing">General boxing</h2>
-
 <p><strong>Box</strong> term is used when referring to thin wrapper that exist to enable
 pointer-like semantics.</p>
-
 <p>The boxed value required to support <code>car</code> and <code>setcar</code> operations.
 <code>car</code> is for dereference, <code>setcar</code> is for writes/updates.</p>
-
-<p>The main purpose of boxing is to implement arbitrary pointer indirection.<br />
+<p>The main purpose of boxing is to implement arbitrary pointer indirection.<br>
 We never care about <code>cdr</code> part; it&rsquo;s value is undefined on purpose.</p>
-
-<pre><code class="language-lisp">  *T (cons T.value ?)
- **T (cons (cons T.value ?) ?)
-***T (cons (cons (cons T.value ?) ?) ?)
-;; ... and so on
-</code></pre>
-
-<pre><code class="language-go">x := new(int) // x = (cons 0 ?)
-*x            // (car x)
-*x = 10       // (setcar x 10)
-</code></pre>
-
-<h2 id="pointers-reference-types">Pointers: reference types</h2>
-
-<p>For reference types (ref types for short), the single level of indirection is the object itself.<br />
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">  *T (<span style="color:#a6e22e">cons</span> T.value ?)
+ **T (<span style="color:#a6e22e">cons</span> (<span style="color:#a6e22e">cons</span> T.value ?) ?)
+***<span style="color:#66d9ef">T</span> (<span style="color:#a6e22e">cons</span> (<span style="color:#a6e22e">cons</span> (<span style="color:#a6e22e">cons</span> T.value ?) ?) ?)
+<span style="color:#75715e">;; ... and so on</span>
+</code></pre></div><div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> new(<span style="color:#66d9ef">int</span>) <span style="color:#75715e">// x = (cons 0 ?)
+</span><span style="color:#75715e"></span><span style="color:#f92672">*</span><span style="color:#a6e22e">x</span>            <span style="color:#75715e">// (car x)
+</span><span style="color:#75715e"></span><span style="color:#f92672">*</span><span style="color:#a6e22e">x</span> = <span style="color:#ae81ff">10</span>       <span style="color:#75715e">// (setcar x 10)
+</span></code></pre></div><h2 id="pointers-reference-types">Pointers: reference types</h2>
+<p>For reference types (ref types for short), the single level of indirection is the object itself.<br>
 This means that <code>*T</code> has the same run-time representation as <code>T</code>.</p>
-
 <p>When object has non-pointer struct type, all assignments use <code>copy-sequence</code>.
 Arrays are assigned via copying, too.</p>
-
 <p>Higher order indirection uses <a href="#general-boxing">general boxing</a>.</p>
-
-<pre><code class="language-go">x1 := Point{x: 1, y: 2}  // x1 = (list 1 2)
-x2 := x1                 // x2 = (copy-sequence x1)
-
-y1 := &amp;Point{x: 1, y: 2} // y1 = (list 1 2)
-y2 := y1                 // y2 = y1
-y3 := *y2                // y3 = (copy-sequence y2)
-
-z := new(*Point)         // z = (cons (list 0 0) ?)
-*z = y2                  // (setcar z y2)
-</code></pre>
-
-<p>Pointer to n-th struct member is it&rsquo;s <code>nthcdr</code>.<br />
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">x1</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">x</span>: <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">y</span>: <span style="color:#ae81ff">2</span>}  <span style="color:#75715e">// x1 = (list 1 2)
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">x2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">x1</span>                 <span style="color:#75715e">// x2 = (copy-sequence x1)
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">y1</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">Point</span>{<span style="color:#a6e22e">x</span>: <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">y</span>: <span style="color:#ae81ff">2</span>} <span style="color:#75715e">// y1 = (list 1 2)
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">y2</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">y1</span>                 <span style="color:#75715e">// y2 = y1
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">y3</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">y2</span>                <span style="color:#75715e">// y3 = (copy-sequence y2)
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">z</span> <span style="color:#f92672">:=</span> new(<span style="color:#f92672">*</span><span style="color:#a6e22e">Point</span>)         <span style="color:#75715e">// z = (cons (list 0 0) ?)
+</span><span style="color:#75715e"></span><span style="color:#f92672">*</span><span style="color:#a6e22e">z</span> = <span style="color:#a6e22e">y2</span>                  <span style="color:#75715e">// (setcar z y2)
+</span></code></pre></div><p>Pointer to n-th struct member is it&rsquo;s <code>nthcdr</code>.<br>
 This is why lists are default struct representation - it makes
 member address operation possible (and allocation-free).</p>
-
-<pre><code class="language-go">pt := Point{1, 2} // pt = (list 1 2)
-x := &amp;pt.x        // x = (nthcdr 0 pt) = pt
-y := &amp;pt.y        // y = (nthcdr 1 pt) = (cdr pt)
-*x = 10           // (setcar x 10)
-*y = 20           // (setcar y 20)
-// pt fields are updated as expected.
-</code></pre>
-
-<p>Because <code>cdr</code> pointer part is always ignored, <code>(x y z)</code> is a valid pointer for <code>x</code>.</p>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">pt</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">Point</span>{<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>} <span style="color:#75715e">// pt = (list 1 2)
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pt</span>.<span style="color:#a6e22e">x</span>        <span style="color:#75715e">// x = (nthcdr 0 pt) = pt
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">pt</span>.<span style="color:#a6e22e">y</span>        <span style="color:#75715e">// y = (nthcdr 1 pt) = (cdr pt)
+</span><span style="color:#75715e"></span><span style="color:#f92672">*</span><span style="color:#a6e22e">x</span> = <span style="color:#ae81ff">10</span>           <span style="color:#75715e">// (setcar x 10)
+</span><span style="color:#75715e"></span><span style="color:#f92672">*</span><span style="color:#a6e22e">y</span> = <span style="color:#ae81ff">20</span>           <span style="color:#75715e">// (setcar y 20)
+</span><span style="color:#75715e">// pt fields are updated as expected.
+</span></code></pre></div><p>Because <code>cdr</code> pointer part is always ignored, <code>(x y z)</code> is a valid pointer for <code>x</code>.</p>
 <h2 id="pointers-non-reference-types">Pointers: non-reference types</h2>
-
-<p>In Emacs Lisp, there are non-ref types; they are not mutable.<br />
+<p>In Emacs Lisp, there are non-ref types; they are not mutable.<br>
 The solution to this is <a href="https://ricardomartins.cc/2016/06/08/interior-mutability">inferior mutability</a>.</p>
-
 <p>We apply boxing for all such values when they are not part of the struct
 or other container.
 Temporary values that are used for stores are not boxed, too.</p>
-
-<pre><code class="language-go">x := 10   // Boxed as (list 10)
-y := 10.5 // Boxed as (list 10.5)
-
-pt.x = 777 // 777 is not boxed here
-pt.y = y   // Unboxing is required: (car y)
-
-passVal(x)  // Possibilities: (copy-sequence x), (car x) or just x
-passPtr(&amp;x) // Always boxed x; makes x optimizations impossible
-</code></pre>
-
-<p>The negative impact on performance is addressed by <a href="#escape-analysis">escape analysis</a>.</p>
-
-<h2 id="pointers-array-slice-element-address">Pointers: array/slice element address</h2>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">10</span>   <span style="color:#75715e">// Boxed as (list 10)
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">10.5</span> <span style="color:#75715e">// Boxed as (list 10.5)
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">pt</span>.<span style="color:#a6e22e">x</span> = <span style="color:#ae81ff">777</span> <span style="color:#75715e">// 777 is not boxed here
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">pt</span>.<span style="color:#a6e22e">y</span> = <span style="color:#a6e22e">y</span>   <span style="color:#75715e">// Unboxing is required: (car y)
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">passVal</span>(<span style="color:#a6e22e">x</span>)  <span style="color:#75715e">// Possibilities: (copy-sequence x), (car x) or just x
+</span><span style="color:#75715e"></span><span style="color:#a6e22e">passPtr</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">x</span>) <span style="color:#75715e">// Always boxed x; makes x optimizations impossible
+</span></code></pre></div><p>The negative impact on performance is addressed by <a href="#escape-analysis">escape analysis</a>.</p>
+<h2 id="pointers-arrayslice-element-address">Pointers: array/slice element address</h2>
 <p>Situation with arrays and slices is more complicated.</p>
-
 <ul>
 <li>Arrays and slices can be very large, which makes lists impractical;</li>
 <li>Speculative layout optimization which is used for structs is not applicable (see below);</li>
 </ul>
-
 <p>Even if it is possible to determine that particular array never gives element address away,
 turning it into &ldquo;real vector&rdquo; will not work as it becomes incompatible with unoptimized arrays
 of the same static type.</p>
-
 <p>Proposed solution:</p>
-
 <ul>
 <li>It is easy to return a pointer to ref type value. Permit this operation;</li>
 <li>Forbid taking element address of non-ref types;</li>
 </ul>
-
-<p>This is a trade-off between performance and Go spec compliance.<br />
+<p>This is a trade-off between performance and Go spec compliance.<br>
 Enabling this feature without constraints will make arrays (and slices)
 very inefficient.</p>
-
-<pre><code class="language-go">xs := [2]Point{}
-x := &amp;xs[1] // Valid.
-
-ys := [2]int{}
-y := &amp;ys[1] // Invalid. Compile-time error.
-</code></pre>
-
-<h2 id="escape-analysis">Escape analysis</h2>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#a6e22e">xs</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">2</span>]<span style="color:#a6e22e">Point</span>{}
+<span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">xs</span>[<span style="color:#ae81ff">1</span>] <span style="color:#75715e">// Valid.
+</span><span style="color:#75715e"></span>
+<span style="color:#a6e22e">ys</span> <span style="color:#f92672">:=</span> [<span style="color:#ae81ff">2</span>]<span style="color:#66d9ef">int</span>{}
+<span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">ys</span>[<span style="color:#ae81ff">1</span>] <span style="color:#75715e">// Invalid. Compile-time error.
+</span></code></pre></div><h2 id="escape-analysis">Escape analysis</h2>
 <p>If pointers never existed in Go, we could avoid many complications described above.</p>
-
 <p>Escape analysis is performed as the last part of optimizations.
 It&rsquo;s aim is to find data that is never used in a way that forces us to
 generate less efficient code.</p>
-
 <p>For example, if address operator is never applied to local non-ref type
 variable, there is no need to box it.</p>
-
 <p>Go structures that have particular layout can be optimized if
 member field address never taken from any of it&rsquo;s instances.
 This analysis can be sound for unexported types.</p>
-
 <p>If needed, special annotation can select particular struct run-time
-representation.<br />
+representation.<br>
 Compiler will reject code that uses such types in
 non-compatible ways.
 This feature should only be used when particular layout is very important.</p>
-
-<pre><code class="language-go">//goism:repr=vector
-type Foo struct {
-    A, B int
-    C Bar
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">//goism:repr=vector
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Foo</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">A</span>, <span style="color:#a6e22e">B</span> <span style="color:#66d9ef">int</span>
+    <span style="color:#a6e22e">C</span> <span style="color:#a6e22e">Bar</span>
 }
 
-// Instances of Foo are represented as Emacs Lisp vectors.
-// It is compile-time error to take address of A and B fields.
-// It is OK to take C field address.
-</code></pre>
-
-<p>Possible representations:</p>
-
+<span style="color:#75715e">// Instances of Foo are represented as Emacs Lisp vectors.
+</span><span style="color:#75715e">// It is compile-time error to take address of A and B fields.
+</span><span style="color:#75715e">// It is OK to take C field address.
+</span></code></pre></div><p>Possible representations:</p>
 <ul>
 <li><code>list</code> - nil-terminated cons pairs. Can take address of any field.</li>
 <li><code>list*</code> - improper list. Like lists, but last element address only works for ref types.</li>
@@ -307,13 +242,11 @@ type Foo struct {
 <li><code>bool-vector</code> - all fields must be booleans. Can&rsquo;t take field address.</li>
 <li><code>atom</code> - unboxed value. Valid only for unit (single field) structs. Can&rsquo;t take address.</li>
 </ul>
-
 <p>Some representations not only have restricted field address operation, but also
 member types/count constraints.</p>
-
-<p>The upside is the benefits of particular data type.<br />
+<p>The upside is the benefits of particular data type.<br>
 For example, strings are much cheaper to allocate, but a little slower at
-random access, than vectors.<br />
+random access, than vectors.<br>
 Improper lists are only a slight improvement over proper lists, but add nearly
 no additional restrictions. They also work like a charm for 2 field objects.</p>
 

@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -77,41 +77,30 @@
     </header>
 
     
-    
+    <nav id="TableOfContents"></nav>
     
     <section class="post-content">
         <blockquote>
 <p>Update: probably the best alternative to <code>log.Fatalf</code> inside <code>main</code> is <code>log.Printf</code> followed by a return statement. If your main function contains a lot of such exit points, consider using a <a href="https://quasilyte.github.io/blog/post/step-pattern/">step driven evaluation</a> pattern.</p>
 </blockquote>
-
 <p>I personally don&rsquo;t like <code>log.Fatal/Fatalf/Fatalln</code>. I feel sad because of their ubiquity in Go examples as a form of reaction to an error. I personally prefer <code>log.Panic</code>.</p>
-
 <p>The <code>log.Panic</code> vs <code>log.Fatal</code> is essentially <code>panic</code> vs <code>os.Exit(1)</code>. The latter will not let deferred calls to run. Most of the time, it&rsquo;s not what you want. It also makes testing much harder. It&rsquo;s quite simple to stop panic in test by the means of <code>recover</code>. It&rsquo;s much harder to cope with a code that does <code>os.Exit</code> somewhere while you&rsquo;re trying to do end2end testing without loosing coverage info.</p>
-
 <p>I have written <code>exitAfterDefer</code> check for the <a href="https://github.com/go-critic/go-critic">go-critic</a> linter. It warns about <code>log.Fatal</code> if the function where it&rsquo;s used deferred any calls prior to that line.</p>
-
 <p>For example, that check would generate a warning for this kind of code:</p>
-
-<pre><code class="language-go">defer os.Remove(filename)
-if err != nil {
-    log.Fatalf(&quot;error: %v&quot;, err)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">defer</span> <span style="color:#a6e22e">os</span>.<span style="color:#a6e22e">Remove</span>(<span style="color:#a6e22e">filename</span>)
+<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+    <span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;error: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 }
-</code></pre>
-
-<blockquote>
+</code></pre></div><blockquote>
 <p>warning: log.Fatalf clutters <code>defer os.Remove(filename)</code></p>
 </blockquote>
-
 <p>If you can, avoid <code>log.Fatal</code>. Don&rsquo;t reject <code>log.Panic</code> just because most people follow &ldquo;don&rsquo;t panic&rdquo; mantra too heavily. Exit is worse that panic, period. If you have a choice, choose something that does less potential damage.</p>
-
 <p>So, you know what to do now:</p>
-
-<pre><code class="language-diff">if err != nil {
--   log.Fatalf(&quot;ooops: %v&quot;, err)
-+   log.Panicf(&quot;ooops: %v&quot;, err)
-}
-</code></pre>
-
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff">if err != nil {
+<span style="color:#f92672">-   log.Fatalf(&#34;ooops: %v&#34;, err)
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+   log.Panicf(&#34;ooops: %v&#34;, err)
+</span><span style="color:#a6e22e"></span>}
+</code></pre></div>
     </section>
 
     

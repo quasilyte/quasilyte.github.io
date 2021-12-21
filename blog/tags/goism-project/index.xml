@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>[goism project] on Iskander (Alex) Sharipov technical blog</title>
@@ -6,11 +6,7 @@
     <description>Recent content in [goism project] on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 14 Jan 2018 00:00:00 +0000</lastBuildDate>
-    
-	<atom:link href="https://quasilyte.dev/blog/tags/goism-project/index.xml" rel="self" type="application/rss+xml" />
-    
-    
+    <lastBuildDate>Sun, 14 Jan 2018 00:00:00 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/goism-project/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Goism objects layout model</title>
       <link>https://quasilyte.dev/blog/post/goism-objects-layout-mode/</link>
@@ -22,7 +18,7 @@ This document describes how to achive (almost) full functionality with potential
 The actual implementation can diverge. Only initial design is outlined.
 Struct representation Go structures represented by lists.
 Empty struct run-time value is unspecified, but it satisfies Go spec requirements.
-type a1 struct { f1 int } // a1{1} // (list 1) type a2 struct { f1, f2, f3, f4 int } // a2{1, 2, 3, 4} // (list 1 2 3 4)  For the very small (1-3 fields) objects lists are a better choice than vectors, but generally, vectors are more memory-efficient and provide faster random access.</description>
+type a1 struct { f1 int } // a1{1} // (list 1)  type a2 struct { f1, f2, f3, f4 int } // a2{1, 2, 3, 4} // (list 1 2 3 4) For the very small (1-3 fields) objects lists are a better choice than vectors, but generally, vectors are more memory-efficient and provide faster random access.</description>
     </item>
     
     <item>

@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.55.6" />
+    <meta name="generator" content="Hugo 0.91.0" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -77,137 +77,114 @@
     </header>
 
     
-    
+    <nav id="TableOfContents"></nav>
     
     <section class="post-content">
         <p>If you heard about <a href="https://github.com/golang/go/wiki/TableDrivenTests">table driven tests</a>, the idea described in this article will be easier to grasp, since it&rsquo;s the same technique, but used outside of the tests.</p>
-
 <p>Suppose you have a function that executes a lot of other functions. This function probably does two main things:</p>
-
 <ol>
 <li>It checks for all returned errors as they occur.</li>
 <li>It passes one function outputs as the inputs for another.</li>
 </ol>
-
-<pre><code class="language-go">// process is an example pipeline-like function.
-func queryFile(filename, queryText string) (string, error) {
-	data, err := readData(filename)
-	if err != nil {
-		return nil, errors.Errorf(&quot;read data: %v&quot;, err)
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// process is an example pipeline-like function.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">queryFile</span>(<span style="color:#a6e22e">filename</span>, <span style="color:#a6e22e">queryText</span> <span style="color:#66d9ef">string</span>) (<span style="color:#66d9ef">string</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#a6e22e">data</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">readData</span>(<span style="color:#a6e22e">filename</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;read data: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-	rows, err := splitData(data)
-	if err != nil {
-		return nil, errors.Errorf(&quot;split data: %v&quot;, err)
+	<span style="color:#a6e22e">rows</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">splitData</span>(<span style="color:#a6e22e">data</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;split data: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-	q, err := compileQuery(queryText)
-	if err != nil {
-		return nil, errors.Errorf(&quot;compile query: %v&quot;, err)
+	<span style="color:#a6e22e">q</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">compileQuery</span>(<span style="color:#a6e22e">queryText</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;compile query: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-	rows, err = filterRows(rows, q)
-	if err != nil {
-		return nil, errors.Errorf(&quot;filter rows: %v&quot;, err)
+	<span style="color:#a6e22e">rows</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">filterRows</span>(<span style="color:#a6e22e">rows</span>, <span style="color:#a6e22e">q</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;filter rows: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-	result, err := rowsToString(rows)
-	if err != nil {
-		return nil, errors.Errorf(&quot;rows to string: %v&quot;, err)
+	<span style="color:#a6e22e">result</span>, <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">rowsToString</span>(<span style="color:#a6e22e">rows</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">nil</span>, <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;rows to string: %v&#34;</span>, <span style="color:#a6e22e">err</span>)
 	}
-	return result, nil
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">result</span>, <span style="color:#66d9ef">nil</span>
 }
-</code></pre>
-
-<p>This function consists of 5 steps. Five relevant calls, to be precise. Everything else is a distraction. The order of those calls matter, it&rsquo;s a sequence, the algorithm.</p>
-
+</code></pre></div><p>This function consists of 5 steps. Five relevant calls, to be precise. Everything else is a distraction. The order of those calls matter, it&rsquo;s a sequence, the algorithm.</p>
 <p>Let&rsquo;s re-write code above using the step driven evaluation.</p>
-
-<pre><code class="language-go">func queryFile(filename, queryText string) ([]row, error) {
-	var ctx queryFileContext
-	steps := []struct {
-		name string
-		fn   func() error
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">queryFile</span>(<span style="color:#a6e22e">filename</span>, <span style="color:#a6e22e">queryText</span> <span style="color:#66d9ef">string</span>) ([]<span style="color:#a6e22e">row</span>, <span style="color:#66d9ef">error</span>) {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">ctx</span> <span style="color:#a6e22e">queryFileContext</span>
+	<span style="color:#a6e22e">steps</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>
+		<span style="color:#a6e22e">fn</span>   <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span>
 	}{
-		{&quot;read data&quot;, ctx.readData},
-		{&quot;split data&quot;, ctx.splitData},
-		{&quot;compile query&quot;, ctx.compileQuery},
-		{&quot;filter rows&quot;, ctx.filterRows},
-		{&quot;rows to string&quot;, ctx.rowsToString},
+		{<span style="color:#e6db74">&#34;read data&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">readData</span>},
+		{<span style="color:#e6db74">&#34;split data&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">splitData</span>},
+		{<span style="color:#e6db74">&#34;compile query&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">compileQuery</span>},
+		{<span style="color:#e6db74">&#34;filter rows&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">filterRows</span>},
+		{<span style="color:#e6db74">&#34;rows to string&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">rowsToString</span>},
 	}
-	for _, step := range steps {
-		if err := step.fn(); err != nil {
-			return errors.Errorf(&quot;%s: %v&quot;, step.name, err)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">step</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">steps</span> {
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">step</span>.<span style="color:#a6e22e">fn</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">errors</span>.<span style="color:#a6e22e">Errorf</span>(<span style="color:#e6db74">&#34;%s: %v&#34;</span>, <span style="color:#a6e22e">step</span>.<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">err</span>)
 		}
 	}
-	return ctx.result
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">result</span>
 }
-</code></pre>
-
-<p>The pipeline is now explicit, it&rsquo;s easier to adjust steps order and to insert or remove them. It is also trivial to add debug logging inside that loop, you need only one new statement as opposed to <code>N</code> statements near every function call.</p>
-
+</code></pre></div><p>The pipeline is now explicit, it&rsquo;s easier to adjust steps order and to insert or remove them. It is also trivial to add debug logging inside that loop, you need only one new statement as opposed to <code>N</code> statements near every function call.</p>
 <p>This approach shines with 4+ step, when the complexity of introducing a new type like <code>queryFileContext</code> is inferior to the benefits.</p>
-
-<pre><code class="language-go">// queryFileContext might look like the struct below.
-
-type queryFileContext struct {
-	data   []byte
-	rows   []row
-	q      *query
-	result string
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// queryFileContext might look like the struct below.
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">queryFileContext</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">data</span>   []<span style="color:#66d9ef">byte</span>
+	<span style="color:#a6e22e">rows</span>   []<span style="color:#a6e22e">row</span>
+	<span style="color:#a6e22e">q</span>      <span style="color:#f92672">*</span><span style="color:#a6e22e">query</span>
+	<span style="color:#a6e22e">result</span> <span style="color:#66d9ef">string</span>
 }
-</code></pre>
-
-<p>Methods like <code>queryFileContext.splitData</code> just call the same function while updating the <code>ctx</code> object state.</p>
-
-<pre><code class="language-go">func (ctx *queryFileContext) splitData() error {
-	var err error
-	ctx.rows, err = splitData(ctx.data)
-	return err
+</code></pre></div><p>Methods like <code>queryFileContext.splitData</code> just call the same function while updating the <code>ctx</code> object state.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">ctx</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">queryFileContext</span>) <span style="color:#a6e22e">splitData</span>() <span style="color:#66d9ef">error</span> {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">err</span> <span style="color:#66d9ef">error</span>
+	<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">rows</span>, <span style="color:#a6e22e">err</span> = <span style="color:#a6e22e">splitData</span>(<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">data</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">err</span>
 }
-</code></pre>
+</code></pre></div><p>This pattern works particularly well for <code>main</code> functions.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">main</span>() {
+	<span style="color:#a6e22e">ctx</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">context</span>{}
 
-<p>This pattern works particularly well for <code>main</code> functions.</p>
-
-<pre><code class="language-go">func main() {
-	ctx := &amp;context{}
-
-	steps := []struct {
-		name string
-		fn   func() error
+	<span style="color:#a6e22e">steps</span> <span style="color:#f92672">:=</span> []<span style="color:#66d9ef">struct</span> {
+		<span style="color:#a6e22e">name</span> <span style="color:#66d9ef">string</span>
+		<span style="color:#a6e22e">fn</span>   <span style="color:#66d9ef">func</span>() <span style="color:#66d9ef">error</span>
 	}{
-		{&quot;parse flags&quot;, ctx.parseFlags},
-		{&quot;read schema&quot;, ctx.readSchema},
-		{&quot;dump schema&quot;, ctx.dumpSchema}, // Before transformations
-		{&quot;remove builtin constructors&quot;, ctx.removeBuiltinConstructors},
-		{&quot;add adhoc constructors&quot;, ctx.addAdhocConstructors},
-		{&quot;validate schema&quot;, ctx.validateSchema},
-		{&quot;decompose arrays&quot;, ctx.decomposeArrays},
-		{&quot;replace arrays&quot;, ctx.replaceArrays},
-		{&quot;resolve generics&quot;, ctx.resolveGenerics},
-		{&quot;dump schema&quot;, ctx.dumpSchema}, // After transformations
-		{&quot;decode combinators&quot;, ctx.decodeCombinators},
-		{&quot;dump decoded combinators&quot;, ctx.dumpDecodedCombinators},
-		{&quot;codegen&quot;, ctx.codegen},
+		{<span style="color:#e6db74">&#34;parse flags&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">parseFlags</span>},
+		{<span style="color:#e6db74">&#34;read schema&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">readSchema</span>},
+		{<span style="color:#e6db74">&#34;dump schema&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">dumpSchema</span>}, <span style="color:#75715e">// Before transformations
+</span><span style="color:#75715e"></span>		{<span style="color:#e6db74">&#34;remove builtin constructors&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">removeBuiltinConstructors</span>},
+		{<span style="color:#e6db74">&#34;add adhoc constructors&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">addAdhocConstructors</span>},
+		{<span style="color:#e6db74">&#34;validate schema&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">validateSchema</span>},
+		{<span style="color:#e6db74">&#34;decompose arrays&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">decomposeArrays</span>},
+		{<span style="color:#e6db74">&#34;replace arrays&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">replaceArrays</span>},
+		{<span style="color:#e6db74">&#34;resolve generics&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">resolveGenerics</span>},
+		{<span style="color:#e6db74">&#34;dump schema&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">dumpSchema</span>}, <span style="color:#75715e">// After transformations
+</span><span style="color:#75715e"></span>		{<span style="color:#e6db74">&#34;decode combinators&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">decodeCombinators</span>},
+		{<span style="color:#e6db74">&#34;dump decoded combinators&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">dumpDecodedCombinators</span>},
+		{<span style="color:#e6db74">&#34;codegen&#34;</span>, <span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">codegen</span>},
 	}
 
-	for _, step := range steps {
-		ctx.debugf(&quot;start %s step&quot;, step.name)
-		if err := step.fn(); err != nil {
-			log.Fatalf(&quot;%s: %v&quot;, step.name, err)
+	<span style="color:#66d9ef">for</span> <span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">step</span> <span style="color:#f92672">:=</span> <span style="color:#66d9ef">range</span> <span style="color:#a6e22e">steps</span> {
+		<span style="color:#a6e22e">ctx</span>.<span style="color:#a6e22e">debugf</span>(<span style="color:#e6db74">&#34;start %s step&#34;</span>, <span style="color:#a6e22e">step</span>.<span style="color:#a6e22e">name</span>)
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">err</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">step</span>.<span style="color:#a6e22e">fn</span>(); <span style="color:#a6e22e">err</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">nil</span> {
+			<span style="color:#a6e22e">log</span>.<span style="color:#a6e22e">Fatalf</span>(<span style="color:#e6db74">&#34;%s: %v&#34;</span>, <span style="color:#a6e22e">step</span>.<span style="color:#a6e22e">name</span>, <span style="color:#a6e22e">err</span>)
 		}
 	}
 }
-</code></pre>
-
-<p>An additional benefit is the ease of testing. Even though we use <code>log.Fatalf</code>, <a href="https://quasilyte.github.io/blog/post/log-fatal-vs-log-panic/">which is a bad thing</a>, it&rsquo;s trivial to re-create this pipeline inside a test and run a set of steps that fail a test instead of doing <code>os.Exit</code>.</p>
-
+</code></pre></div><p>An additional benefit is the ease of testing. Even though we use <code>log.Fatalf</code>, <a href="https://quasilyte.github.io/blog/post/log-fatal-vs-log-panic/">which is a bad thing</a>, it&rsquo;s trivial to re-create this pipeline inside a test and run a set of steps that fail a test instead of doing <code>os.Exit</code>.</p>
 <p>You can also omit some CLI-related steps inside tests, like <code>&quot;dump schema&quot;</code> or <code>&quot;codegen&quot;</code>. You can also inject test-specific steps into that list.</p>
-
 <p>There are few drawbacks, as always:</p>
-
 <ol>
 <li>You need to introduce a new type and probably a few methods for it.</li>
 <li>It&rsquo;s not always straightforward to figure out appropriate context object layout so
 it satisfies the needs of the entire pipeline without getting overly complex.</li>
 </ol>
-
 <p>Try using it, maybe you&rsquo;ll like it.</p>
 
     </section>
