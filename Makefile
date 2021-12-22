@@ -5,7 +5,7 @@
 gocorpus:
 	rm -rf gocorpus/
 	mkdir -p gocorpus && \
-		git clone https://github.com/quasilyte/gocorpus.git && \
+		git clone --depth 1 https://github.com/quasilyte/gocorpus.git && \
 		cd gocorpus && \
 		make all
 
