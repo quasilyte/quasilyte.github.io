@@ -492,6 +492,12 @@ found <span style="color:#ae81ff">4</span> matches
 </code></pre></div><p>A query above finds localized usages of the <code>bytes.Buffer</code> that end with a call to its <code>String()</code> method. In some cases, using <code>strings.Builder</code> can be better here.</p>
 <p>Rather than using a <code>$b.String()</code> inside a pattern, I introduced a <code>$m</code> variable to make it possible to reference it from the filters. We&rsquo;re binding <code>IsHot()</code> to <code>$m</code> instead of <code>$$</code> (which would be a multi-line, multi-statement match).</p>
 <p>Using pprof in this case could show that <code>bytes.(*Buffer).String</code> is a hot function, but this information itself is not very actionable. With gogrep, we can locate a code that can be improved by a transition from <code>bytes.Buffer</code> to <code>strings.Builder</code>.</p>
+<p>Here is another good example:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ gogrep --heatmap cpu.out . <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#39;return $*_, errors.New($x)&#39;</span> <span style="color:#ae81ff">\
+</span><span style="color:#ae81ff"></span>  <span style="color:#e6db74">&#39;$$.IsHot() &amp;&amp; $x.IsStringLit()&#39;</span>
+</code></pre></div><p>In the big codebase, there could be hundreds, if not thousands, places where <code>errors.New()</code> is used. More often than not, you don&rsquo;t care about the performance of the error path. Unless that error path can be exploited by the users or your system can frequently have data inputs that result in an error. We may want to find this 0.1% of the cases that can (and they probably should) be optimized.</p>
+<p>Note that the example above also filters out the cases with dynamic error message creation, like <code>errors.New(&quot;db: &quot; + msg)</code>. We only find the spots that can benefit from replacing a call with a global variable that is allocated only once.</p>
 <p>I hope that you&rsquo;ll have a lot of fun with this thing, just like I did.</p>
 
     </section>
