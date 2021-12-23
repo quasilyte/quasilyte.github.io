@@ -82,6 +82,7 @@
     <li><a href="#introduction">Introduction</a></li><br>
     <li><a href="#collecting-a-cpu-profile">Collecting a CPU profile</a></li><br>
     <li><a href="#perf-heatmap">perf-heatmap</a></li><br>
+    <li><a href="#heat-levels-by-example">Heat levels by example</a></li><br>
     <li><a href="#gogrep--heatmap">gogrep + heatmap</a></li><br>
     <li><a href="#how-heatmap-is-integrated">How heatmap is integrated</a></li><br>
     <li><a href="#vs-code-extension">VS Code extension</a></li><br>
@@ -202,6 +203,205 @@ $ perf-heatmap stat -filename buffer.go cpu.out
 <li><code>L</code> is a local heat level</li>
 <li><code>G</code> is a global heat level</li>
 </ul>
+<h2 id="heat-levels-by-example">Heat levels by example</h2>
+<p>Suppose that we have a CPU profile that has the following samples:</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>line</th>
+<th>value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.go</code></td>
+<td><code>10</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><code>a.go</code></td>
+<td><code>10</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td><code>a.go</code></td>
+<td><code>13</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>40</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>40</code></td>
+<td><code>300</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>40</code></td>
+<td><code>400</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>49</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>49</code></td>
+<td><code>100</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>50</code></td>
+<td><code>500</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>51</code></td>
+<td><code>100</code></td>
+</tr>
+</tbody>
+</table>
+<p>The first step is to calculate the sum of all samples pointing to the same line:</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>line</th>
+<th>total value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>a.go</code></td>
+<td><code>10</code></td>
+<td><code>300</code></td>
+</tr>
+<tr>
+<td><code>a.go</code></td>
+<td><code>13</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>40</code></td>
+<td><code>800</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>49</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>50</code></td>
+<td><code>500</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>51</code></td>
+<td><code>100</code></td>
+</tr>
+</tbody>
+</table>
+<p>To assign the global heat level, we need to sort all values in descending order and take the first N entries that go through the threshold. Let&rsquo;s take threshold=0.5 case for the first example. 3 entries made it into the topN%.</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>line</th>
+<th>total value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+<code>b.go</code>+</td>
+<td>+<code>40</code>+</td>
+<td>+<code>800</code>+</td>
+</tr>
+<tr>
+<td>+<code>b.go</code>+</td>
+<td>+<code>50</code>+</td>
+<td>+<code>500</code>+</td>
+</tr>
+<tr>
+<td>+<code>a.go</code>+</td>
+<td>+<code>10</code>+</td>
+<td>+<code>300</code>+</td>
+</tr>
+<tr>
+<td><code>a.go</code></td>
+<td><code>13</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>49</code></td>
+<td><code>200</code></td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>51</code></td>
+<td><code>100</code></td>
+</tr>
+</tbody>
+</table>
+<p>If we set threshold to 0.9, we&rsquo;ll get 5 entries: 800, 500, 300, 200, 200.</p>
+<p>Assigning global levels among that group of 5 elements is simple:</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>line</th>
+<th>total value</th>
+<th>global heat level</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>b.go</code></td>
+<td><code>40</code></td>
+<td><code>800</code></td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>50</code></td>
+<td><code>500</code></td>
+<td>4</td>
+</tr>
+<tr>
+<td><code>a.go</code></td>
+<td><code>10</code></td>
+<td><code>300</code></td>
+<td>3</td>
+</tr>
+<tr>
+<td><code>a.go</code></td>
+<td><code>13</code></td>
+<td><code>200</code></td>
+<td>2</td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>49</code></td>
+<td><code>200</code></td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>b.go</code></td>
+<td><code>51</code></td>
+<td><code>100</code></td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>For 10 elements we would get 2 elements per heat level. For the cases when we can&rsquo;t split the elements as nicely, some approximation is used: 8 elements will form <code>[2, 1, 2, 1, 2]</code> buckets.</p>
+<p>For the local heat levels we would take a slice of the samples that belong to the file as opposed to using all samples from the profile. Every line gets annotated with both levels.</p>
 <h2 id="gogrep--heatmap">gogrep + heatmap</h2>
 <p>Now let&rsquo;s install a gogrep that includes heatmap support:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ go install github.com/quasilyte/gogrep/cmd/gogrep@latest
