@@ -1,21 +1,32 @@
 # Iskander (Alex) Sharipov
 
-**Location**: Unspecified. Mostly interested in remote jobs<br>
+**Location**: Unspecified. Mostly interested in remote jobs; I may consider a relocation to English-speaking country<br>
 **Education**: Bachelor's degree in Computer Science ([Kazan Federal University](https://en.wikipedia.org/wiki/Kazan_Federal_University))<br>
 
 * [Go](https://github.com/golang/go/commits?author=quasilyte) and [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte) programming languages contributor
-* Maintainer of several<sup>[[1]](https://go-critic.github.io/)</sup> good<sup>[[2]](https://github.com/VKCOM/noverify)</sup> static<sup>[[3]](https://github.com/quasilyte/go-ruleguard)</sup> analyzers<sup>[[4]](https://github.com/quasilyte/go-consistent)</sup> (and the list goes on...)
-* Skilled in low-level<sup>[[1]](https://github.com/quasilyte/go-jdk)</sup> programming<sup>[[2]](https://github.com/quasilyte/YALWEE)</sup>
-* Open-source enthusiast. Contributed to dozens of projects, maintain a lot of [my own](http://quasilyte.dev/status/) (mostly dev tools like [phpgrep](https://github.com/quasilyte/phpgrep))
-* Created a lot of [tech talks and articles](https://github.com/quasilyte/talks); also organized several [workshops](https://github.com/quasilyte/talks#workshops) (more than listed there)
-* Founder of the [GolangKazan](https://www.meetup.com/GolangKazan/) community
 
-<table><caption>Working experience (~7 years)</caption>
+* Maintainer of several static analyzers <sup>[[go-critic]](https://go-critic.github.io/)</sup> <sup>[[noverify]](https://github.com/VKCOM/noverify)</sup> <sup>[[go-ruleguard]](https://github.com/quasilyte/go-ruleguard)</sup> <sup>[[go-consistent]](https://github.com/quasilyte/go-consistent)</sup>
+
+* Skilled in low-level programming and optimizations (mostly x86-64) <sup>[[jit]](https://github.com/quasilyte/go-jdk)</sup>
+
+* Open-source enthusiast. Contributed to dozens of projects, maintain a lot of [my own](http://quasilyte.dev/status/)
+
+* Created a lot of [tech talks and articles](https://github.com/quasilyte/talks); also organized several [workshops](https://github.com/quasilyte/talks#workshops)
+
+<table><caption>Working experience (~9 years)</caption>
 <tr><td>
   
   <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)<br>
   <ul>
-    <li><a href="https://github.com/VKCOM/kphp/">KPHP</a> runtime and compiler</li>
+    <li>
+        <a href="https://github.com/VKCOM/kphp/">KPHP</a> runtime and compiler
+        <ul>
+            <li>Implemented several language features (like typesafe FFI)</li>
+            <li>Added many compile-time optimizations</li>
+            <li>Added optimizations in stdlib and runtime</li>
+            <li>Created multiple dev tools and low-level libraries</li>
+        </ul>
+    </li>
     <li><a href="https://github.com/VKCOM/noverify">NoVerify</a> static code analyzer</li>
     <li>Compiler for a custom gRPC-like protocol (<a href="https://core.telegram.org/mtproto/TL">Type Language</a>) + networking stack library</li>
     <li><a href="https://ru.wikipedia.org/wiki/QUIC">QUIC</a>, <a href="https://lucene.apache.org/">Lucene</a> and <a href="https://en.wikipedia.org/wiki/Java_Native_Interface">JNI</a></li>
