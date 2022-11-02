@@ -55,6 +55,11 @@ Mostly maintenance:
 * <https://github.com/quasilyte/ktemplate-playground> KTemplate engine playground
 * <https://github.com/VKCOM/ktest> a tool and a framework for KPHP benchmarks and unit testing
 
+Finished projects:
+
+* <https://quasilyte.itch.io/autotanks> - a simple real-time strategy game
+* <https://quasilyte.itch.io/retrowave-city> - a simple battle-city like game in retrowave style
+
 ## Contacts
 
 * [twitter](https://twitter.com/quasilyte)
