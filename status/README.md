@@ -14,6 +14,7 @@ I rarely do a translation into several languages, it's usually either English-on
 ## My non-programming projects
 
 * <http://quasilyte.dev/gopherkon/> gopher constructor
+* <https://quasilyte.dev/georgian/> an app for studying Georgian alphabet and basic words
 * <https://github.com/quasilyte/talks> a collection of talks I gave
 * <https://github.com/quasilyte/awesome-kphp> awesome list for KPHP
 * <https://quasilyte.dev/gocorpus/> a structural search over Go corpus
@@ -54,6 +55,11 @@ Mostly maintenance:
 * <https://github.com/quasilyte/KSQLite> SQLite FFI bindings for PHP+KPHP
 * <https://github.com/quasilyte/ktemplate-playground> KTemplate engine playground
 * <https://github.com/VKCOM/ktest> a tool and a framework for KPHP benchmarks and unit testing
+
+Finished projects:
+
+* <https://quasilyte.itch.io/autotanks> a simple real-time strategy game
+* <https://quasilyte.itch.io/retrowave-city> a simple battle-city like game in retrowave style
 
 ## Contacts
 
