@@ -60,6 +60,7 @@ Finished projects:
 
 * <https://quasilyte.itch.io/autotanks> a simple real-time strategy game
 * <https://quasilyte.itch.io/retrowave-city> a simple battle-city like game in retrowave style
+* <https://quasilyte.itch.io/decipherism> a puzzle game where you solve the encoding machine ciphers
 
 ## Contacts
 
