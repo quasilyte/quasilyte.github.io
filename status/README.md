@@ -23,9 +23,16 @@ I rarely do a translation into several languages, it's usually either English-on
 * <https://github.com/quasilyte/gocorpus> a corpus of Go code
 * <https://github.com/quasilyte/phpcorpus> a corpus of PHP code
 
+## Games I created
+
+* <https://quasilyte.itch.io/autotanks> a simple real-time strategy game
+* <https://quasilyte.itch.io/retrowave-city> a simple battle-city like game in retrowave style
+* <https://quasilyte.itch.io/decipherism> a puzzle game where you solve the encoding machine ciphers
+
 ## Community-related projects I maintain
 
-* <https://golangkazan.github.io> Kazan Go community resources
+* <https://golangkazan.github.io> + <https://t.me/GolangKazan> Kazan Go community resources
+* <https://t.me/go_gamedev> Go gamedev community
 
 ## Projects I maintain
 
@@ -57,12 +64,6 @@ Mostly maintenance:
 * <https://github.com/quasilyte/KSQLite> SQLite FFI bindings for PHP+KPHP
 * <https://github.com/quasilyte/ktemplate-playground> KTemplate engine playground
 * <https://github.com/VKCOM/ktest> a tool and a framework for KPHP benchmarks and unit testing
-
-Finished projects:
-
-* <https://quasilyte.itch.io/autotanks> a simple real-time strategy game
-* <https://quasilyte.itch.io/retrowave-city> a simple battle-city like game in retrowave style
-* <https://quasilyte.itch.io/decipherism> a puzzle game where you solve the encoding machine ciphers
 
 ## Contacts
 
