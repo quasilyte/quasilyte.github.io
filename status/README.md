@@ -29,6 +29,8 @@ I rarely do a translation into several languages, it's usually either English-on
 * <https://quasilyte.itch.io/retrowave-city> a simple battle-city like game in retrowave style
 * <https://quasilyte.itch.io/decipherism> a puzzle game where you solve the encoding machine ciphers
 
+Well, there are x100 more games that I never finished nor published, but oh well.
+
 ## Community-related projects I maintain
 
 * <https://golangkazan.github.io> + <https://t.me/GolangKazan> Kazan Go community resources
