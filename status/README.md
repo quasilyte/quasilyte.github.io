@@ -44,16 +44,15 @@ Development + maintenance:
 * <https://github.com/quasilyte/go-perfguard> profile-guided optimizer for Go
 * <https://github.com/quasilyte/go-ruleguard> dynamic AST rules based Go linter
 * <https://github.com/go-critic> pretty opinionated Go static analyzer
-* <https://github.com/quasilyte/ge> Ebitengine-based game engine for Go 
-* <https://github.com/quasilyte/phpgrep> syntax-aware code search for PHP
-* <https://github.com/quasilyte/gogrep> syntax-aware code search for Go
-* <https://github.com/quasilyte/vscode-phpgrep> phpgrep VS Code extension
-* <https://github.com/quasilyte/vscode-gogrep> gogrep VS Code extension
-* <https://github.com/quasilyte/KTemplate> text template engine for KPHP (compiles to bytecode)
 * <https://github.com/quasilyte/gmath> a Godot-inspired math library for gamedev
 * <https://github.com/quasilyte/gsignal> a lightweight Godot/Qt inspired signals and slots for Go  
 * <https://github.com/quasilyte/ebitengine-input> a Godot-inspired action input handling system for Ebitengine
 * <https://github.com/quasilyte/ebitengine-resource> a resource manager/loader for Ebitengine 
+* <https://github.com/quasilyte/ge> Ebitengine-based game engine for Go 
+* <https://github.com/quasilyte/phpgrep> syntax-aware code search for PHP
+* <https://github.com/quasilyte/gogrep> syntax-aware code search for Go
+* <https://github.com/quasilyte/KTemplate> text template engine for KPHP (compiles to bytecode)
+
 
 Mostly maintenance:
 
@@ -70,6 +69,8 @@ Mostly maintenance:
 * <https://github.com/quasilyte/KSQLite> SQLite FFI bindings for PHP+KPHP
 * <https://github.com/quasilyte/ktemplate-playground> KTemplate engine playground
 * <https://github.com/VKCOM/ktest> a tool and a framework for KPHP benchmarks and unit testing
+* <https://github.com/quasilyte/vscode-phpgrep> phpgrep VS Code extension
+* <https://github.com/quasilyte/vscode-gogrep> gogrep VS Code extension
 
 ## Contacts
 
