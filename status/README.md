@@ -50,6 +50,10 @@ Development + maintenance:
 * <https://github.com/quasilyte/vscode-phpgrep> phpgrep VS Code extension
 * <https://github.com/quasilyte/vscode-gogrep> gogrep VS Code extension
 * <https://github.com/quasilyte/KTemplate> text template engine for KPHP (compiles to bytecode)
+* <https://github.com/quasilyte/gmath> a Godot-inspired math library for gamedev
+* <https://github.com/quasilyte/gsignal> a lightweight Godot/Qt inspired signals and slots for Go  
+* <https://github.com/quasilyte/ebitengine-input> a Godot-inspired action input handling system for Ebitengine
+* <https://github.com/quasilyte/ebitengine-resource> a resource manager/loader for Ebitengine 
 
 Mostly maintenance:
 
