@@ -15,7 +15,7 @@ I rarely do a translation into several languages, it's usually either English-on
 
 * <https://instagram.com/quasilyte3d/> here I publish the things I created by 3D printing (either pen or a printer)
 * <https://www.youtube.com/@quasilyte/> I play indie games on the record (sometimes I do streaming too!)
-* <http://quasilyte.dev/gopherkon/> gopher constructor
+* <https://quasilyte.dev/gopherkon/> gopher constructor
 * <https://quasilyte.dev/georgian/> an app for studying Georgian alphabet and basic words
 * <https://github.com/quasilyte/talks> a collection of talks I gave
 * <https://github.com/quasilyte/awesome-kphp> awesome list for KPHP
