@@ -15,11 +15,8 @@
         maximum: 96,
     });
     const go = new Go();
-    const importObject = {
-        'go': go.importObject.go,
-        'js': {'mem': memory}
-    }
-    WebAssembly.instantiateStreaming(fetch("main.wasm"), importObject).then(result => {
+    go.importObject.mem = memory;
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
         go.run(result.instance);
     });
 
