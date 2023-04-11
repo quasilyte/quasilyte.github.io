@@ -11,8 +11,8 @@
     }
 
     const memory = new WebAssembly.Memory({
-        initial: 80,
-        maximum: 96,
+        initial: 96,
+        maximum: 128,
     });
     const go = new Go();
     go.importObject.mem = memory;
