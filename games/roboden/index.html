@@ -10,12 +10,7 @@
         };
     }
 
-    const memory = new WebAssembly.Memory({
-        initial: 96,
-        maximum: 128,
-    });
     const go = new Go();
-    go.importObject.mem = memory;
     WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
         go.run(result.instance);
     });
