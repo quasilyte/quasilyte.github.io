@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Game development in Go: Ebitengine shaders &middot; Iskander (Alex) Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about systems programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.91.0" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">Technical blog about systems programming and related topics</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Game development in Go: Ebitengine shaders</h1>
+        <div class="post-meta">
+            <time datetime="01 May 2023">
+                01 May 2023
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-brief-shaders-intro">A Brief Shaders Intro</a></li><br>
+    <li><a href="#motivation">Motivation</a></li><br>
+    <li><a href="#round-1-applying-the-damage-mask">Round 1: Applying the Damage Mask</a></li><br>
+    <li><a href="#kage-shader-language-overview">Kage Shader Language Overview</a></li><br>
+    <li><a href="#connecting-a-shader">Connecting a Shader</a></li><br>
+    <li><a href="#round-2-the-pick-effect">Round 2: the Pick Effect</a></li><br>
+    <li><a href="#round-3-the-crt-display-effect">Round 3: the CRT Display Effect</a></li><br>
+    <li><a href="#round-4-a-looped-texture-animation">Round 4: a Looped Texture Animation</a></li><br>
+    <li><a href="#round-5-building-construction-effect">Round 5: Building Construction Effect</a></li><br>
+    <li><a href="#go-gamedev-entry-checklist">Go Gamedev Entry Checklist</a></li><br>
+    <li><a href="#extra-links">Extra Links</a></li><br>
+  </ul>
+</nav>
+    
+    <section class="post-content">
+        <p>Hello, my friend. Stay awhile and listen!</p>
+<p>Does game development in <a href="https://go.dev/">Go programming language</a> fascinate you? You&rsquo;ve come to the right place!</p>
+<p>Today I want to share some of my <a href="https://github.com/hajimehoshi/ebiten">Ebitengine</a> shaders experience with you. Most of the examples I&rsquo;ll use and refer to come from my <a href="https://quasilyte.itch.io/roboden">Roboden</a> and <a href="https://quasilyte.itch.io/decipherism">Decipherism</a> open-source games. You can find their sources on GitHub.</p>
+<p>Without further ado, let&rsquo;s do it!</p>
+<img title="A showcase of several shaders" src="https://habrastorage.org/webt/fq/jg/ed/fqjgedeltwlgpfj8h4s6v895r_8.png"/>
+<h2 id="a-brief-shaders-intro">A Brief Shaders Intro</h2>
+<p>I&rsquo;ll only talk about <a href="(https://thebookofshaders.com/01/?lan=en)">fragment shaders</a> (also known as pixel shaders) because those are the only ones supported in Ebitengine.</p>
+<p>A fragment shader is an algorithm that describes how to transform the pixels of an image before displaying it. Most often, this algorithm is described in code, but there are visual ways to create shaders as well. The specific shader language dialect used to describe these programs depends on the engine you are using, as they may try to hide the details of the specific graphics card you are writing the shader for (but more on that later).</p>
+<p>An example of a simplest shader is a program that multiplies the alpha channel of each pixel by 0.5, making the image semi-transparent. Shaders can be very complex and create effects similar to animation: distortions, waves, dynamic color changes.</p>
+<blockquote>
+<p>Please keep in mind that I&rsquo;m no shader expert by any standards. I&rsquo;ll also simplify some of the terminology to make things look more easy to understand for newcomers. All opinions that are shared here are partially subjective.</p>
+</blockquote>
+<h2 id="motivation">Motivation</h2>
+<p>But why do we need shaders at all? In most cases, there are ways to change the alpha channel without using shaders. A wave animation can be created with a normal frame-based sequence.</p>
+<p>That&rsquo;s mostly true, but shaders have undeniable advantages:</p>
+<ul>
+<li>They are almost always more efficient than alternatives</li>
+<li>Shaders can simplify the implementation (so it&rsquo;s faster to do it this way)</li>
+<li>The shader code is maintainable than a set of components implementing the effect</li>
+</ul>
+<p>This article will be in the form of tasks and their solutions. We start by defining a goal and then we&rsquo;ll implement that desired effect using shaders.</p>
+<h2 id="round-1-applying-the-damage-mask">Round 1: Applying the Damage Mask</h2>
+<p>Let&rsquo;s assume that we have buildings in our game. You may want to visually display the building&rsquo;s damage level. How can we achieve this?</p>
+<p>I have prepared the assets for us. Building sprites, top view, four variations:</p>
+<img title="Our sprites" src="https://habrastorage.org/webt/qo/cd/65/qocd65hehbqrqncecv-fuace2is.png"/>
+<p>Now to the damage mask. When there is no damage, this mask will have zero opacity. As the received damage increases, the alpha channel of the mask increases, making it more noticeable.</p>
+<p>Four variations of the damage mask:</p>
+<img title="4 damage masks variations" src="https://habrastorage.org/webt/xf/2d/wl/xf2dwlbrgjik6x7y-oez4jtaxs4.png"/>
+<blockquote>
+<p>I&rsquo;ve only drawn one mask and rotated it by 90 degrees to get 4 sprites.</p>
+</blockquote>
+<p>Now let&rsquo;s try to apply them. Let&rsquo;s assume the damage level is around 100% and the visibility of the mask is absolute:</p>
+<img title="Applying a damage mask on our sprites" src="https://habrastorage.org/webt/aj/c3/uu/ajc3uuhcrywvxeao_vjbmkwaaws.png"/>
+<p>It doesn&rsquo;t look very neat: this mask only fits square-shaped sprites.</p>
+<p>It <strong>is</strong> possible to solve this issue without shaders:</p>
+<ul>
+<li>We can draw masks of different shapes that perfectly fit the sprite.</li>
+<li>Alternatively, we can use round damage textures that can fit anywhere.</li>
+<li>Or we can apply intersection composite modes when rendering.</li>
+</ul>
+<p>But let&rsquo;s try to solve the task using a shader, shall we?</p>
+<p>First, I&rsquo;ll write the shader, and then I&rsquo;ll show you how to apply it to the image.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">main</span>
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">HP</span> <span style="color:#66d9ef">float</span> <span style="color:#75715e">// A health level, a value in [0, 1] range
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">texCoord</span>)    <span style="color:#75715e">// A pixel from the building image
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">mask</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrc1At</span>(<span style="color:#a6e22e">texCoord</span>) <span style="color:#75715e">// A pixel from the damage mask image
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">a</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0.0</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">mask</span>.<span style="color:#a6e22e">a</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0.0</span> {
+		<span style="color:#a6e22e">a</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">clamp</span>(<span style="color:#a6e22e">HP</span><span style="color:#f92672">+</span>(<span style="color:#ae81ff">1.0</span><span style="color:#f92672">-</span><span style="color:#a6e22e">mask</span>.<span style="color:#a6e22e">a</span>), <span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">1.0</span>)
+		<span style="color:#75715e">// Create a darker pixel if it&#39;s inside a damage mask.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">vec4</span>(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">r</span><span style="color:#f92672">*</span><span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">g</span><span style="color:#f92672">*</span><span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">b</span><span style="color:#f92672">*</span><span style="color:#a6e22e">a</span>, <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">a</span>)
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span> <span style="color:#75715e">// Otherwise, leave a pixel color as is
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>Our shader has some dependencies:</p>
+<ul>
+<li>The texture of the main image (Src0)</li>
+<li>The texture of the damage (Src1)</li>
+<li>The HP parameter for calculating color components</li>
+</ul>
+<img src="https://habrastorage.org/webt/eq/ht/gi/eqhtgiutnpeqyx6igdilz0mqgri.png"/>
+<p>Src0 and Src1 should be of the same size, so each pixel in Src0 has a corresponding pixel in Src1. For each intersection of opaque pixels in Src0 and Src1, we calculate a new color.</p>
+<p>The shader result looks like this:</p>
+<img title="The damage mask rendered via shaders" src="https://habrastorage.org/webt/uo/kc/qn/uokcqnu6jgp6ocxk37fkog_qfik.png"/>
+<p>You can modify the shader to prevent the damage texture from overlaying the object&rsquo;s outline. By checking other color components (apart from <code>c.a</code>), you can determine whether the textures should be blended in that pixel or not.</p>
+<h2 id="kage-shader-language-overview">Kage Shader Language Overview</h2>
+<p>Did you notice that we wrote the shader in a Go-like language?</p>
+<p>We use Kage as a shader language in Ebitengine. Kage&rsquo;s translator parses Go code and generates the corresponding snippet in the required shader language dialect. For example, on my machine, the shader from the previous example is transformed into the following code:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cpp" data-lang="cpp"><span style="color:#75715e">#if defined(GL_ES)
+</span><span style="color:#75715e"></span>precision highp <span style="color:#66d9ef">float</span>;
+<span style="color:#75715e">#else
+</span><span style="color:#75715e">#define lowp
+</span><span style="color:#75715e">#define mediump
+</span><span style="color:#75715e">#define highp
+</span><span style="color:#75715e">#endif
+</span><span style="color:#75715e"></span>
+<span style="color:#66d9ef">int</span> <span style="color:#a6e22e">modInt</span>(<span style="color:#66d9ef">int</span> x, <span style="color:#66d9ef">int</span> y) {
+	<span style="color:#66d9ef">return</span> x <span style="color:#f92672">-</span> y<span style="color:#f92672">*</span>(x<span style="color:#f92672">/</span>y);
+}
+
+uniform vec2 U0;
+uniform vec2 U1[<span style="color:#ae81ff">4</span>];
+<span style="color:#75715e">// ... много других uniform-деклараций.
+</span><span style="color:#75715e"></span>
+varying vec2 V0;
+varying vec4 V1;
+
+vec4 <span style="color:#a6e22e">F5</span>(in vec2 l0);
+vec4 <span style="color:#a6e22e">F7</span>(in vec2 l0);
+vec4 <span style="color:#a6e22e">F12</span>(in vec4 l0, in vec2 l1, in vec4 l2);
+
+vec4 <span style="color:#a6e22e">F5</span>(in vec2 l0) { <span style="color:#75715e">/* ... */</span> }
+
+vec4 <span style="color:#a6e22e">F7</span>(in vec2 l0) { <span style="color:#75715e">/* ... */</span> }
+
+vec4 <span style="color:#a6e22e">F12</span>(in vec4 l0, in vec2 l1, in vec4 l2) {
+	vec4 l3 <span style="color:#f92672">=</span> vec4(<span style="color:#ae81ff">0</span>);
+	vec4 l4 <span style="color:#f92672">=</span> vec4(<span style="color:#ae81ff">0</span>);
+	l3 <span style="color:#f92672">=</span> F5(l1);
+	l4 <span style="color:#f92672">=</span> F7(l1);
+	<span style="color:#66d9ef">if</span> ((((l3).a) <span style="color:#f92672">!=</span> (<span style="color:#ae81ff">0.0</span>)) <span style="color:#f92672">&amp;&amp;</span> (((l4).a) <span style="color:#f92672">!=</span> (<span style="color:#ae81ff">0.0</span>))) {
+		<span style="color:#66d9ef">float</span> l5 <span style="color:#f92672">=</span> <span style="color:#66d9ef">float</span>(<span style="color:#ae81ff">0</span>);
+		l5 <span style="color:#f92672">=</span> clamp((U8) <span style="color:#f92672">+</span> ((<span style="color:#ae81ff">1.0</span>) <span style="color:#f92672">-</span> ((l4).a)), <span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">1.0</span>);
+		<span style="color:#66d9ef">return</span> vec4(((l3).r)<span style="color:#f92672">*</span>(l5), ((l3).g)<span style="color:#f92672">*</span>(l5), ((l3).b)<span style="color:#f92672">*</span>(l5), (l3).a);
+	}
+	<span style="color:#66d9ef">return</span> l3;
+}
+
+<span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span>(<span style="color:#66d9ef">void</span>) {
+	gl_FragColor <span style="color:#f92672">=</span> F12(gl_FragCoord, V0, V1);
+}
+</code></pre></div><p>Fascinating, isn&rsquo;t it?</p>
+<p>My opinion on Kage is mixed. On one hand, I understand why this layer of abstraction was added. On the other hand, Kage makes working with shaders more difficult for both beginners and experienced shader creators. For beginners, it is challenging to learn something with minimal documentation, while for experienced creators, it is difficult to apply existing knowledge.</p>
+<p>Advantages of Kage:</p>
+<ul>
+<li>Convenient editing features similar to Go: gofmt, autocompletion, go to definition</li>
+<li>Familiar Go concepts work (e.g. multi-value return)</li>
+<li>Improved portability due to the ability to translate into any target language</li>
+<li>The Kage layer allows the engine to have more control over shaders</li>
+</ul>
+<p>Disadvantages of Kage:</p>
+<ul>
+<li>It&rsquo;s harder to use existing shaders; they need to be rewritten in Kage</li>
+<li>Less documentation, examples, and tutorials available</li>
+<li>Less shader tooling (looking forward to a visual shader editor by <a href="(https://github.com/sedyh/)">Sedyh</a>)</li>
+<li>Debugging Kage is more challenging</li>
+</ul>
+<p>Here are some useful hints about Kage that will come in handy pretty soon:</p>
+<ul>
+<li>The entry point is the <code>Fragment()</code> func, we&rsquo;ll examine its parameters later.</li>
+<li>The types we need are <code>int</code>, <code>float</code>, <code>vec2</code>, and <code>vec4</code>.</li>
+<li>Kage provides built-in funcs such as <code>distance()</code>, <code>clamp()</code>, and <code>imageSrc0At()</code>.</li>
+<li>You can also define your own functions and numerical constants.</li>
+<li>Kage supports <a href="(https://ebitengine.org/en/documents/shader.html#Swizzling)">swizzling</a></li>
+<li>Arithmetic operations such as <code>*</code> also work for vectors (<code>vec2</code>, <code>vec4</code>)</li>
+<li>Coordinates are represented with <code>vec2</code> (x, y).</li>
+<li>Colors are represented with <code>vec4</code> (r, g, b, a).</li>
+</ul>
+<h2 id="connecting-a-shader">Connecting a Shader</h2>
+<p>Let&rsquo;s assume that our game scene contains Sprite objects. They hold an <a href="https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#Image">*ebiten.Image</a> and, optionally, a compiled shader.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Sprite</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">y</span> <span style="color:#66d9ef">float64</span>
+
+	<span style="color:#a6e22e">img</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">Image</span>
+
+	<span style="color:#a6e22e">shader</span>        <span style="color:#f92672">*</span><span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">Shader</span>
+	<span style="color:#a6e22e">shaderTexture</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">Image</span>
+	<span style="color:#a6e22e">shaderParams</span>  <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">any</span>
+}
+</code></pre></div><p>Rendering sprites without shaders can be done as follows:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Sprite</span>) <span style="color:#a6e22e">Draw</span>(<span style="color:#a6e22e">dst</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">Image</span>) {
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">options</span> <span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">DrawImageOptions</span>
+	<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">GeoM</span>.<span style="color:#a6e22e">Translate</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">y</span>)
+	<span style="color:#a6e22e">dst</span>.<span style="color:#a6e22e">DrawImage</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">img</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">options</span>)
+}
+</code></pre></div><p>Next, in our root <a href="https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#Game">game.Draw()</a> function, we call <code>Sprite.Draw()</code> on every sprite object to render every one of them.</p>
+<p>Now let&rsquo;s add shader-aware drawing:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Sprite</span>) <span style="color:#a6e22e">Draw</span>(<span style="color:#a6e22e">dst</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">Image</span>) {
+	<span style="color:#75715e">// If there is no shader, do it as before.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">shader</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">nil</span> {
+		<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">options</span> <span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">DrawImageOptions</span>
+		<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">GeoM</span>.<span style="color:#a6e22e">Translate</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">y</span>)
+		<span style="color:#a6e22e">dst</span>.<span style="color:#a6e22e">DrawImage</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">img</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">options</span>)
+		<span style="color:#66d9ef">return</span>
+	}
+	<span style="color:#75715e">// We&#39;ll need a different draw options type here.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">options</span> <span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">DrawRectShaderOptions</span>
+	<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">GeoM</span>.<span style="color:#a6e22e">Translate</span>(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">y</span>)
+	<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">Images</span>[<span style="color:#ae81ff">0</span>] = <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">img</span>           <span style="color:#75715e">// Src0
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">Images</span>[<span style="color:#ae81ff">1</span>] = <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">shaderTexture</span> <span style="color:#75715e">// Src1
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">options</span>.<span style="color:#a6e22e">Uniforms</span> = <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">shaderParams</span>
+	<span style="color:#a6e22e">b</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">img</span>.<span style="color:#a6e22e">Bounds</span>()
+	<span style="color:#a6e22e">drawDest</span>.<span style="color:#a6e22e">DrawRectShader</span>(<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">Dx</span>(), <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">Dy</span>(), <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">shader</span>, <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">options</span>)
+}
+</code></pre></div><p>The amount of code definitely increased, but there&rsquo;s nothing fundamentally difficult out there. We need to correctly populate <a href="https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#DrawRectShaderOptions">DrawRectShaderOptions</a> and call <a href="https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#Image.DrawRectShader">DrawRectShader()</a> instead of <a href="https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#Image.DrawImage">DrawImage()</a>.</p>
+<p>Where do <code>s.shaderParams</code> and <code>s.shaderTexture</code> come from? I suggest associating them with the sprite once when assigning the shader:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">ShaderParams</span> <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">Compiled</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">Shader</span>
+	<span style="color:#a6e22e">Uniforms</span> <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">any</span>
+	<span style="color:#a6e22e">Src1</span>     <span style="color:#f92672">*</span><span style="color:#a6e22e">ebiten</span>.<span style="color:#a6e22e">Image</span>
+	<span style="color:#75715e">// ... can be extended to include Src2, and so on.
+</span><span style="color:#75715e"></span>}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Sprite</span>) <span style="color:#a6e22e">SetShader</span>(<span style="color:#a6e22e">params</span> <span style="color:#a6e22e">ShaderParams</span>) {
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">shader</span> = <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">Compiled</span>
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">shaderParams</span> = <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">Uniforms</span>
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">shaderTexture</span> = <span style="color:#a6e22e">params</span>.<span style="color:#a6e22e">Src1</span>
+}
+</code></pre></div><p><a href="https://pkg.go.dev/github.com/hajimehoshi/ebiten/v2#Shader">*ebiten.Shader</a> can be reused for all sprites that require that shader effect. Similarly, a single <code>*ebiten.Image</code> can be used as Src1 everywhere. However, the &ldquo;data&rdquo; (uniforms) for each sprite will be specific to that sprite.</p>
+<p>Since a map is a pointer wrapper, changes made outside will be visible inside the <code>Sprite</code>. We&rsquo;ll take advantage of this to modify shader parameters.</p>
+<p>The code for an object that uses a shader sprite would look something like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Building</span>) <span style="color:#a6e22e">Init</span>() {
+	<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">shaderData</span> = <span style="color:#66d9ef">map</span>[<span style="color:#66d9ef">string</span>]<span style="color:#a6e22e">any</span>{<span style="color:#e6db74">&#34;HP&#34;</span>: <span style="color:#ae81ff">1.0</span>}
+	<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">sprite</span> = <span style="color:#a6e22e">NewSprite</span>()
+	<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">sprite</span>.<span style="color:#a6e22e">SetShader</span>(<span style="color:#a6e22e">damageShader</span>, <span style="color:#a6e22e">damageMask</span>, <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">shaderData</span>)
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">b</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Building</span>) <span style="color:#a6e22e">OnDamage</span>(<span style="color:#a6e22e">damage</span> <span style="color:#66d9ef">float64</span>) {
+	<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">hp</span> <span style="color:#f92672">-=</span> <span style="color:#a6e22e">damage</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">hp</span> <span style="color:#f92672">&lt;=</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">destroy</span>()
+		<span style="color:#66d9ef">return</span>
+	}
+	<span style="color:#75715e">// Updating the shader parameter.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Note: we&#39;re using float32 here.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Kage shader uniforms support int, float32, and []float32 types.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">shaderData</span>[<span style="color:#e6db74">&#34;HP&#34;</span>] = float32(<span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">hp</span> <span style="color:#f92672">/</span> <span style="color:#a6e22e">b</span>.<span style="color:#a6e22e">maxHP</span>)
+}
+</code></pre></div><p>Where:</p>
+<ul>
+<li><code>damageShader</code> is an <code>*ebiten.Shader</code> created from our Kage snippet.</li>
+<li><code>damageMask</code> is an <code>*ebiten.Image</code> that contains the damage mask.</li>
+<li><code>b.shaderData</code> belongs to the <code>Building</code> object; the shader never mutates that map.</li>
+</ul>
+<p>The shader script itself is a regular file, a data. You can store it next to your application or embed it directly into the binary using <code>go:embed</code>. To compile the shader, you need to pass the shader source code bytes to the <a href="https://pkg.go.dev/github.com/hajimehoshi/ebiten#NewShader">ebiten.NewShader()</a> function.</p>
+<h2 id="round-2-the-pick-effect">Round 2: the Pick Effect</h2>
+<p>You can find fonts that look like handwriting on the internet. However, each letter will look identical, which is unrealistic. Some entropy during the rendering could help here.</p>
+<p>There are different ways to achieve this entropy. In my <a href="https://quasilyte.itch.io/decipherism">Decipherism</a> game, I just randomly shuffled some neighboring pixels when rendering the text:</p>
+<img title="Comparison of results with and without the shader" src="https://habrastorage.org/webt/n1/k-/yk/n1k-yk7m4ggcr1j4fzlhxkeoluc.png"/>
+<p>Let&rsquo;s recall the signature of the fragment shader (ignoring the irrelevant parameters):</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span>
+</code></pre></div><p><code>texCoord</code> is a texel coordinate on the source texture.</p>
+<p>All we need to about the texels is that they have values ranging from 0 to 1. If an image has a size of 500 pixels, 0.5 texels will represent a size of 250 pixels within the bounds of that image.</p>
+<p>The <code>imageSrc0At()</code> function takes <strong>texel</strong> coordinates. But what if we want to work at the pixel level? Conversions between texels and pixels are possible.</p>
+<p>Ebitengine allows us to define custom functions inside shaders, so we&rsquo;ll do just that:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#75715e">// text2pixCoord converts a texel coordinate texCoord
+</span><span style="color:#75715e">// into a pixel coordinate, taking a texture offset into account.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">tex2pixCoord</span>(<span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>) <span style="color:#a6e22e">vec2</span> {
+	<span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcTextureSize</span>()
+	<span style="color:#a6e22e">originTexCoord</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcRegionOnTexture</span>()
+	<span style="color:#a6e22e">actualTexCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">texCoord</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">originTexCoord</span>
+	<span style="color:#a6e22e">actualPixCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">actualTexCoord</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">pixSize</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">actualPixCoord</span>
+}
+</code></pre></div><p>Since Ebitengine combines multiple images into atlases automagically, our source image could be at some non-zero offset inside that atlas. Because of this, we need to subtract the origin to translate the texel coordinate into one that we can interpret as a regular pixel coordinate on the image.</p>
+<p>Here is what we&rsquo;ll do:</p>
+<ul>
+<li>Convert texels to pixel coordinates.</li>
+<li>Apply logic to the pixels.</li>
+<li>Convert pixels back to texels in the end.</li>
+</ul>
+<p>For the last step in that list, we&rsquo;ll need a <code>tex2pixCoord()</code> counterpart:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">pix2texCoord</span>(<span style="color:#a6e22e">actualPixCoord</span> <span style="color:#a6e22e">vec2</span>) <span style="color:#a6e22e">vec2</span> {
+	<span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcTextureSize</span>()
+	<span style="color:#a6e22e">actualTexCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">actualPixCoord</span> <span style="color:#f92672">/</span> <span style="color:#a6e22e">pixSize</span>
+	<span style="color:#a6e22e">originTexCoord</span>, <span style="color:#a6e22e">_</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcRegionOnTexture</span>()
+	<span style="color:#a6e22e">texCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">actualTexCoord</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">originTexCoord</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">texCoord</span>
+}
+</code></pre></div><p>Next, we need to apply something like the <a href="https://docs.gimp.org/2.10/nl/gimp-filter-noise-pick.html">pick</a> filter. I can suggest the following implementation:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">applyPixPick</span>(<span style="color:#a6e22e">pixCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">dist</span> <span style="color:#66d9ef">float</span>, <span style="color:#a6e22e">m</span>, <span style="color:#a6e22e">hash</span> <span style="color:#66d9ef">int</span>) <span style="color:#a6e22e">vec2</span> {
+	<span style="color:#75715e">// dist - how much we&#39;re offseting a pixel
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// dir - where we&#39;re moving that pixel
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Kage doesn&#39;t have a switch statement (yet?),
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// hence we&#39;ll use an if/else here.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">dir</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">hash</span> <span style="color:#f92672">%</span> <span style="color:#a6e22e">m</span>
+	<span style="color:#75715e">// We need to use an explicit int conversion here,
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// otherwise we&#39;ll get an &#34;operands of `==&#39; must have the same type&#34; error.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// Ebitengine converts a bare 0 literal into 0.0
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// which will be interpreted as a float value by the underlying driver.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dir</span> <span style="color:#f92672">==</span> int(<span style="color:#ae81ff">0</span>) {
+		<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">dist</span>
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dir</span> <span style="color:#f92672">==</span> int(<span style="color:#ae81ff">1</span>) {
+		<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">-=</span> <span style="color:#a6e22e">dist</span>
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dir</span> <span style="color:#f92672">==</span> int(<span style="color:#ae81ff">2</span>) {
+		<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">dist</span>
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dir</span> <span style="color:#f92672">==</span> int(<span style="color:#ae81ff">3</span>) {
+		<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">y</span> <span style="color:#f92672">-=</span> <span style="color:#a6e22e">dist</span>
+	}
+	<span style="color:#75715e">// Otherwise, don&#39;t move it anywhere.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">pixCoord</span>
+}
+</code></pre></div><blockquote>
+<p>A lower <code>m</code> parameter makes more pixels shuffled; a higher <code>m</code> value keeps more pixels in their original positions.</p>
+</blockquote>
+<p>Now, the remaining question is: where do we get the <code>hash</code> value from? In theory, it is a pseudo-random value that determines what to do with a specific pixel. But there&rsquo;s no <code>rand()</code> inside shaders, of course.</p>
+<p>Let&rsquo;s write a pseudo-random function ourselves then:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">shaderRand</span>(<span style="color:#a6e22e">pixCoord</span> <span style="color:#a6e22e">vec2</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> int(<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">x</span><span style="color:#f92672">+</span><span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">y</span>) <span style="color:#f92672">*</span> int(<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">y</span><span style="color:#f92672">*</span><span style="color:#ae81ff">5</span>)
+}
+</code></pre></div><p>With all the functions we created above, we can express the fragment processor:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">texCoord</span>)
+	<span style="color:#a6e22e">actualPixCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tex2pixCoord</span>(<span style="color:#a6e22e">texCoord</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">a</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0.0</span> {
+		<span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">shaderRand</span>(<span style="color:#a6e22e">actualPixCoord</span>)
+		<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">applyPixPick</span>(<span style="color:#a6e22e">actualPixCoord</span>, <span style="color:#ae81ff">1.0</span>, <span style="color:#ae81ff">15</span>, <span style="color:#a6e22e">h</span>)
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">pix2texCoord</span>(<span style="color:#a6e22e">p</span>))
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+}
+</code></pre></div><p>This shader will produce the desired pick effect.</p>
+<h2 id="round-3-the-crt-display-effect">Round 3: the CRT Display Effect</h2>
+<p>In my <a href="https://quasilyte.itch.io/decipherism">Decipherism</a> game, I needed to implement a terminal screen that would scream &ldquo;retro hacking&rdquo;. The terminal screen displayed elements of a scheme that implemented a certain encoding algorithm.</p>
+<p>Here&rsquo;s what it looked like in the end:</p>
+<img title="Shaders enabled" src="https://habrastorage.org/webt/zw/13/9r/zw139rxmwe6fvvlhxl861pdfje8.gif"/>
+<p>This is how it looks without a shader:</p>
+<img title="Shaders disabled" src="https://habrastorage.org/webt/5g/m5/nv/5gm5nvpsn3ruarhtyvsxtl_aony.png"/>
+<p>We&rsquo;ll need a more sophisticated pseudo-random numbers generation here. For this purpose, I&rsquo;ll introduce two external parameters:</p>
+<ul>
+<li><code>Tick</code> - a value that changes over time</li>
+<li><code>Seed</code> - each element will have its own seed for some extra randomness</li>
+</ul>
+<p>A new <code>shaderRand()</code> will look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">shaderRand</span>(<span style="color:#a6e22e">pixCoord</span> <span style="color:#a6e22e">vec2</span>) (<span style="color:#a6e22e">seedMod</span>, <span style="color:#a6e22e">randValue</span> <span style="color:#66d9ef">int</span>) {
+	<span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcTextureSize</span>()
+	<span style="color:#a6e22e">pixelOffset</span> <span style="color:#f92672">:=</span> int(<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">x</span>) <span style="color:#f92672">+</span> int(<span style="color:#a6e22e">pixCoord</span>.<span style="color:#a6e22e">y</span><span style="color:#f92672">*</span><span style="color:#a6e22e">pixSize</span>.<span style="color:#a6e22e">x</span>)
+	<span style="color:#a6e22e">seedMod</span> = <span style="color:#a6e22e">pixelOffset</span> <span style="color:#f92672">%</span> int(<span style="color:#a6e22e">Seed</span>)
+	<span style="color:#a6e22e">pixelOffset</span> <span style="color:#f92672">+=</span> <span style="color:#a6e22e">seedMod</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">seedMod</span>, <span style="color:#a6e22e">pixelOffset</span> <span style="color:#f92672">+</span> int(<span style="color:#a6e22e">Seed</span>)
+}
+</code></pre></div><blockquote>
+<p><code>seedMod</code> will be used as an additional source of randomness by the caller.</p>
+</blockquote>
+<p>In addition, we need to create some animated glitch-like distortions. I would say it resembles the <a href="https://docs.gimp.org/2.10/en/gimp-filter-video-degradation.html">video degradation</a> effect.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">applyVideoDegradation</span>(<span style="color:#a6e22e">y</span> <span style="color:#66d9ef">float</span>, <span style="color:#a6e22e">c</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">a</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0.0</span> {
+		<span style="color:#75715e">// Every 4th pixel on the Y axis will be darkened.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">if</span> int(<span style="color:#a6e22e">y</span><span style="color:#f92672">+</span><span style="color:#a6e22e">Tick</span>)<span style="color:#f92672">%</span><span style="color:#ae81ff">4</span> <span style="color:#f92672">!=</span> int(<span style="color:#ae81ff">0</span>) {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.6</span>
+		}
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+}
+</code></pre></div><p>The final code for the fragment shader:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">pos</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">texCoord</span>)
+
+	<span style="color:#a6e22e">actualPixCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tex2pixCoord</span>(<span style="color:#a6e22e">texCoord</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">a</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0.0</span> {
+		<span style="color:#a6e22e">seedMod</span>, <span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">shaderRand</span>(<span style="color:#a6e22e">actualPixCoord</span>)
+		<span style="color:#a6e22e">dist</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1.0</span>
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">seedMod</span> <span style="color:#f92672">==</span> int(<span style="color:#ae81ff">0</span>) {
+			<span style="color:#a6e22e">dist</span> = <span style="color:#ae81ff">2.0</span>
+		}
+		<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">applyPixPick</span>(<span style="color:#a6e22e">actualPixCoord</span>, <span style="color:#a6e22e">dist</span>, <span style="color:#ae81ff">5</span>, <span style="color:#a6e22e">h</span>)
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">applyVideoDegradation</span>(<span style="color:#a6e22e">pos</span>.<span style="color:#a6e22e">y</span>, <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">pix2texCoord</span>(<span style="color:#a6e22e">p</span>)))
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+}
+</code></pre></div><p>I&rsquo;m using the <code>pos</code> parameter for the first time here. It represents the position in the destination image (in pixels). By using this value, I avoid issues when rotating source textures. Thus, the glitch waves always go from top to bottom, instead of right to left when source texture is rotated by 90 degrees.</p>
+<h2 id="round-4-a-looped-texture-animation">Round 4: a Looped Texture Animation</h2>
+<p>Let&rsquo;s take a texture of an energy beam:</p>
+<img title="Texture for the laser" src="https://habrastorage.org/webt/ej/uq/d2/ejuqd2gdaviqspfyk1z4ler1cs8.png"/>
+<p>&hellip;and start looping it along the X-axis:</p>
+<img title="Laser with shader (1)" src="https://habrastorage.org/webt/eu/wy/lh/euwylhgbj0jb5q5pe2gbtxvm_pw.gif"/>
+<p>Here&rsquo;s another example:</p>
+<img title="Laser with shader (2)" src="https://habrastorage.org/webt/wt/cl/fm/wtclfmg0rico_9la1n0oqbfl_w0.gif"/>
+<p>My first attempt at solving this looked like the code below:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Time</span> <span style="color:#66d9ef">float</span>
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcTextureSize</span>()
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">srcRegion</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcRegionOnTexture</span>()
+	<span style="color:#a6e22e">width</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pixSize</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">srcRegion</span>.<span style="color:#a6e22e">x</span>
+	<span style="color:#a6e22e">actualPixCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tex2pixCoord</span>(<span style="color:#a6e22e">texCoord</span>)
+	<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec2</span>(<span style="color:#a6e22e">slide</span>(<span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">width</span>), <span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">y</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">pix2texCoord</span>(<span style="color:#a6e22e">p</span>))
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">slide</span>(<span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">size</span> <span style="color:#66d9ef">float</span>) <span style="color:#66d9ef">float</span> {
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">mod</span>(<span style="color:#a6e22e">v</span><span style="color:#f92672">-</span>(<span style="color:#ae81ff">100</span><span style="color:#f92672">*</span><span style="color:#a6e22e">Time</span>), <span style="color:#a6e22e">size</span>)
+}
+</code></pre></div><p>When applied to the image above, this shader yields this result:</p>
+<img src="https://habrastorage.org/webt/se/qw/o2/seqwo2qrzblwbv5dafni5trc344.gif"/>
+<blockquote>
+<p>The sliding direction depends on whether <code>Time</code> increases or decreases.</p>
+</blockquote>
+<p>This is almost what we need, but the loop is rough due to the sharp transition at both ends of the image. To achieve a better-looking result, we need to add some code to this shader:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcTextureSize</span>()
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">srcRegion</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcRegionOnTexture</span>()
+	<span style="color:#a6e22e">width</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pixSize</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">srcRegion</span>.<span style="color:#a6e22e">x</span>
+	<span style="color:#a6e22e">actualPixCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tex2pixCoord</span>(<span style="color:#a6e22e">texCoord</span>)
+	<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec2</span>(<span style="color:#a6e22e">slide</span>(<span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">width</span>), <span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">y</span>)
+
+	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">pix2texCoord</span>(<span style="color:#a6e22e">p</span>))
+	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">cutoffThreshold</span> = <span style="color:#ae81ff">10.0</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">&lt;=</span> <span style="color:#a6e22e">cutoffThreshold</span> {
+		<span style="color:#a6e22e">c</span> <span style="color:#f92672">*=</span> <span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.1</span>
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">&gt;=</span> (<span style="color:#a6e22e">width</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">cutoffThreshold</span>) {
+		<span style="color:#a6e22e">c</span> <span style="color:#f92672">*=</span> (<span style="color:#a6e22e">width</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">x</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.1</span>
+	}
+
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+}
+</code></pre></div><p>We added a gradient that reduces the opacity of the image. Pixels closer to the edge of the image will have higher transparency.</p>
+<p>I have another cool example for you. We can make a planet rotation effect using almost the same shader! First, we&rsquo;ll need a rectangular texture:</p>
+<img src="https://habrastorage.org/webt/kx/y9/mo/kxy9moqosqov78akosruiifoql0.png"/>
+<p>The shader will be similar to the previous ones, but with the addition of shadows and a rendering radius:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">Time</span> <span style="color:#66d9ef">float</span>
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">srcRegion</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcRegionOnTexture</span>()
+	<span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcTextureSize</span>()
+	<span style="color:#a6e22e">sizes</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">srcRegion</span>
+	<span style="color:#a6e22e">width</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sizes</span>.<span style="color:#a6e22e">x</span>
+	<span style="color:#a6e22e">height</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sizes</span>.<span style="color:#a6e22e">y</span>
+	<span style="color:#a6e22e">actualPixCoord</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tex2pixCoord</span>(<span style="color:#a6e22e">texCoord</span>)
+
+	<span style="color:#75715e">// We won&#39;t render anything that is outside of the circle radius (32).
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// This way, we&#39;re keeping the center section of the texture.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">planetSize</span> = <span style="color:#ae81ff">64.0</span>
+	<span style="color:#a6e22e">center</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec2</span>(<span style="color:#a6e22e">width</span>, <span style="color:#a6e22e">height</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.5</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">distance</span>(<span style="color:#a6e22e">center</span>, <span style="color:#a6e22e">actualPixCoord</span>) &gt; <span style="color:#a6e22e">planetSize</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">0</span>)
+	}
+
+	<span style="color:#75715e">// The light source will be a slightly off from the center.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">lightPos</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec2</span>(<span style="color:#a6e22e">center</span>.<span style="color:#a6e22e">x</span><span style="color:#f92672">*</span><span style="color:#ae81ff">0.85</span>, <span style="color:#a6e22e">center</span>.<span style="color:#a6e22e">y</span><span style="color:#f92672">*</span><span style="color:#ae81ff">0.9</span>)
+	<span style="color:#a6e22e">lightDist</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">distance</span>(<span style="color:#a6e22e">lightPos</span>, <span style="color:#a6e22e">actualPixCoord</span>) <span style="color:#f92672">/</span> <span style="color:#a6e22e">planetSize</span>
+	<span style="color:#a6e22e">colorMultiplier</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1</span>)
+	<span style="color:#75715e">// A higher distance from the light source makes the color darker.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">colorMultiplier</span>.<span style="color:#a6e22e">xyz</span> <span style="color:#f92672">*=</span> <span style="color:#a6e22e">clamp</span>(<span style="color:#ae81ff">1.8</span><span style="color:#f92672">-</span><span style="color:#a6e22e">lightDist</span><span style="color:#f92672">*</span><span style="color:#ae81ff">1.6</span>, <span style="color:#ae81ff">0.0</span>, <span style="color:#ae81ff">1.0</span>)
+
+	<span style="color:#75715e">// As a last step, apply a sliding loop animation.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec2</span>(<span style="color:#a6e22e">slide</span>(<span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">x</span>, <span style="color:#a6e22e">width</span>), <span style="color:#a6e22e">actualPixCoord</span>.<span style="color:#a6e22e">y</span>)
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">pix2texCoord</span>(<span style="color:#a6e22e">p</span>)) <span style="color:#f92672">*</span> <span style="color:#a6e22e">colorMultiplier</span>
+}
+</code></pre></div><p>Are you ready to see the results?</p>
+<img src="https://habrastorage.org/webt/n9/zi/qs/n9ziqsfxvnbx3zikgdjvtqpdto4.gif"/>
+<h2 id="round-5-building-construction-effect">Round 5: Building Construction Effect</h2>
+<p>In <a href="https://quasilyte.itch.io/roboden">Roboden</a> game, you can build bases and turrets. The animation of constructing a new building is done through shaders.</p>
+<p>In the game, it looks like this:</p>
+<img title="Building a colony in Roboden" src="https://habrastorage.org/webt/-5/0h/ol/-50holsyyz4vg7in_qhx92hyuv8.gif"/>
+<p>For convenience, here are frames from the animation above, in isolation:</p>
+<img title="Several stages of construction" src="https://habrastorage.org/webt/if/eh/et/ifehetkbibgsa46_s3emuxu3kjk.png"/>
+<p>The <code>t</code> parameter (named <code>Time</code> in the shader) is controlled by the game logic. When workers construct a building, <code>t</code> increases. <code>t</code> represents a normalized construction progress value (from 0 to 1).</p>
+<p>This shader requires almost everything we&rsquo;ve learned so far:</p>
+<ul>
+<li>Rendering only a part of the texture that is outside the circle.</li>
+<li>Adding the dark outline to the rendering circle to make it look less flat.</li>
+<li>Moving and painting pixels close to the rendering outline (pick effect).</li>
+</ul>
+<p>Let&rsquo;s start by introducing helper functions:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">shaderRand</span>(<span style="color:#a6e22e">p</span> <span style="color:#a6e22e">vec2</span>) <span style="color:#66d9ef">int</span> {
+	<span style="color:#66d9ef">return</span> int(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">x</span><span style="color:#f92672">+</span><span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">y</span>) <span style="color:#f92672">*</span> int(<span style="color:#a6e22e">p</span>.<span style="color:#a6e22e">y</span><span style="color:#f92672">*</span><span style="color:#ae81ff">5</span>)
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">sourceSize</span>() <span style="color:#a6e22e">vec2</span> {
+	<span style="color:#a6e22e">pixSize</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcTextureSize</span>()
+	<span style="color:#a6e22e">_</span>, <span style="color:#a6e22e">srcRegion</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrcRegionOnTexture</span>()
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">pixSize</span>.<span style="color:#a6e22e">x</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">srcRegion</span>
+}
+</code></pre></div><p>The shader itself had many parameters that I manually hardcoded to get a result I wanted. I modified the shader specifically for this article to make it more versatile (and look less crappy).</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">Fragment</span>(<span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>, <span style="color:#a6e22e">texCoord</span> <span style="color:#a6e22e">vec2</span>, <span style="color:#a6e22e">_</span> <span style="color:#a6e22e">vec4</span>) <span style="color:#a6e22e">vec4</span> {
+	<span style="color:#75715e">// texCoord is known to be in Src0 bounds, therefore we
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// can use an unsafe imageAt version which works faster.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">c</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">imageSrc0UnsafeAt</span>(<span style="color:#a6e22e">texCoord</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">a</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+	}
+
+	<span style="color:#a6e22e">actualPixPos</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">tex2pixCoord</span>(<span style="color:#a6e22e">texCoord</span>)
+
+	<span style="color:#75715e">// We&#39;ll take the image size into the account
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// to make this shader work with images of different sizes.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">sizes</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sourceSize</span>()
+	<span style="color:#a6e22e">width</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">sizes</span>.<span style="color:#a6e22e">x</span> <span style="color:#75715e">// For square images it&#39;s enough to have a width alone
+</span><span style="color:#75715e"></span>
+	<span style="color:#75715e">// Defining a rendering area and its dt movement.
+</span><span style="color:#75715e"></span>	<span style="color:#a6e22e">initialY</span> <span style="color:#f92672">:=</span> <span style="color:#f92672">-</span><span style="color:#ae81ff">2.0</span>
+	<span style="color:#a6e22e">offsetY</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">width</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.15</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">Time</span>
+	<span style="color:#a6e22e">circleCenter</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec2</span>(<span style="color:#a6e22e">width</span><span style="color:#f92672">*</span><span style="color:#ae81ff">0.5</span>, <span style="color:#a6e22e">initialY</span><span style="color:#f92672">-</span><span style="color:#a6e22e">offsetY</span>)
+	<span style="color:#a6e22e">dist</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">distance</span>(<span style="color:#a6e22e">actualPixPos</span>, <span style="color:#a6e22e">circleCenter</span>)
+
+	<span style="color:#a6e22e">progress</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">1.4</span> <span style="color:#f92672">-</span> <span style="color:#a6e22e">Time</span>
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dist</span> &gt; ((<span style="color:#a6e22e">width</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.95</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">progress</span>) {
+		<span style="color:#75715e">// Everything outside of this area is drawn without distortions.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+	}
+
+	<span style="color:#a6e22e">spread</span> <span style="color:#f92672">:=</span> <span style="color:#ae81ff">0</span>
+	<span style="color:#a6e22e">colorMultiplier</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">0</span>)
+
+	<span style="color:#75715e">// Defining several distance rings.
+</span><span style="color:#75715e"></span>	<span style="color:#75715e">// We&#39;re using if/else again due to the lack of switch statement.
+</span><span style="color:#75715e"></span>	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dist</span> &gt; ((<span style="color:#a6e22e">width</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.85</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">progress</span>) {
+		<span style="color:#a6e22e">spread</span> = <span style="color:#ae81ff">15</span>
+		<span style="color:#a6e22e">colorMultiplier</span> = <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">1.1</span>, <span style="color:#ae81ff">1.3</span>, <span style="color:#ae81ff">1.0</span>)
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dist</span> &gt; ((<span style="color:#a6e22e">width</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.75</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">progress</span>) {
+		<span style="color:#a6e22e">spread</span> = <span style="color:#ae81ff">11</span>
+		<span style="color:#a6e22e">colorMultiplier</span> = <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">0.9</span>, <span style="color:#ae81ff">1.2</span>, <span style="color:#ae81ff">1.6</span>, <span style="color:#ae81ff">1.0</span>)
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dist</span> &gt; ((<span style="color:#a6e22e">width</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.65</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">progress</span>) {
+		<span style="color:#a6e22e">spread</span> = <span style="color:#ae81ff">7</span>
+		<span style="color:#a6e22e">colorMultiplier</span> = <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">1.4</span>, <span style="color:#ae81ff">2.0</span>, <span style="color:#ae81ff">1.0</span>)
+	} <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">dist</span> &gt; ((<span style="color:#a6e22e">width</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">0.62</span>) <span style="color:#f92672">*</span> <span style="color:#a6e22e">progress</span>) {
+		<span style="color:#a6e22e">spread</span> = <span style="color:#ae81ff">6</span>
+		<span style="color:#a6e22e">colorMultiplier</span> = <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">0.25</span>, <span style="color:#ae81ff">0.25</span>, <span style="color:#ae81ff">0.25</span>, <span style="color:#ae81ff">1.0</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#75715e">// Too close to the circle, skip this area.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">vec4</span>(<span style="color:#ae81ff">0</span>)
+	}
+
+	<span style="color:#a6e22e">h</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">shaderRand</span>(<span style="color:#a6e22e">actualPixPos</span>)
+	<span style="color:#a6e22e">p</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">applyPixPick</span>(<span style="color:#a6e22e">actualPixPos</span>, <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">spread</span>, <span style="color:#a6e22e">h</span>)
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">p</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">actualPixPos</span> {
+		<span style="color:#75715e">// If pixel wasn&#39;t moved at all, render it with its original color.
+</span><span style="color:#75715e"></span>		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">c</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">imageSrc0At</span>(<span style="color:#a6e22e">pix2texCoord</span>(<span style="color:#a6e22e">p</span>)) <span style="color:#f92672">*</span> <span style="color:#a6e22e">colorMultiplier</span>
+}
+</code></pre></div><p>As <code>Time</code> increases, we move our abstract circle up, which changes the distribution of displayed pixels due to the updated distance from the circle&rsquo;s center.</p>
+<p>This was the last of the shaders I wanted to show you in this article.</p>
+<p>Want even more shaders? Check out <a href="https://github.com/hajimehoshi/ebiten/tree/main/examples/shader">examples/shader</a> in the Ebitengine repository. It includes these effects:</p>
+<ul>
+<li>Dissolve effect</li>
+<li>Radial blur</li>
+<li>Water reflections effect</li>
+<li>Chromatic aberration</li>
+</ul>
+<p>Finally, here is a small list of my suggestions regarding shaders in Ebitengine:</p>
+<ul>
+<li>Store shader source code inside the binary using <code>go:embed</code>.</li>
+<li>Compile each shader only once and reuse <code>*ebiten.Shader</code>.</li>
+<li>When a shader is not needed*, draw using <code>DrawImage</code> instead of <code>DrawRectShader</code>.</li>
+<li>Write more helper functions in shaders as they improve readability a ton.</li>
+<li>Work at the pixel level if it makes the algorithm more concise.</li>
+</ul>
+<blockquote>
+<p>(*) For example, the damage mask at <code>HP=1.0</code> will not change the appearance, so you can draw the sprite using <code>DrawImage()</code> instead of <code>DrawRectShader()</code>.</p>
+</blockquote>
+<h2 id="go-gamedev-entry-checklist">Go Gamedev Entry Checklist</h2>
+<p>Do you want to write your game in Go, but you don&rsquo;t know how to get started?</p>
+<ol>
+<li>Join the official <a href="https://discord.gg/3tVdM5H8cC">Ebitengine discord channel</a>.</li>
+<li>Complete the <a href="https://ebitengine.org/en/tour/">Ebitengine Tour</a>.</li>
+<li>Come up with some simple game idea (asteroids will do) and start making it.</li>
+</ol>
+<p>While working on your game, use these resources:</p>
+<ul>
+<li>Ebitengine <a href="https://github.com/hajimehoshi/ebiten/tree/main/examples">examples</a>.</li>
+<li><a href="https://github.com/sedyh/awesome-ebitengine">awesome-ebitengine</a> for 3rd-party libraries.</li>
+<li><a href="https://github.com/tinne26/kage-desk">Kage desk</a> for the detailed shaders documentation.</li>
+</ul>
+<p>You probably won&rsquo;t need shaders in your first game, but you might end up wanting to use them anyway; and I won&rsquo;t stop you. Shaders are awesome.</p>
+<p>I hope that you enjoyed this article and found it useful. If you want to say thanks to me, star the <a href="https://github.com/quasilyte/roboden-game">Roboden</a> GitHub repository. :)</p>
+<h2 id="extra-links">Extra Links</h2>
+<ul>
+<li><a href="https://ebitengine.org/en/documents/shader.html">Ebitengine official shaders documentation</a></li>
+<li><a href="https://github.com/quasilyte/roboden-game">Roboden game sources</a></li>
+<li><a href="https://github.com/quasilyte/decipherism-game/">Decipherism game sources</a></li>
+</ul>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/gamedev">[gamedev] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/tutorial">[tutorial] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/shaders">[shaders] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Game%20development%20in%20Go%3a%20Ebitengine%20shaders&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2febitengine-shaders%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2febitengine-shaders%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2febitengine-shaders%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that got lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2023 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

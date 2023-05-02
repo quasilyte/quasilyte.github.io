@@ -6,7 +6,20 @@
     <description>Recent content in Posts on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 26 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 01 May 2023 20:19:08 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Game development in Go: Ebitengine shaders</title>
+      <link>https://quasilyte.dev/blog/post/ebitengine-shaders/</link>
+      <pubDate>Mon, 01 May 2023 20:19:08 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/ebitengine-shaders/</guid>
+      <description>Hello, my friend. Stay awhile and listen!
+Does game development in Go programming language fascinate you? You&amp;rsquo;ve come to the right place!
+Today I want to share some of my Ebitengine shaders experience with you. Most of the examples I&amp;rsquo;ll use and refer to come from my Roboden and Decipherism open-source games. You can find their sources on GitHub.
+Without further ado, let&amp;rsquo;s do it!
+A Brief Shaders Intro I&amp;rsquo;ll only talk about fragment shaders (also known as pixel shaders) because those are the only ones supported in Ebitengine.</description>
+    </item>
+    
     <item>
       <title>A simpler scheme than SSA</title>
       <link>https://quasilyte.dev/blog/post/naive-ssa-alternative/</link>
@@ -23,11 +36,10 @@ Then you realize that it&amp;rsquo;s not enough to just have some IR that is sui
       <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/profile-guided-gogrep/</guid>
-      <description>Original (ru): https://habr.com/ru/post/596755/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/ru/post/596755/.
  If you combine a structural code search of gogrep and CPU profile filtering with perf-heatmap, you&amp;rsquo;ll get a profile-guided code search.
 This combo lets you find complex code patterns that occur only on the &amp;ldquo;hot&amp;rdquo; code path, so optimizing them can be worthwhile.
-perf-heatmap can also be used by a text editor to display the source code lines performance heat levels as shown below.
-Introduction Let&amp;rsquo;s start with a question why would you ever want to do this.</description>
+perf-heatmap can also be used by a text editor to display the source code lines performance heat levels as shown below.</description>
     </item>
     
     <item>
@@ -61,9 +73,10 @@ package gorules import &amp;#34;github.com/quasilyte/go-ruleguard/dsl&amp;#34; /
       
       <guid>https://quasilyte.dev/blog/post/yaml5/</guid>
       <description>TL;DR:
- Write YAML as JSON5 (but use # for comments) Enforce this style with yaml5 lint  # JSON5? YAML? {a: 1, b: [&amp;#39;x&amp;#39;, &amp;#39;y&amp;#39;]} What you see above is a valid YAML 1.2 document.It uses the flow-style syntax for objects and arrays.
-If you look at the JSON5 feature list, you can deduce that YAML is a superset of JSON5.The only difference is the single-line comment syntax.
-Yes, we can go and re-write all YAML files in a JSON5 style.</description>
+ Write YAML as JSON5 (but use # for comments) Enforce this style with yaml5 lint  # JSON5? YAML? {a: 1, b: [&amp;#39;x&amp;#39;, &amp;#39;y&amp;#39;]} What you see above is a valid YAML 1.2 document.
+It uses the flow-style syntax for objects and arrays.
+If you look at the JSON5 feature list, you can deduce that YAML is a superset of JSON5.
+The only difference is the single-line comment syntax.</description>
     </item>
     
     <item>
@@ -72,10 +85,9 @@ Yes, we can go and re-write all YAML files in a JSON5 style.</description>
       <pubDate>Sat, 20 Jun 2020 10:41:50 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/call-go-from-jit/</guid>
-      <description>Original (ru): https://habr.com/ru/post/489482/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/ru/post/489482/.
  Intro As long as your assembler code does something simple, you&amp;rsquo;re golden.
-As soon as you&amp;rsquo;ll need to call a Go function from it, the first suggestion that you&amp;rsquo;ll probably get: don&amp;rsquo;t do it. Perhaps you would like to follow that advice, especially if you&amp;rsquo;re unsure why you needed it in the first place.
-But what if you can&amp;rsquo;t avoid that? Read-on, we have a cure.</description>
+As soon as you&amp;rsquo;ll need to call a Go function from it, the first suggestion that you&amp;rsquo;ll probably get: don&amp;rsquo;t do it. Perhaps you would like to follow that advice, especially if you&amp;rsquo;re unsure why you needed it in the first place.</description>
     </item>
     
     <item>
@@ -84,11 +96,9 @@ But what if you can&amp;rsquo;t avoid that? Read-on, we have a cure.</descriptio
       <pubDate>Sun, 07 Jun 2020 14:11:49 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/gogrep/</guid>
-      <description>Original (ru): https://habr.com/post/481696/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/post/481696/.
  gogrep is one of my favorite tools. It gives you the ability to search Go code using syntax patterns, filter matches by expression types, and perform structural replace.
-Today I&amp;rsquo;ll talk about how to use gogrep and about VS Code extension that integrates gogrep into the editor.
-Why do you need gogrep? In a nutshell, gogrep is useful for:
- Refactoring (search and replace) Codebase exploration Suspicious code detection (example: ruleguard)  I&amp;rsquo;ll show you an example that demonstrates the power and elegance of the structural search.</description>
+Today I&amp;rsquo;ll talk about how to use gogrep and about VS Code extension that integrates gogrep into the editor.</description>
     </item>
     
     <item>
@@ -97,9 +107,9 @@ Why do you need gogrep? In a nutshell, gogrep is useful for:
       <pubDate>Fri, 27 Mar 2020 17:08:04 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/pratt-parsers-go/</guid>
-      <description>Original (ru): https://habr.com/ru/post/494316/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/ru/post/494316/.
  Recursive descent parsing works well when you can continue parsing using the current context and a given token.
-Some expressions make parsing harder: postfix, infix and other. They introduce a problem: you don&amp;rsquo;t know which kind of expression you&amp;rsquo;re processing until you&amp;rsquo;ve already parsed half of it. Most of the time you also care about operations precedence and their associativity, so the result AST has a proper shape.</description>
+Some expressions make parsing harder: postfix, infix and other. They introduce a problem: you don&amp;rsquo;t know which kind of expression you&amp;rsquo;re processing until you&amp;rsquo;ve already parsed half of it.</description>
     </item>
     
     <item>
@@ -108,11 +118,9 @@ Some expressions make parsing harder: postfix, infix and other. They introduce a
       <pubDate>Wed, 08 Jan 2020 21:54:02 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/ruleguard/</guid>
-      <description>Original (ru): https://habr.com/post/481696/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/post/481696/.
  This article introduces a new static analysis library (and CLI utility) go-ruleguard. It&amp;rsquo;s like a gogrep that is adapted for the use inside your CI pipeline.
-You describe static analysis rules in terms of a special Go-like DSL. During the startup, ruleguard turns these definitions into a set of inspections to be executed.
-As a bonus, we&amp;rsquo;ll also talk about go/analysis and it&amp;rsquo;s predecessors.
-Static analysis extensibility There is a lot of Go linters, but only a few of them can be extended.</description>
+You describe static analysis rules in terms of a special Go-like DSL. During the startup, ruleguard turns these definitions into a set of inspections to be executed.</description>
     </item>
     
     <item>

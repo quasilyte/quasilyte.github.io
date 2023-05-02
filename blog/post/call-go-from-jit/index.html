@@ -80,7 +80,7 @@
     <nav id="TableOfContents"></nav>
     
     <section class="post-content">
-        <!-- raw HTML omitted -->
+        <center>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.</center>
 <p><img src="https://hsto.org/webt/ep/4u/el/ep4uelswcffwgq9yfqkyuvcy5bu.png" alt=""></p>
 <blockquote>
 <p>Original (ru): <a href="https://habr.com/ru/post/489482/">https://habr.com/ru/post/489482/</a>.</p>
@@ -264,7 +264,8 @@ TEXT ·getg(SB), NOSPLIT, $32-16
 }
 
 <span style="color:#75715e">// Extra (scary) code is hidden under the spoiler for brevity.
-</span></code></pre></div><!-- raw HTML omitted -->
+</span></code></pre></div><details>
+<summary>Helper functions</summary>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">mmapExecutable</span>(<span style="color:#a6e22e">length</span> <span style="color:#66d9ef">int</span>) ([]<span style="color:#66d9ef">byte</span>, <span style="color:#66d9ef">error</span>) {
 	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">prot</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">PROT_READ</span> | <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">PROT_WRITE</span> | <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">PROT_EXEC</span>
 	<span style="color:#66d9ef">const</span> <span style="color:#a6e22e">flags</span> = <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">MAP_PRIVATE</span> | <span style="color:#a6e22e">syscall</span>.<span style="color:#a6e22e">MAP_ANON</span>
@@ -294,7 +295,7 @@ TEXT ·getg(SB), NOSPLIT, $32-16
 	<span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> (<span style="color:#f92672">*</span><span style="color:#a6e22e">emptyInterface</span>)(<span style="color:#a6e22e">unsafe</span>.<span style="color:#a6e22e">Pointer</span>(<span style="color:#f92672">&amp;</span><span style="color:#a6e22e">fn</span>))
 	<span style="color:#66d9ef">return</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">e</span>.<span style="color:#a6e22e">value</span>
 }
-</code></pre></div><!-- raw HTML omitted -->
+</code></pre></div></details>
 <pre tabindex="0"><code class="language-x86asm" data-lang="x86asm">// file jit_amd64.s
 TEXT ·calljit(SB), 0, $0-8
     MOVQ code+0(FP), AX
@@ -360,7 +361,7 @@ gocall:
 <ol>
 <li>The callee address is stored in <code>CX</code></li>
 <li>The <code>gocall</code> address is stored in <code>DI</code></li>
-<li>The return address is evaluated to <code>SI</code>, then stored to <code>(SP)</code><!-- raw HTML omitted -->
+<li>The return address is evaluated to <code>SI</code>, then stored to <code>(SP)</code><br>
 4+2 is a width of <code>MOVQ</code> and <code>JMP</code> instructions that follow the <code>LEAQ</code></li>
 <li>Then we jump to the <code>gocall</code></li>
 </ol>
@@ -391,7 +392,7 @@ called from JIT
 <li>The existing assembler code will continue to work correctly.</li>
 <li>Older calling conventions will still be supported for the new code.</li>
 </ul>
-<p>The original Go calling convention is a part of <code>ABI0</code>.<!-- raw HTML omitted -->
+<p>The original Go calling convention is a part of <code>ABI0</code>.<br>
 The experimental calling convention is a part of <code>ABIInternal</code>.</p>
 <p>If we&rsquo;ll start a Go compilation with <code>-S</code> flag, it&rsquo;s possible to note that <code>ABIInternal</code> is already there (but it&rsquo;s very similar to <code>ABI0</code> right now):</p>
 <p><img src="https://habrastorage.org/webt/yf/cz/ox/yfczox8dzfemakdghfoit5m14iu.png" alt=""></p>
@@ -483,7 +484,7 @@ The experimental calling convention is a part of <code>ABIInternal</code>.</p>
       
   </section>
 
-		<section class="copyright">&copy; 2022 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+		<section class="copyright">&copy; 2023 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
 	</div>
 </footer>
 

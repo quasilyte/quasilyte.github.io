@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>[gamedev] on Iskander (Alex) Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/gamedev/</link>
+    <description>Recent content in [gamedev] on Iskander (Alex) Sharipov technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 01 May 2023 20:19:08 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/gamedev/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Game development in Go: Ebitengine shaders</title>
+      <link>https://quasilyte.dev/blog/post/ebitengine-shaders/</link>
+      <pubDate>Mon, 01 May 2023 20:19:08 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/ebitengine-shaders/</guid>
+      <description>Hello, my friend. Stay awhile and listen!
+Does game development in Go programming language fascinate you? You&amp;rsquo;ve come to the right place!
+Today I want to share some of my Ebitengine shaders experience with you. Most of the examples I&amp;rsquo;ll use and refer to come from my Roboden and Decipherism open-source games. You can find their sources on GitHub.
+Without further ado, let&amp;rsquo;s do it!
+A Brief Shaders Intro I&amp;rsquo;ll only talk about fragment shaders (also known as pixel shaders) because those are the only ones supported in Ebitengine.</description>
+    </item>
+    
+  </channel>
+</rss>

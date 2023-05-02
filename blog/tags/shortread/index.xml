@@ -48,9 +48,10 @@ package gorules import &amp;#34;github.com/quasilyte/go-ruleguard/dsl&amp;#34; /
       
       <guid>https://quasilyte.dev/blog/post/yaml5/</guid>
       <description>TL;DR:
- Write YAML as JSON5 (but use # for comments) Enforce this style with yaml5 lint  # JSON5? YAML? {a: 1, b: [&amp;#39;x&amp;#39;, &amp;#39;y&amp;#39;]} What you see above is a valid YAML 1.2 document.It uses the flow-style syntax for objects and arrays.
-If you look at the JSON5 feature list, you can deduce that YAML is a superset of JSON5.The only difference is the single-line comment syntax.
-Yes, we can go and re-write all YAML files in a JSON5 style.</description>
+ Write YAML as JSON5 (but use # for comments) Enforce this style with yaml5 lint  # JSON5? YAML? {a: 1, b: [&amp;#39;x&amp;#39;, &amp;#39;y&amp;#39;]} What you see above is a valid YAML 1.2 document.
+It uses the flow-style syntax for objects and arrays.
+If you look at the JSON5 feature list, you can deduce that YAML is a superset of JSON5.
+The only difference is the single-line comment syntax.</description>
     </item>
     
     <item>
