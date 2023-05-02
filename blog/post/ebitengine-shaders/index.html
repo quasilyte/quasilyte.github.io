@@ -100,7 +100,7 @@
 <p>Without further ado, let&rsquo;s do it!</p>
 <img title="A showcase of several shaders" src="https://habrastorage.org/webt/fq/jg/ed/fqjgedeltwlgpfj8h4s6v895r_8.png"/>
 <h2 id="a-brief-shaders-intro">A Brief Shaders Intro</h2>
-<p>I&rsquo;ll only talk about <a href="(https://thebookofshaders.com/01/?lan=en)">fragment shaders</a> (also known as pixel shaders) because those are the only ones supported in Ebitengine.</p>
+<p>I&rsquo;ll only talk about <a href="https://thebookofshaders.com/01/?lan=en">fragment shaders</a> (also known as pixel shaders) because those are the only ones supported in Ebitengine.</p>
 <p>A fragment shader is an algorithm that describes how to transform the pixels of an image before displaying it. Most often, this algorithm is described in code, but there are visual ways to create shaders as well. The specific shader language dialect used to describe these programs depends on the engine you are using, as they may try to hide the details of the specific graphics card you are writing the shader for (but more on that later).</p>
 <p>An example of a simplest shader is a program that multiplies the alpha channel of each pixel by 0.5, making the image semi-transparent. Shaders can be very complex and create effects similar to animation: distortions, waves, dynamic color changes.</p>
 <blockquote>
@@ -220,7 +220,7 @@ vec4 <span style="color:#a6e22e">F12</span>(in vec4 l0, in vec2 l1, in vec4 l2) 
 <ul>
 <li>It&rsquo;s harder to use existing shaders; they need to be rewritten in Kage</li>
 <li>Less documentation, examples, and tutorials available</li>
-<li>Less shader tooling (looking forward to a visual shader editor by <a href="(https://github.com/sedyh/)">Sedyh</a>)</li>
+<li>Less shader tooling (looking forward to a visual shader editor by <a href="https://github.com/sedyh/">Sedyh</a></li>
 <li>Debugging Kage is more challenging</li>
 </ul>
 <p>Here are some useful hints about Kage that will come in handy pretty soon:</p>
@@ -229,7 +229,7 @@ vec4 <span style="color:#a6e22e">F12</span>(in vec4 l0, in vec2 l1, in vec4 l2) 
 <li>The types we need are <code>int</code>, <code>float</code>, <code>vec2</code>, and <code>vec4</code>.</li>
 <li>Kage provides built-in funcs such as <code>distance()</code>, <code>clamp()</code>, and <code>imageSrc0At()</code>.</li>
 <li>You can also define your own functions and numerical constants.</li>
-<li>Kage supports <a href="(https://ebitengine.org/en/documents/shader.html#Swizzling)">swizzling</a></li>
+<li>Kage supports <a href="https://ebitengine.org/en/documents/shader.html#Swizzling">swizzling</a></li>
 <li>Arithmetic operations such as <code>*</code> also work for vectors (<code>vec2</code>, <code>vec4</code>)</li>
 <li>Coordinates are represented with <code>vec2</code> (x, y).</li>
 <li>Colors are represented with <code>vec4</code> (r, g, b, a).</li>
