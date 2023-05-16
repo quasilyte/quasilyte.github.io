@@ -263,6 +263,46 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Dark Souls | Action, RPG, Souls-like | Watched review/know about | 8 |
 | Minecraft | Action, RPG, Souls-like | Watched review/know about | 6 |
 
+Here are some tables for stats.
+
+| Tag | Count | Avg. Rating |
+|---|---|---|
+| RPG | 54 | 7.08 |
+| Action | 44 | 6.92 |
+| Point and Click | 34 | 6.47 |
+| Horror | 30 | 6.75 |
+| Puzzle | 25 | 7.06 |
+| FPS | 23 | 6.57 |
+| RTS | 21 | 7.12 |
+| Arcade | 20 | 6.78 |
+| Adventure | 18 | 7.22 |
+| Turn-based Strategy | 16 | 6.72 |
+| Detective | 15 | 7.30 |
+| Walking Simulator | 14 | 6.82 |
+| Sandbox | 13 | 6.38 |
+| Survival | 11 | 6.45 |
+| Strategy | 11 | 6.86 |
+| FMV | 11 | 6.59 |
+| Platformer | 10 | 6.75 |
+| Racing | 8 | 6.31 |
+| Rogue-like | 7 | 7.14 |
+| Interactive Movie | 5 | 7.00 |
+| Visual Novel | 5 | 7.10 |
+| Souls-like | 3 | 7.00 |
+| Turn-based RPG | 2 | 7.00 |
+| MMO | 2 | 7.50 |
+| Talking Simulator | 2 | 7.25 |
+| Sport | 1 | 6.00 |
+| Vendor Simulator | 1 | 5.50 |
+| Deckbuilder | 1 | 7.00 |
+| Stealth | 1 | 7.00 |
+
+| Status | Count |
+|---|---|
+| Completed myself | 97 |
+| Completed via YouTube | 150 |
+| Watched review/know about | 2 |
+
 ### [itch.io](https://itch.io/) indie games
 
 Sometimes I [play random games](https://www.youtube.com/playlist?list=PLAjl-3QkinHsHaEnaie_FFG1sI8KU2Eoq) from [itch.io](https://itch.io/). I wonder, how many games from this list you ever heard of.
