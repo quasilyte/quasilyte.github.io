@@ -150,6 +150,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Urban Strike | Arcade | Completed myself | 6 |
 | Bloodline Champions | Action, Online | Completed myself | 6 |
 | Serious Sam | FPS | Completed myself | 6 |
+| Silverfall | Action, RPG | Completed myself | 6 |
 | Sacred | Action, RPG | Completed myself | 6 |
 | Dungeon Maker: Hunting Grounds | RPG | Completed myself | 6 |
 | Neverwinter Nights 2 | RPG | Completed myself | 6 |
@@ -172,6 +173,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Desert Strike | Arcade | Completed myself | 5.5 |
 | Worms Blast | Arcade | Completed myself | 5.5 |
 | Serious Sam 2 | FPS | Completed myself | 5.5 |
+| Mage Knight: Apocalypse | Action, RPG | Completed myself | 5.5 |
 | Theme Hospital | Puzzle, RTS | Completed myself | 5.5 |
 | Battle Realms | RTS | Completed myself | 5.5 |
 | Fate | RPG | Completed myself | 5.5 |
@@ -349,8 +351,8 @@ Here are some tables for stats.
 
 | Tag | Count | Avg. Rating |
 |---|---|---|
-| RPG | 73 | 7.05 |
-| Action | 63 | 6.83 |
+| RPG | 75 | 7.02 |
+| Action | 65 | 6.79 |
 | RTS | 37 | 7.18 |
 | Point and Click | 34 | 6.47 |
 | FPS | 32 | 6.47 |
@@ -369,26 +371,26 @@ Here are some tables for stats.
 | Platformer | 11 | 6.73 |
 | Rogue-like | 8 | 7.06 |
 | Online | 5 | 6.80 |
-| Visual Novel | 5 | 7.10 |
 | Interactive Movie | 5 | 7.00 |
+| Visual Novel | 5 | 7.10 |
 | Souls-like | 4 | 7.12 |
 | Turn-based RPG | 4 | 6.88 |
 | Fighting | 3 | 6.17 |
+| Global Strategy | 2 | 7.00 |
 | Engineering | 2 | 7.75 |
+| MOBA | 2 | 6.50 |
 | MMO | 2 | 7.50 |
 | Talking Simulator | 2 | 7.25 |
-| MOBA | 2 | 6.50 |
-| Global Strategy | 2 | 7.00 |
 | Deckbuilder | 1 | 7.00 |
 | Sport | 1 | 6.00 |
 | Vendor Simulator | 1 | 5.50 |
+| Programming | 1 | 8.00 |
 | Match-Three | 1 | 7.50 |
 | Stealth | 1 | 7.00 |
-| Programming | 1 | 8.00 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 170 |
+| Completed myself | 172 |
 | Completed via YouTube | 159 |
 | Watched review/know about | 2 |
 
