@@ -26,7 +26,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Danganronpa 3 | Detective, Visual Novel | Completed myself | 8 |
 | Divine Divinity | RPG | Completed myself | 8 |
 | Warhammer: Dark Omen | RTS | Completed myself | 8 |
-| Guild Wars | MMO, RPG | Completed myself | 8 |
+| Carnage Heart EXA (PSP) | Engineering, Programming, Strategy | Completed myself | 8 |
+| Guild Wars | MMO, Online, RPG | Completed myself | 8 |
 | Need For Speed: Most Wanted | Racing | Completed myself | 8 |
 | Warhammer 40000: Dawn of War | RTS | Completed myself | 8 |
 | Lord of the Rings: Battle for Middle Earth | RTS | Completed myself | 8 |
@@ -39,9 +40,13 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Diablo II | Action, RPG, Rogue-like | Completed myself | 7.5 |
 | Danganronpa | Detective, Visual Novel | Completed myself | 7.5 |
 | Mount & Blade | Action, RPG, Sandbox | Completed myself | 7.5 |
+| Hogs of War (PSX) | Action, Strategy | Completed myself | 7.5 |
 | Worms: World Party | Action, Strategy | Completed myself | 7.5 |
 | Worms: Armageddon | Action, Strategy | Completed myself | 7.5 |
 | Worms Ultimate Mayhem | Action, Strategy | Completed myself | 7.5 |
+| Worms Reloaded | Arcade | Completed myself | 7.5 |
+| Robot Arena 2 | Arcade, Engineering | Completed myself | 7.5 |
+| Monster Hunter: Freedom Unite (PSP) | Action, RPG, Souls-like | Completed myself | 7.5 |
 | Need For Speed: Underground 2 | Racing | Completed myself | 7.5 |
 | GTA Vice City | Action, Sandbox | Completed myself | 7.5 |
 | GTA San Andreas | Action, Sandbox | Completed myself | 7.5 |
@@ -50,11 +55,13 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Star Wars: Knights of the Old Republic 2 | RPG | Completed myself | 7.5 |
 | SpellForce: Shadow of the Phoenix | RPG, RTS | Completed myself | 7.5 |
 | Warlords Battlecry III | RTS | Completed myself | 7.5 |
+| What Did I Do to Deserve This, My Lord? 2 (PSP) | RTS | Completed myself | 7.5 |
 | Empire Earth II | RTS | Completed myself | 7.5 |
 | Dungeon Siege 2 | RPG | Completed myself | 7.5 |
 | Dungeon Siege 2: Broken World | RPG | Completed myself | 7.5 |
 | Stronghold: Crusader | RTS | Completed myself | 7.5 |
 | Fable: The Lost Chapters | RPG | Completed myself | 7.5 |
+| PuzzleQuest: Challenge of the Warlords | Match-Three, Puzzle, RPG | Completed myself | 7.5 |
 | Quake 3 Arena | FPS | Completed myself | 7 |
 | Robinson's Requiem | Adventure, Survival | Completed myself | 7 |
 | Civilization 4 | Turn-based Strategy | Completed myself | 7 |
@@ -75,8 +82,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Sacred: Underworld | Action, RPG | Completed myself | 7 |
 | Warhammer: Shadow of the Horned Rat | RTS | Completed myself | 7 |
 | Tanktics | Puzzle, RTS | Completed myself | 7 |
-| Monster Hunter: Freedom Unite | Action, RPG, Souls-like | Completed myself | 7 |
-| Lineage II | MMO, RPG | Completed myself | 7 |
+| Gods Eater Burst (PSP) | Action, RPG, Souls-like | Completed myself | 7 |
+| Lineage II | MMO, Online, RPG | Completed myself | 7 |
 | Neverwinter Nights | RPG | Completed myself | 7 |
 | Dominions 5 | Global Strategy, Turn-based Strategy | Completed myself | 7 |
 | Knights of Honor | Global Strategy, RTS | Completed myself | 7 |
@@ -87,14 +94,20 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | SpellForce 2 | RPG, RTS | Completed myself | 7 |
 | Disciples | Turn-based Strategy | Completed myself | 7 |
 | Warlords IV: Heroes of Etheria | Turn-based Strategy | Completed myself | 7 |
+| MotorStorm: Arctic Edge (PSP) | Racing | Completed myself | 7 |
+| Every Extend Extra | Arcade | Completed myself | 7 |
+| What Did I Do to Deserve This, My Lord? (PSP) | RTS | Completed myself | 7 |
+| Rise of Nations | RTS | Completed myself | 7 |
 | Naruto: Ultimate Ninja Heroes 3 (PSP) | Fighting | Completed myself | 7 |
 | Dungeon Siege | RPG | Completed myself | 7 |
 | Dungeon Siege: Legends of Aranna | RPG | Completed myself | 7 |
+| League of Legends | MOBA, Online | Completed myself | 7 |
 | The Elder Scrolls IV: Oblivion | RPG | Completed myself | 6.5 |
 | Return to Castle Wolfenstein | FPS, Horror | Completed myself | 6.5 |
 | Heroes of Might And Magic II | Turn-based Strategy | Completed myself | 6.5 |
 | Heroes of Might And Magic V | Turn-based Strategy | Completed myself | 6.5 |
 | Syndicate Wars (psx) | Arcade, RTS | Completed myself | 6.5 |
+| Darkstone | Action, RPG, Rogue-like | Completed myself | 6.5 |
 | Nuclear Strike | Arcade | Completed myself | 6.5 |
 | Age of Wonders | Turn-based Strategy | Completed myself | 6.5 |
 | Dragon Shards | Turn-based Strategy | Completed myself | 6.5 |
@@ -103,12 +116,16 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Worms Battle Islands | Action, Strategy | Completed myself | 6.5 |
 | Worms Battle Islands 2 | Action, Strategy | Completed myself | 6.5 |
 | Titan Quest | Action, RPG | Completed myself | 6.5 |
+| RPG Maker (PSX) | RPG, Sandbox | Completed myself | 6.5 |
+| Army Men 3D (PSX) | FPS | Completed myself | 6.5 |
+| Army Men Air Attack | Arcade | Completed myself | 6.5 |
 | Carmageddon | Racing | Completed myself | 6.5 |
 | Carmageddon 2 | Racing | Completed myself | 6.5 |
 | WarGame: Defcon (PSX) | Arcade, FPS | Completed myself | 6.5 |
 | Need For Speed: Hot Pursuit 2 | Racing | Completed myself | 6.5 |
 | Gran Turismo (PSP) | Racing | Completed myself | 6.5 |
 | GTA 2 | Arcade | Completed myself | 6.5 |
+| GTA Chinatown Wars (PSP) | Action, Sandbox | Completed myself | 6.5 |
 | Z (1996) | RTS | Completed myself | 6.5 |
 | Lord of the Rings: The Return of the King | Action | Completed myself | 6.5 |
 | Mafia | Action | Completed myself | 6.5 |
@@ -118,18 +135,23 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Disciples 2 | Turn-based Strategy | Completed myself | 6.5 |
 | Warlords Battlecry | RTS | Completed myself | 6.5 |
 | Test Drive: Overdrive | Racing | Completed myself | 6.5 |
+| Overlord | Action, Strategy | Completed myself | 6.5 |
 | Empire Earth | RTS | Completed myself | 6.5 |
 | Naruto: Ultimate Ninja Heroes 2 (PSP) | Fighting | Completed myself | 6.5 |
 | Commandos: Behind Enemy Lines | Strategy | Completed myself | 6.5 |
 | Perimeter | RTS | Completed myself | 6.5 |
 | Evil Genius | RTS | Completed myself | 6.5 |
+| Prince of Persia (GBA) | Platformer | Completed myself | 6.5 |
 | Blood Bowl | Sport, Turn-based Strategy | Completed myself | 6 |
 | Postal | Action, Sandbox | Completed myself | 6 |
 | Outlive | RTS | Completed myself | 6 |
 | Command and Conquer: Generals | RTS | Completed myself | 6 |
+| Extraterrestrials | Turn-based Strategy | Completed myself | 6 |
 | Urban Strike | Arcade | Completed myself | 6 |
+| Bloodline Champions | Action, Online | Completed myself | 6 |
 | Serious Sam | FPS | Completed myself | 6 |
 | Sacred | Action, RPG | Completed myself | 6 |
+| Dungeon Maker: Hunting Grounds | RPG | Completed myself | 6 |
 | Neverwinter Nights 2 | RPG | Completed myself | 6 |
 | Star Wars: Battlefront II | FPS | Completed myself | 6 |
 | FlatOut | Racing | Completed myself | 6 |
@@ -138,10 +160,13 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Resident Evil 3 | Arcade, Horror, Survival | Completed myself | 6 |
 | Counter Strike Source | FPS | Completed myself | 6 |
 | Twisted Metal 2 | Action, Racing | Completed myself | 6 |
+| Twisted Metal: Head-On (PSP) | Action, Racing | Completed myself | 6 |
 | Summoner | RPG | Completed myself | 6 |
 | Command and Conquer: Renegade | FPS | Completed myself | 6 |
 | Half-Life | FPS | Completed myself | 6 |
 | Blitzkrieg: Rolling Thunder | Strategy | Completed myself | 6 |
+| DCS: Black Shark | Arcade | Completed myself | 6 |
+| DoTA 2 | MOBA, Online | Completed myself | 6 |
 | Heroes of Might And Magic | Turn-based Strategy | Completed myself | 5.5 |
 | Sonic the Hedgehog | Arcade, Platformer | Completed myself | 5.5 |
 | Desert Strike | Arcade | Completed myself | 5.5 |
@@ -152,6 +177,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Fate | RPG | Completed myself | 5.5 |
 | Twisted Metal 4 | Action, Racing | Completed myself | 5.5 |
 | Dungeon Siege: Throne of Agony (PSP) | RPG | Completed myself | 5.5 |
+| Sims 2 | Sandbox | Completed myself | 5.5 |
 | Splinter Cell | FPS | Completed myself | 5 |
 | Need For Speed II | Racing | Completed myself | 5 |
 | Delta Force: Land Warrior | FPS | Completed myself | 5 |
@@ -193,6 +219,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Observer | FPS, Horror | Completed via YouTube | 7.5 |
 | The Infectious Madness of Doctor Dekker | FMV | Completed via YouTube | 7.5 |
 | Bully | Action, Sandbox | Completed via YouTube | 7.5 |
+| Max Payne | FPS | Completed via YouTube | 7.5 |
 | The Elder Scrolls V: Skyrim | RPG | Completed via YouTube | 7 |
 | Shadow of the Colossus | RPG | Completed via YouTube | 7 |
 | Primordia | Point and Click | Completed via YouTube | 7 |
@@ -234,7 +261,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | World of Horror | Horror, Rogue-like, Turn-based RPG | Completed via YouTube | 7 |
 | Fear Effect | Action | Completed via YouTube | 7 |
 | Steambot Chronicles | Action, RPG | Completed via YouTube | 7 |
-| Max Paybe | FPS | Completed via YouTube | 7 |
+| Spore | Action, Adventure | Completed via YouTube | 7 |
 | The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
 | BioShock Infinite | FPS | Completed via YouTube | 6.5 |
 | Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
@@ -322,42 +349,47 @@ Here are some tables for stats.
 
 | Tag | Count | Avg. Rating |
 |---|---|---|
-| RPG | 68 | 7.07 |
-| Action | 55 | 6.85 |
-| RTS | 34 | 7.18 |
+| RPG | 73 | 7.05 |
+| Action | 63 | 6.83 |
+| RTS | 37 | 7.18 |
 | Point and Click | 34 | 6.47 |
-| FPS | 31 | 6.45 |
+| FPS | 32 | 6.47 |
 | Horror | 30 | 6.75 |
-| Puzzle | 25 | 7.06 |
-| Arcade | 22 | 6.70 |
-| Turn-based Strategy | 20 | 6.75 |
-| Adventure | 18 | 7.22 |
+| Arcade | 27 | 6.74 |
+| Puzzle | 26 | 7.08 |
+| Turn-based Strategy | 21 | 6.71 |
+| Adventure | 19 | 7.21 |
+| Sandbox | 17 | 6.41 |
 | Detective | 16 | 7.25 |
-| Sandbox | 14 | 6.46 |
+| Strategy | 16 | 6.88 |
+| Racing | 15 | 6.37 |
 | Walking Simulator | 14 | 6.82 |
-| Racing | 13 | 6.35 |
-| Strategy | 13 | 6.77 |
 | FMV | 13 | 6.46 |
 | Survival | 11 | 6.45 |
-| Platformer | 10 | 6.75 |
-| Rogue-like | 7 | 7.14 |
+| Platformer | 11 | 6.73 |
+| Rogue-like | 8 | 7.06 |
+| Online | 5 | 6.80 |
 | Visual Novel | 5 | 7.10 |
 | Interactive Movie | 5 | 7.00 |
+| Souls-like | 4 | 7.12 |
 | Turn-based RPG | 4 | 6.88 |
-| Souls-like | 3 | 7.00 |
 | Fighting | 3 | 6.17 |
+| Engineering | 2 | 7.75 |
 | MMO | 2 | 7.50 |
 | Talking Simulator | 2 | 7.25 |
+| MOBA | 2 | 6.50 |
 | Global Strategy | 2 | 7.00 |
 | Deckbuilder | 1 | 7.00 |
-| Stealth | 1 | 7.00 |
 | Sport | 1 | 6.00 |
 | Vendor Simulator | 1 | 5.50 |
+| Match-Three | 1 | 7.50 |
+| Stealth | 1 | 7.00 |
+| Programming | 1 | 8.00 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 144 |
-| Completed via YouTube | 158 |
+| Completed myself | 170 |
+| Completed via YouTube | 159 |
 | Watched review/know about | 2 |
 
 ### [itch.io](https://itch.io/) indie games
