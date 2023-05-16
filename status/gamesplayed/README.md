@@ -82,75 +82,75 @@
 | Need For Speed II | Racing | Completed myself | 5 |
 | SWAT 4 | FPS | Completed myself | 4.5 |
 | Hatoful Boyfriend | Visual Novel | Completed myself | 4.5 |
-| Galerians: Ash | Action, Horror | Completed via YouTube | 6 |
-| The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
-| The Bad Rats | Puzzle | Completed via YouTube | 6 |
-| The Elder Scrolls II: Daggerfall | RPG | Completed via YouTube | 6 |
-| The Elder Scrolls V: Skyrim | RPG | Completed via YouTube | 7 |
-| Shadow of the Colossus | RPG | Completed via YouTube | 7 |
-| BioShock Infinite | FPS | Completed via YouTube | 6.5 |
 | Tales of Vesperia | Action, RPG | Completed via YouTube | 8 |
-| Fort Zombie | FPS, Survival | Completed via YouTube | 5.5 |
+| I Have No Mouth, and I Must Scream | Point and Click, Horror | Completed via YouTube | 8 |
+| Myth II: Soulblighter | RTS | Completed via YouTube | 8 |
 | Sanitarium | Point and Click | Completed via YouTube | 7.5 |
-| Primordia | Point and Click | Completed via YouTube | 7 |
-| Beneath a Steel Sky | Point and Click | Completed via YouTube | 5.5 |
-| Phantasmagoria | FMV, Point and Click | Completed via YouTube | 6 |
-| Recettear | RPG, Vendor Simulator | Completed via YouTube | 5.5 |
-| Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
 | Deus Ex: Human Revolution | FPS, RPG, Action | Completed via YouTube | 7.5 |
-| Deus Ex: Mankind Devided | FPS, RPG, Action | Completed via YouTube | 7 |
 | Hitman: Blood Money | FPS, Puzzle | Completed via YouTube | 7.5 |
-| Metal Gear Solid 3: Snake Eater | Action, Stealth | Completed via YouTube | 7 |
 | Tokobot | Puzzle, Platformer | Completed via YouTube | 7.5 |
-| Way of the Samurai 4 | Action, RPG, Sandbox | Completed via YouTube | 6.5 |
 | SOMA | Adventure, Horror | Completed via YouTube | 7.5 |
-| Alan Wake | FPS, Horror | Completed via YouTube | 6 |
-| Mystical Ninja Starring Goemon | Action | Completed via YouTube | 5.5 |
-| Dead Space | FPS, Horror, Survival | Completed via YouTube | 7 |
-| Dead Space 2 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
-| Dead Space 3 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
-| Dishonored | Action, RPG, Adventure, Sandbox | Completed via YouTube | 7 |
-| Dishonored 2 | Action, RPG, Adventure, Sandbox | Completed via YouTube | 6.5 |
-| Genuine Blast Corps | Racing, Action | Completed via YouTube | 5 |
 | Mega Man Legends | Action | Completed via YouTube | 7.5 |
 | Mega Man Legends 2 | Action | Completed via YouTube | 7.5 |
-| The Misadventures of Tron Bonn | Action | Completed via YouTube | 7 |
-| Brave Fencer Musashi | Action | Completed via YouTube | 5 |
-| The Turing Test | Puzzle | Completed via YouTube | 6 |
-| Contact (NDS) | RPG | Completed via YouTube | 6.5 |
-| Made In Abyss: Binary Star Falling Into Darkness | Action, Adventure, RPG, Sandbox | Completed via YouTube | 6 |
-| Endoparasitic | Action, Horror | Completed via YouTube | 6.5 |
-| Backpack Hero | RPG, Rogue-like | Completed via YouTube | 7 |
-| Master of Orion | Turn-based Strategy | Completed via YouTube | 6.5 |
-| Master of Orion II | Turn-based Strategy | Completed via YouTube | 7 |
-| 5 Days A Stranger | Point and Click | Completed via YouTube | 4.5 |
-| 7 Days A Skeptic | Point and Click | Completed via YouTube | 5 |
-| Trilby's Notes | Point and Click | Completed via YouTube | 5 |
-| 6 Days A Sacrifice | Point and Click | Completed via YouTube | 5 |
-| The Sandbox of God | Sandbox | Completed via YouTube | 3.5 |
-| I Have No Mouth, and I Must Scream | Point and Click, Horror | Completed via YouTube | 8 |
-| The Dig | Point and Click, Horror | Completed via YouTube | 6.5 |
-| Myth II: Soulblighter | RTS | Completed via YouTube | 8 |
 | System Shock | FPS, RPG | Completed via YouTube | 7.5 |
-| System Shock 2 | FPS, RPG | Completed via YouTube | 7 |
-| Harvester | Point and Click, Horror | Completed via YouTube | 6.5 |
-| Alone In the Dark | Point and Click, Horror | Completed via YouTube | 5 |
-| Faster Than Light | Rogue-like, Action | Completed via YouTube | 7 |
-| Tex Murphy: Pandora Directive | Point and Click | Completed via YouTube | 6.5 |
-| Danganronpa 2 | Visual Novel, Detective | Completed via YouTube | 7 |
 | To The Moon | Point and Click | Completed via YouTube | 7.5 |
+| The Elder Scrolls V: Skyrim | RPG | Completed via YouTube | 7 |
+| Shadow of the Colossus | RPG | Completed via YouTube | 7 |
+| Primordia | Point and Click | Completed via YouTube | 7 |
+| Deus Ex: Mankind Devided | FPS, RPG, Action | Completed via YouTube | 7 |
+| Metal Gear Solid 3: Snake Eater | Action, Stealth | Completed via YouTube | 7 |
+| Dead Space | FPS, Horror, Survival | Completed via YouTube | 7 |
+| Dishonored | Action, RPG, Adventure, Sandbox | Completed via YouTube | 7 |
+| The Misadventures of Tron Bonn | Action | Completed via YouTube | 7 |
+| Backpack Hero | RPG, Rogue-like | Completed via YouTube | 7 |
+| Master of Orion II | Turn-based Strategy | Completed via YouTube | 7 |
+| System Shock 2 | FPS, RPG | Completed via YouTube | 7 |
+| Faster Than Light | Rogue-like, Action | Completed via YouTube | 7 |
+| Danganronpa 2 | Visual Novel, Detective | Completed via YouTube | 7 |
 | Finding Paradise | Point and Click | Completed via YouTube | 7 |
+| The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
+| BioShock Infinite | FPS | Completed via YouTube | 6.5 |
+| Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
+| Way of the Samurai 4 | Action, RPG, Sandbox | Completed via YouTube | 6.5 |
+| Dead Space 2 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
+| Dead Space 3 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
+| Dishonored 2 | Action, RPG, Adventure, Sandbox | Completed via YouTube | 6.5 |
+| Contact (NDS) | RPG | Completed via YouTube | 6.5 |
+| Endoparasitic | Action, Horror | Completed via YouTube | 6.5 |
+| Master of Orion | Turn-based Strategy | Completed via YouTube | 6.5 |
+| The Dig | Point and Click, Horror | Completed via YouTube | 6.5 |
+| Harvester | Point and Click, Horror | Completed via YouTube | 6.5 |
+| Tex Murphy: Pandora Directive | Point and Click | Completed via YouTube | 6.5 |
 | Impostor Factory | Point and Click | Completed via YouTube | 6.5 |
-| Monster Loves You | Sandbox | Completed via YouTube | 5 |
 | Unholy Heights | Strategy | Completed via YouTube | 6.5 |
-| Miasmata | Adventure, Horror | Completed via YouTube | 5 |
+| King's Bounty | Turn-based Strategy | Completed via YouTube | 6.5 |
+| Galerians: Ash | Action, Horror | Completed via YouTube | 6 |
+| The Bad Rats | Puzzle | Completed via YouTube | 6 |
+| The Elder Scrolls II: Daggerfall | RPG | Completed via YouTube | 6 |
+| Phantasmagoria | FMV, Point and Click | Completed via YouTube | 6 |
+| Alan Wake | FPS, Horror | Completed via YouTube | 6 |
+| The Turing Test | Puzzle | Completed via YouTube | 6 |
+| Made In Abyss: Binary Star Falling Into Darkness | Action, Adventure, RPG, Sandbox | Completed via YouTube | 6 |
+| Little Big Adventure | Point and Click | Completed via YouTube | 6 |
+| Crusader: No Remorse | Action | Completed via YouTube | 6 |
+| Late Shift | FMV | Completed via YouTube | 6 |
+| Fort Zombie | FPS, Survival | Completed via YouTube | 5.5 |
+| Beneath a Steel Sky | Point and Click | Completed via YouTube | 5.5 |
+| Recettear | RPG, Vendor Simulator | Completed via YouTube | 5.5 |
+| Mystical Ninja Starring Goemon | Action | Completed via YouTube | 5.5 |
 | Little Inferno | Sandbox, Puzzle | Completed via YouTube | 5.5 |
 | Doom | FPS | Completed via YouTube | 5.5 |
 | Might And Magic 7 | RPG | Completed via YouTube | 5.5 |
-| Little Big Adventure | Point and Click | Completed via YouTube | 6 |
-| Crusader: No Remorse | Action | Completed via YouTube | 6 |
-| King's Bounty | Turn-based Strategy | Completed via YouTube | 6.5 |
-| Late Shift | FMV | Completed via YouTube | 6 |
+| Genuine Blast Corps | Racing, Action | Completed via YouTube | 5 |
+| Brave Fencer Musashi | Action | Completed via YouTube | 5 |
+| 7 Days A Skeptic | Point and Click | Completed via YouTube | 5 |
+| Trilby's Notes | Point and Click | Completed via YouTube | 5 |
+| 6 Days A Sacrifice | Point and Click | Completed via YouTube | 5 |
+| Alone In the Dark | Point and Click, Horror | Completed via YouTube | 5 |
+| Monster Loves You | Sandbox | Completed via YouTube | 5 |
+| Miasmata | Adventure, Horror | Completed via YouTube | 5 |
+| 5 Days A Stranger | Point and Click | Completed via YouTube | 4.5 |
+| The Sandbox of God | Sandbox | Completed via YouTube | 3.5 |
 | Dark Souls | Action, RPG, Souls-like | Watched review/know about | 8 |
 
 ### [itch.io](https://itch.io/) indie games
