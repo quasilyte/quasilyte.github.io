@@ -1,8 +1,8 @@
-## Games Player
+## Games Played
 
-### itch.io indie games
+### [itch.io](https://itch.io/) indie games
 
-Sometimes I play random games from [itch.io](https://itch.io/). I wonder, how many games from this list you ever heard of.
+Sometimes I [play random games](https://www.youtube.com/playlist?list=PLAjl-3QkinHsHaEnaie_FFG1sI8KU2Eoq) from [itch.io](https://itch.io/). I wonder, how many games from this list you ever heard of.
 
 | Game | Short summary |
 |---|---|
