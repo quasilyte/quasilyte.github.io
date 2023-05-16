@@ -1,24 +1,40 @@
+
 ## Games Played
+
+There are 3 possible game title status here:
+
+1. Completed myself.
+2. Completed via let's play (e.g. YouTube).
+3. Extra category for the games I can discuss, but I haven't completed them.
+
+I usually try not to add an entry unless I either completed the game or feeling competent enough to include it at least in the 3rd category.
+
+Also, this list is never complete. I can't possibly remember every game I have ever played, but I'm doing my best here.
 
 | Game | Genre Tags | Status | Rating |
 |---|---|---|---|
 | Star Control II (Ur-Quan Masters) | Adventure, Arcade, RPG | Completed myself | 9 |
-| Deus Ex | FPS, RPG, Action | Completed myself | 8.5 |
+| Deus Ex | Action, FPS, RPG | Completed myself | 8.5 |
 | Warzone 2100 | Adventure, Arcade, RPG | Completed myself | 8.5 |
 | WarCraft III | RTS | Completed myself | 8.5 |
+| Doki Doki Literature Club | Horror, Visual Novel | Completed myself | 8.5 |
+| Lord of the Rings: Battle for Middle Earth 2 | RTS | Completed myself | 8.5 |
 | The Elder Scrolls III: Morrowind | RPG | Completed myself | 8 |
 | Space Rangers 2 | Adventure, Arcade, RPG | Completed myself | 8 |
-| Danganronpa 3 | Visual Novel, Detective | Completed myself | 8 |
+| Danganronpa 3 | Detective, Visual Novel | Completed myself | 8 |
 | Divine Divinity | RPG | Completed myself | 8 |
 | Warhammer: Dark Omen | RTS | Completed myself | 8 |
+| Guild Wars | MMO, RPG | Completed myself | 8 |
+| Warhammer 40000: Dawn of War | RTS | Completed myself | 8 |
+| Lord of the Rings: Battle for Middle Earth | RTS | Completed myself | 8 |
 | Civilization 3 | Turn-based Strategy | Completed myself | 7.5 |
 | Space Rangers | Adventure, Arcade, RPG | Completed myself | 7.5 |
 | Dungeons & Dragons: Dragonshard | RTS | Completed myself | 7.5 |
 | Command and Conquer: Red Alert | RTS | Completed myself | 7.5 |
 | Command and Conquer: Red Alert 2 | RTS | Completed myself | 7.5 |
-| Fallout | RPG, Adventure, Sandbox | Completed myself | 7.5 |
-| Diablo II | Rogue-like, RPG, Action | Completed myself | 7.5 |
-| Danganronpa | Visual Novel, Detective | Completed myself | 7.5 |
+| Fallout | Adventure, RPG, Sandbox | Completed myself | 7.5 |
+| Diablo II | Action, RPG, Rogue-like | Completed myself | 7.5 |
+| Danganronpa | Detective, Visual Novel | Completed myself | 7.5 |
 | Mount & Blade | Action, RPG, Sandbox | Completed myself | 7.5 |
 | Worms: World Party | Action, Strategy | Completed myself | 7.5 |
 | Worms: Armageddon | Action, Strategy | Completed myself | 7.5 |
@@ -26,6 +42,9 @@
 | Need For Speed: Underground 2 | Racing | Completed myself | 7.5 |
 | GTA Vice City | Action, Sandbox | Completed myself | 7.5 |
 | GTA San Andreas | Action, Sandbox | Completed myself | 7.5 |
+| Jagged Alliance 2 | Turn-based Strategy | Completed myself | 7.5 |
+| Lord of the Rings: War of the Ring | RTS | Completed myself | 7.5 |
+| Star Wars: Knights of the Old Republic 2 | RPG | Completed myself | 7.5 |
 | Quake 3 Arena | FPS | Completed myself | 7 |
 | Robinson's Requiem | Adventure, Survival | Completed myself | 7 |
 | Civilization 4 | Turn-based Strategy | Completed myself | 7 |
@@ -33,19 +52,23 @@
 | Heroes of Might And Magic IV | Turn-based Strategy | Completed myself | 7 |
 | Dune 2000 | RTS | Completed myself | 7 |
 | Command and Conquer: Tiberian Dawn | RTS | Completed myself | 7 |
-| Fallout II | RPG, Adventure, Sandbox | Completed myself | 7 |
+| Fallout II | Adventure, RPG, Sandbox | Completed myself | 7 |
 | X-Com | Turn-based Strategy | Completed myself | 7 |
 | X-Com II | Turn-based Strategy | Completed myself | 7 |
-| Diablo | Rogue-like, RPG, Action | Completed myself | 7 |
-| Path Of Exile | Rogue-like, RPG, Action | Completed myself | 7 |
+| Diablo | Action, RPG, Rogue-like | Completed myself | 7 |
+| Path Of Exile | Action, RPG, Rogue-like | Completed myself | 7 |
 | The Stanley Parable | Walking Simulator | Completed myself | 7 |
 | Worms 3D | Action, Strategy | Completed myself | 7 |
 | Worms Revolution | Action, Strategy | Completed myself | 7 |
 | Sacred: Underworld | RPG | Completed myself | 7 |
+| Warhammer: Shadow of the Horned Rat | RTS | Completed myself | 7 |
+| Tanktics | Puzzle, RTS | Completed myself | 7 |
 | Monster Hunter: Freedom Unite | Action, RPG, Souls-like | Completed myself | 7 |
 | Lineage II | MMO, RPG | Completed myself | 7 |
 | Neverwinter Nights | RPG | Completed myself | 7 |
 | Need For Speed: Underground | Racing | Completed myself | 7 |
+| Vampire: The Masquerade | Horror, RPG | Completed myself | 7 |
+| Oddworld: Abe's Oddysee | Platformer, Puzzle | Completed myself | 7 |
 | The Elder Scrolls IV: Oblivion | RPG | Completed myself | 6.5 |
 | Return to Castle Wolfenstein | FPS, Horror | Completed myself | 6.5 |
 | Heroes of Might And Magic II | Turn-based Strategy | Completed myself | 6.5 |
@@ -64,66 +87,140 @@
 | Need For Speed: Hot Pursuit | Racing | Completed myself | 6.5 |
 | Gran Turismo (PSP) | Racing | Completed myself | 6.5 |
 | GTA 2 | Arcade | Completed myself | 6.5 |
-| Blood Bowl | Turn-based Strategy, Sport | Completed myself | 6 |
+| Z (1996) | RTS | Completed myself | 6.5 |
+| Mafia | Action | Completed myself | 6.5 |
+| Blood Bowl | Sport, Turn-based Strategy | Completed myself | 6 |
 | Postal | Action, Sandbox | Completed myself | 6 |
+| Outlive | RTS | Completed myself | 6 |
 | Command and Conquer: Generals | RTS | Completed myself | 6 |
 | Urban Strike | Arcade | Completed myself | 6 |
 | Serious Sam | FPS | Completed myself | 6 |
 | Sacred | RPG | Completed myself | 6 |
 | Neverwinter Nights 2 | RPG | Completed myself | 6 |
 | GTA 1 | Arcade | Completed myself | 6 |
+| Resident Evil 2 | Arcade, Horror, Survival | Completed myself | 6 |
+| Resident Evil 3 | Arcade, Horror, Survival | Completed myself | 6 |
 | Heroes of Might And Magic | Turn-based Strategy | Completed myself | 5.5 |
 | Sonic the Hedgehog | Arcade, Platformer | Completed myself | 5.5 |
 | Desert Strike | Arcade | Completed myself | 5.5 |
 | Serious Sam 2 | FPS | Completed myself | 5.5 |
-| Theme Hospital | RTS, Puzzle | Completed myself | 5.5 |
+| Theme Hospital | Puzzle, RTS | Completed myself | 5.5 |
 | Battle Realms | RTS | Completed myself | 5.5 |
 | Splinter Cell | FPS | Completed myself | 5 |
 | Need For Speed II | Racing | Completed myself | 5 |
 | SWAT 4 | FPS | Completed myself | 4.5 |
 | Hatoful Boyfriend | Visual Novel | Completed myself | 4.5 |
+| Return of the Obra Dinn | Detective, Puzzle | Completed via YouTube | 9 |
+| Undertale | Puzzle, RPG | Completed via YouTube | 8.5 |
+| Detroit: Become Human | Detective, Interactive Movie | Completed via YouTube | 8.5 |
+| The Cat Lady | Horror, Point and Click | Completed via YouTube | 8.5 |
+| Outer Wilds | Adventure, Puzzle | Completed via YouTube | 8.5 |
 | Tales of Vesperia | Action, RPG | Completed via YouTube | 8 |
-| I Have No Mouth, and I Must Scream | Point and Click, Horror | Completed via YouTube | 8 |
+| I Have No Mouth, and I Must Scream | Horror, Point and Click | Completed via YouTube | 8 |
 | Myth II: Soulblighter | RTS | Completed via YouTube | 8 |
+| L.A. Noire | Action, Detective | Completed via YouTube | 8 |
+| Life Is Strange | Walking Simulator | Completed via YouTube | 8 |
+| LISA: The Painful RPG | RPG | Completed via YouTube | 8 |
+| The Last of Us | FPS, Horror | Completed via YouTube | 8 |
+| The Hex | Arcade, Platformer, Puzzle | Completed via YouTube | 8 |
+| Outer Wilds: Echoes of the Eye | Adventure, Puzzle | Completed via YouTube | 8 |
+| Papers, Please | Puzzle | Completed via YouTube | 8 |
 | Sanitarium | Point and Click | Completed via YouTube | 7.5 |
-| Deus Ex: Human Revolution | FPS, RPG, Action | Completed via YouTube | 7.5 |
+| Deus Ex: Human Revolution | Action, FPS, RPG | Completed via YouTube | 7.5 |
 | Hitman: Blood Money | FPS, Puzzle | Completed via YouTube | 7.5 |
-| Tokobot | Puzzle, Platformer | Completed via YouTube | 7.5 |
+| Tokobot | Platformer, Puzzle | Completed via YouTube | 7.5 |
 | SOMA | Adventure, Horror | Completed via YouTube | 7.5 |
 | Mega Man Legends | Action | Completed via YouTube | 7.5 |
 | Mega Man Legends 2 | Action | Completed via YouTube | 7.5 |
 | System Shock | FPS, RPG | Completed via YouTube | 7.5 |
 | To The Moon | Point and Click | Completed via YouTube | 7.5 |
+| Resident Evil VII | Action, Horror, Survival | Completed via YouTube | 7.5 |
+| TUNIC | Action, Arcade, Puzzle, RPG | Completed via YouTube | 7.5 |
+| Tales from the Borderlands | Walking Simulator | Completed via YouTube | 7.5 |
+| Wolf Among Us | Walking Simulator | Completed via YouTube | 7.5 |
+| Heavy Rain | Detective, Interactive Movie | Completed via YouTube | 7.5 |
+| Not For Broadcast | FMV | Completed via YouTube | 7.5 |
+| Hades | Action, RPG, Rogue-like | Completed via YouTube | 7.5 |
+| The Forgotten City | Detective, Talking Simulator | Completed via YouTube | 7.5 |
+| Signalis | Arcade, Horror, Survival | Completed via YouTube | 7.5 |
+| Observer | FPS, Horror | Completed via YouTube | 7.5 |
+| The Infectious Madness of Doctor Dekker | FMV | Completed via YouTube | 7.5 |
 | The Elder Scrolls V: Skyrim | RPG | Completed via YouTube | 7 |
 | Shadow of the Colossus | RPG | Completed via YouTube | 7 |
 | Primordia | Point and Click | Completed via YouTube | 7 |
-| Deus Ex: Mankind Devided | FPS, RPG, Action | Completed via YouTube | 7 |
+| Deus Ex: Mankind Devided | Action, FPS, RPG | Completed via YouTube | 7 |
 | Metal Gear Solid 3: Snake Eater | Action, Stealth | Completed via YouTube | 7 |
 | Dead Space | FPS, Horror, Survival | Completed via YouTube | 7 |
-| Dishonored | Action, RPG, Adventure, Sandbox | Completed via YouTube | 7 |
+| Dishonored | Action, Adventure, RPG, Sandbox | Completed via YouTube | 7 |
 | The Misadventures of Tron Bonn | Action | Completed via YouTube | 7 |
 | Backpack Hero | RPG, Rogue-like | Completed via YouTube | 7 |
 | Master of Orion II | Turn-based Strategy | Completed via YouTube | 7 |
 | System Shock 2 | FPS, RPG | Completed via YouTube | 7 |
-| Faster Than Light | Rogue-like, Action | Completed via YouTube | 7 |
-| Danganronpa 2 | Visual Novel, Detective | Completed via YouTube | 7 |
+| Faster Than Light | Action, Rogue-like | Completed via YouTube | 7 |
+| Danganronpa 2 | Detective, Visual Novel | Completed via YouTube | 7 |
 | Finding Paradise | Point and Click | Completed via YouTube | 7 |
+| Until Dawn | Action, Horror, Walking Simulator | Completed via YouTube | 7 |
+| Deltarune | Puzzle, RPG | Completed via YouTube | 7 |
+| LISA: The Joyful | RPG | Completed via YouTube | 7 |
+| Oxenfree | Adventure, Puzzle | Completed via YouTube | 7 |
+| The Walking Dead | Walking Simulator | Completed via YouTube | 7 |
+| The Witcher 2 | RPG | Completed via YouTube | 7 |
+| Downfall | Horror, Point and Click | Completed via YouTube | 7 |
+| The Council | Puzzle, RPG, Talking Simulator | Completed via YouTube | 7 |
+| Unawoved | Point and Click | Completed via YouTube | 7 |
+| Distraint 2 | Platformer, Point and Click | Completed via YouTube | 7 |
+| Little Misfortune | Point and Click | Completed via YouTube | 7 |
+| Fran Bow | Point and Click | Completed via YouTube | 7 |
+| Twelve Minutes | Puzzle | Completed via YouTube | 7 |
+| Inscryption | Deckbuilder, Strategy | Completed via YouTube | 7 |
+| As Dusk Falls | Walking Simulator | Completed via YouTube | 7 |
+| Burnhouse Lane | Horror, Puzzle | Completed via YouTube | 7 |
+| Darkest Dungeon | Turn-based RPG | Completed via YouTube | 7 |
+| Broken Age | Point and Click | Completed via YouTube | 7 |
+| South Park: Fractured But Whole | RPG | Completed via YouTube | 7 |
+| Yesterday | Point and Click | Completed via YouTube | 7 |
+| Yesterday Origins | Point and Click | Completed via YouTube | 7 |
+| Shovel Knight | Arcade, Platformer | Completed via YouTube | 7 |
+| Contradiction | Detective, FMV | Completed via YouTube | 7 |
+| Tesla Effect: A Tex Murphy Adventure | Adventure, Detective, FMV, Puzzle | Completed via YouTube | 7 |
+| World of Horror | Horror, Rogue-like, Turn-based RPG | Completed via YouTube | 7 |
 | The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
 | BioShock Infinite | FPS | Completed via YouTube | 6.5 |
 | Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
 | Way of the Samurai 4 | Action, RPG, Sandbox | Completed via YouTube | 6.5 |
 | Dead Space 2 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
 | Dead Space 3 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
-| Dishonored 2 | Action, RPG, Adventure, Sandbox | Completed via YouTube | 6.5 |
+| Dishonored 2 | Action, Adventure, RPG, Sandbox | Completed via YouTube | 6.5 |
 | Contact (NDS) | RPG | Completed via YouTube | 6.5 |
 | Endoparasitic | Action, Horror | Completed via YouTube | 6.5 |
 | Master of Orion | Turn-based Strategy | Completed via YouTube | 6.5 |
-| The Dig | Point and Click, Horror | Completed via YouTube | 6.5 |
-| Harvester | Point and Click, Horror | Completed via YouTube | 6.5 |
+| The Dig | Horror, Point and Click | Completed via YouTube | 6.5 |
+| Harvester | Horror, Point and Click | Completed via YouTube | 6.5 |
 | Tex Murphy: Pandora Directive | Point and Click | Completed via YouTube | 6.5 |
 | Impostor Factory | Point and Click | Completed via YouTube | 6.5 |
 | Unholy Heights | Strategy | Completed via YouTube | 6.5 |
 | King's Bounty | Turn-based Strategy | Completed via YouTube | 6.5 |
+| The Quarry | Action, Horror, Walking Simulator | Completed via YouTube | 6.5 |
+| Life Is Strange: Before The Storm | Walking Simulator | Completed via YouTube | 6.5 |
+| Life Is Strange 2 | Walking Simulator | Completed via YouTube | 6.5 |
+| Her Story | FMV, Puzzle | Completed via YouTube | 6.5 |
+| Psychonauts | Arcade, Platformer | Completed via YouTube | 6.5 |
+| Firewatch | Walking Simulator | Completed via YouTube | 6.5 |
+| Fahrenheit: Indigo Prophecy | Detective, Interactive Movie | Completed via YouTube | 6.5 |
+| Beyond: Two Souls | Detective, Interactive Movie | Completed via YouTube | 6.5 |
+| The Witcher | RPG | Completed via YouTube | 6.5 |
+| Night in the Woods | Platformer, Puzzle | Completed via YouTube | 6.5 |
+| Lorelai | Horror, Point and Click | Completed via YouTube | 6.5 |
+| Forgotton Anne | Point and Click | Completed via YouTube | 6.5 |
+| State of Mind | Walking Simulator | Completed via YouTube | 6.5 |
+| Distraint | Platformer, Point and Click | Completed via YouTube | 6.5 |
+| The Sinking City | Adventure, Detective, FPS | Completed via YouTube | 6.5 |
+| Telling Lies | FMV | Completed via YouTube | 6.5 |
+| South Park: The Stick of Truth | RPG | Completed via YouTube | 6.5 |
+| The Shapeshifting Detective | Detective, FMV | Completed via YouTube | 6.5 |
+| Dark Nights With Poe & Munro | FMV | Completed via YouTube | 6.5 |
+| Murdered: Soul Suspect | Detective | Completed via YouTube | 6.5 |
+| Twin Mirror | Walking Simulator | Completed via YouTube | 6.5 |
 | Galerians: Ash | Action, Horror | Completed via YouTube | 6 |
 | The Bad Rats | Puzzle | Completed via YouTube | 6 |
 | The Elder Scrolls II: Daggerfall | RPG | Completed via YouTube | 6 |
@@ -134,24 +231,37 @@
 | Little Big Adventure | Point and Click | Completed via YouTube | 6 |
 | Crusader: No Remorse | Action | Completed via YouTube | 6 |
 | Late Shift | FMV | Completed via YouTube | 6 |
+| Gone Rogue | Puzzle, Strategy | Completed via YouTube | 6 |
+| Resident Evil 4 | FPS, Horror, Survival | Completed via YouTube | 6 |
+| OneShot | Point and Click | Completed via YouTube | 6 |
+| Hidden Agenda | Interactive Movie | Completed via YouTube | 6 |
+| Afterparty | Point and Click | Completed via YouTube | 6 |
+| Stray | Arcade, Platformer | Completed via YouTube | 6 |
+| McPixel | Puzzle | Completed via YouTube | 6 |
+| Bulb Boy | Point and Click | Completed via YouTube | 6 |
 | Fort Zombie | FPS, Survival | Completed via YouTube | 5.5 |
 | Beneath a Steel Sky | Point and Click | Completed via YouTube | 5.5 |
 | Recettear | RPG, Vendor Simulator | Completed via YouTube | 5.5 |
 | Mystical Ninja Starring Goemon | Action | Completed via YouTube | 5.5 |
-| Little Inferno | Sandbox, Puzzle | Completed via YouTube | 5.5 |
+| Little Inferno | Puzzle, Sandbox | Completed via YouTube | 5.5 |
 | Doom | FPS | Completed via YouTube | 5.5 |
 | Might And Magic 7 | RPG | Completed via YouTube | 5.5 |
-| Genuine Blast Corps | Racing, Action | Completed via YouTube | 5 |
+| Resident Evil | Arcade, Horror, Survival | Completed via YouTube | 5.5 |
+| Draugen | Walking Simulator | Completed via YouTube | 5.5 |
+| The Complex | FMV | Completed via YouTube | 5.5 |
+| Genuine Blast Corps | Action, Racing | Completed via YouTube | 5 |
 | Brave Fencer Musashi | Action | Completed via YouTube | 5 |
 | 7 Days A Skeptic | Point and Click | Completed via YouTube | 5 |
 | Trilby's Notes | Point and Click | Completed via YouTube | 5 |
 | 6 Days A Sacrifice | Point and Click | Completed via YouTube | 5 |
-| Alone In the Dark | Point and Click, Horror | Completed via YouTube | 5 |
+| Alone In the Dark | Horror, Point and Click | Completed via YouTube | 5 |
 | Monster Loves You | Sandbox | Completed via YouTube | 5 |
 | Miasmata | Adventure, Horror | Completed via YouTube | 5 |
+| LISA: The First | RPG | Completed via YouTube | 5 |
 | 5 Days A Stranger | Point and Click | Completed via YouTube | 4.5 |
 | The Sandbox of God | Sandbox | Completed via YouTube | 3.5 |
 | Dark Souls | Action, RPG, Souls-like | Watched review/know about | 8 |
+| Minecraft | Action, RPG, Souls-like | Watched review/know about | 6 |
 
 ### [itch.io](https://itch.io/) indie games
 
@@ -193,3 +303,4 @@ Sometimes I [play random games](https://www.youtube.com/playlist?list=PLAjl-3Qki
 | [Danmaku](https://zergon321.itch.io/touhou-game-in-go) | A Touhou-inspired bullet hell game. |
 | [Violet's Awakening](https://rafaskb.itch.io/violets-awakening) | A game that reminds me of TUNIC, but it's quite broken and unfinished. |
 | [Fairyside](https://kiyummi.itch.io/fairyside) | Plays like a cute and lighter version of Binding of Isaac. |
+
