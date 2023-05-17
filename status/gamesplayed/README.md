@@ -21,6 +21,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Lord of the Rings: Battle for Middle Earth 2 | RTS | Completed myself | 8.5 |
 | SpellForce: The Order of Dawn | RPG, RTS | Completed myself | 8.5 |
 | SpellForce: Breath of Winter | RPG, RTS | Completed myself | 8.5 |
+| Baba Is You | Programming, Puzzle | Completed myself | 8.5 |
 | The Elder Scrolls III: Morrowind | RPG | Completed myself | 8 |
 | Space Rangers 2 | Adventure, Arcade, RPG | Completed myself | 8 |
 | Danganronpa 3 | Detective, Visual Novel | Completed myself | 8 |
@@ -367,39 +368,39 @@ Here are some tables for stats.
 | FPS | 32 | 6.47 |
 | Horror | 30 | 6.75 |
 | Arcade | 28 | 6.73 |
-| Puzzle | 26 | 7.08 |
+| Puzzle | 27 | 7.13 |
 | Adventure | 25 | 7.02 |
 | Turn-based Strategy | 21 | 6.71 |
 | Sandbox | 20 | 6.38 |
-| Racing | 16 | 6.38 |
 | Detective | 16 | 7.25 |
+| Racing | 16 | 6.38 |
 | Strategy | 16 | 6.88 |
 | Walking Simulator | 14 | 6.82 |
 | FMV | 13 | 6.46 |
 | Survival | 12 | 6.46 |
 | Platformer | 11 | 6.73 |
 | Rogue-like | 8 | 7.06 |
-| Interactive Movie | 5 | 7.00 |
 | Online | 5 | 6.80 |
 | Visual Novel | 5 | 7.10 |
-| Turn-based RPG | 4 | 6.88 |
+| Interactive Movie | 5 | 7.00 |
 | Souls-like | 4 | 7.12 |
+| Turn-based RPG | 4 | 6.88 |
 | Fighting | 3 | 6.17 |
-| MMO | 2 | 7.50 |
-| Engineering | 2 | 7.75 |
-| MOBA | 2 | 6.50 |
-| Talking Simulator | 2 | 7.25 |
 | Global Strategy | 2 | 7.00 |
-| Match-Three | 1 | 7.50 |
-| Programming | 1 | 8.00 |
+| MOBA | 2 | 6.50 |
+| MMO | 2 | 7.50 |
+| Talking Simulator | 2 | 7.25 |
+| Programming | 2 | 8.25 |
+| Engineering | 2 | 7.75 |
 | Stealth | 1 | 7.00 |
-| Vendor Simulator | 1 | 5.50 |
 | Sport | 1 | 6.00 |
 | Deckbuilder | 1 | 7.00 |
+| Match-Three | 1 | 7.50 |
+| Vendor Simulator | 1 | 5.50 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 173 |
+| Completed myself | 174 |
 | Completed via YouTube | 166 |
 | Watched review/know about | 3 |
 
