@@ -115,6 +115,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Worms Clan Wars | Action, Strategy | Completed myself | 6.5 |
 | Worms Battle Islands | Action, Strategy | Completed myself | 6.5 |
 | Worms Battle Islands 2 | Action, Strategy | Completed myself | 6.5 |
+| The Entente | RTS | Completed myself | 6.5 |
 | Titan Quest | Action, RPG | Completed myself | 6.5 |
 | RPG Maker (PSX) | RPG, Sandbox | Completed myself | 6.5 |
 | Army Men 3D (PSX) | FPS | Completed myself | 6.5 |
@@ -264,6 +265,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Fear Effect | Action | Completed via YouTube | 7 |
 | Steambot Chronicles | Action, RPG | Completed via YouTube | 7 |
 | Spore | Action, Adventure | Completed via YouTube | 7 |
+| Gothic | Adventure, RPG | Completed via YouTube | 7 |
+| Gothic 2 | Adventure, RPG | Completed via YouTube | 7 |
 | The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
 | BioShock Infinite | FPS | Completed via YouTube | 6.5 |
 | Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
@@ -303,6 +306,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Twin Mirror | Walking Simulator | Completed via YouTube | 6.5 |
 | The X-Files | Detective, FMV | Completed via YouTube | 6.5 |
 | The Hobbit | Action | Completed via YouTube | 6.5 |
+| Raft | Adventure, Sandbox, Survival | Completed via YouTube | 6.5 |
+| Vangers | Adventure, Arcade, Racing, Sandbox | Completed via YouTube | 6.5 |
 | Galerians: Ash | Action, Horror | Completed via YouTube | 6 |
 | The Bad Rats | Puzzle | Completed via YouTube | 6 |
 | The Elder Scrolls II: Daggerfall | RPG | Completed via YouTube | 6 |
@@ -321,6 +326,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Stray | Arcade, Platformer | Completed via YouTube | 6 |
 | McPixel | Puzzle | Completed via YouTube | 6 |
 | Bulb Boy | Point and Click | Completed via YouTube | 6 |
+| Risen | Adventure, RPG | Completed via YouTube | 6 |
 | Fort Zombie | FPS, Survival | Completed via YouTube | 5.5 |
 | Beneath a Steel Sky | Point and Click | Completed via YouTube | 5.5 |
 | Recettear | RPG, Vendor Simulator | Completed via YouTube | 5.5 |
@@ -331,6 +337,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Resident Evil | Arcade, Horror, Survival | Completed via YouTube | 5.5 |
 | Draugen | Walking Simulator | Completed via YouTube | 5.5 |
 | The Complex | FMV | Completed via YouTube | 5.5 |
+| Gothic 3 | Adventure, RPG | Completed via YouTube | 5.5 |
+| Call of Cthulhu: Shadow of the Comet | Point and Click | Completed via YouTube | 5.5 |
 | Genuine Blast Corps | Action, Racing | Completed via YouTube | 5 |
 | Brave Fencer Musashi | Action | Completed via YouTube | 5 |
 | 7 Days A Skeptic | Point and Click | Completed via YouTube | 5 |
@@ -346,53 +354,54 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | The Sandbox of God | Sandbox | Completed via YouTube | 3.5 |
 | Dark Souls | Action, RPG, Souls-like | Watched review/know about | 8 |
 | Minecraft | Action, RPG, Souls-like | Watched review/know about | 6 |
+| Dwarf Fortress | Sandbox | Watched review/know about | 5.5 |
 
 Here are some tables for stats.
 
 | Tag | Count | Avg. Rating |
 |---|---|---|
-| RPG | 75 | 7.02 |
+| RPG | 79 | 6.99 |
 | Action | 65 | 6.79 |
-| RTS | 37 | 7.18 |
-| Point and Click | 34 | 6.47 |
+| RTS | 38 | 7.16 |
+| Point and Click | 35 | 6.44 |
 | FPS | 32 | 6.47 |
 | Horror | 30 | 6.75 |
-| Arcade | 27 | 6.74 |
+| Arcade | 28 | 6.73 |
 | Puzzle | 26 | 7.08 |
+| Adventure | 25 | 7.02 |
 | Turn-based Strategy | 21 | 6.71 |
-| Adventure | 19 | 7.21 |
-| Sandbox | 17 | 6.41 |
+| Sandbox | 20 | 6.38 |
+| Racing | 16 | 6.38 |
 | Detective | 16 | 7.25 |
 | Strategy | 16 | 6.88 |
-| Racing | 15 | 6.37 |
 | Walking Simulator | 14 | 6.82 |
 | FMV | 13 | 6.46 |
-| Survival | 11 | 6.45 |
+| Survival | 12 | 6.46 |
 | Platformer | 11 | 6.73 |
 | Rogue-like | 8 | 7.06 |
-| Online | 5 | 6.80 |
 | Interactive Movie | 5 | 7.00 |
+| Online | 5 | 6.80 |
 | Visual Novel | 5 | 7.10 |
-| Souls-like | 4 | 7.12 |
 | Turn-based RPG | 4 | 6.88 |
+| Souls-like | 4 | 7.12 |
 | Fighting | 3 | 6.17 |
-| Global Strategy | 2 | 7.00 |
+| MMO | 2 | 7.50 |
 | Engineering | 2 | 7.75 |
 | MOBA | 2 | 6.50 |
-| MMO | 2 | 7.50 |
 | Talking Simulator | 2 | 7.25 |
-| Deckbuilder | 1 | 7.00 |
-| Sport | 1 | 6.00 |
-| Vendor Simulator | 1 | 5.50 |
-| Programming | 1 | 8.00 |
+| Global Strategy | 2 | 7.00 |
 | Match-Three | 1 | 7.50 |
+| Programming | 1 | 8.00 |
 | Stealth | 1 | 7.00 |
+| Vendor Simulator | 1 | 5.50 |
+| Sport | 1 | 6.00 |
+| Deckbuilder | 1 | 7.00 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 172 |
-| Completed via YouTube | 159 |
-| Watched review/know about | 2 |
+| Completed myself | 173 |
+| Completed via YouTube | 166 |
+| Watched review/know about | 3 |
 
 ### [itch.io](https://itch.io/) indie games
 
