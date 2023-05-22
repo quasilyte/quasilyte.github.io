@@ -1,8 +1,6 @@
-<head><title>GG Podcast</title></head>
+# GG Podcast
 
 ![logo](logo.png)
-
-# Go`ne Gamedev Podcast
 
 Русскоязычный подкаст о разработке игр на языке программирования [Go](https://go.dev/).
 
