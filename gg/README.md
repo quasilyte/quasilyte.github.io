@@ -1,6 +1,6 @@
-![logo](logo.png)
-
 # GG Podcast
+
+![logo](logo.png)
 
 Русскоязычный подкаст о разработке игр на языке программирования [Go](https://go.dev/).
 
