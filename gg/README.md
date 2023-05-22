@@ -1,14 +1,39 @@
-# GG Podcast
+<!DOCTYPE html>
 
-![logo](logo.png)
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GG Podcast</title>
+    <meta name="generator" content="Jekyll v3.9.3"/>
+    <meta property="og:title" content="GG Podcast"/>
+    <meta property="og:locale" content="en_US"/>
+    <link rel="canonical" href="https://quasilyte.dev/gg/"/>
+    <meta property="og:url" content="https://quasilyte.dev/gg/"/>
+    <meta property="og:site_name" content="quasilyte.github.io"/>
+    <meta property="og:type" content="website"/>
+    <meta name="twitter:card" content="summary"/>
+    <meta property="twitter:title" content="GG Podcast"/>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","headline":"GG Podcast","url":"https://quasilyte.dev/gg/"}</script>
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
 
-Русскоязычный подкаст о разработке игр на языке программирования [Go](https://go.dev/).
+<body>
+    <p><img src="/gg/logo.png" alt="logo"/></p>
 
-* Чатик в телеграме: [t.me/go_gamedev](https://t.me/go_gamedev)
-* Канал с объявлениями подкаста: [t.me/gone_gamedev](https://t.me/gone_gamedev)
+    <h2>GG Podcast</h2>
 
-Сообщество разработки игр на Go - это место, где мы обсуждаем фреймворки и библиотеки, проекты, статьи и новости, связанные с созданием видеоигр. В подкасте мы немного выходим за эти рамки и сравниваем состояние геймдева на Go с Unity и другими популярными движками. 
+    <p>
+        Русскоязычный подкаст о разработке игр на языке программирования <a href="https://go.dev/">Go</a>.
+    </p>
+    <ul>
+        <li>Чатик в телеграме: <a href="https://t.me/go_gamedev">t.me/go_gamedev</a></li>
+        <li>Канал с объявлениями подкаста: <a href="https://t.me/gone_gamedev">t.me/gone_gamedev</a></li>
+    </ul>
+    <p>Сообщество разработки игр на Go - это место, где мы обсуждаем фреймворки и библиотеки, проекты, статьи и новости, связанные с созданием видеоигр. В подкасте мы немного выходим за эти рамки и сравниваем состояние геймдева на Go с Unity и другими популярными движками.</p>
 
-## Выпуски подкаста
+    <h2 id="выпуски-подкаста">Выпуски подкаста</h2>
 
-TODO
+    <p>TODO</p>
+
+</body>
