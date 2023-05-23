@@ -25,9 +25,11 @@
 
 Ссылки и полезные материалы:
 
-1. Стартам Андрея: https://balancy.co. Сама админка и CDN универсальны, но плагин пока только под Unity. Можно в теории и для Go попробовать использовать.
-1. https://machinations.io - это тулза для прогонки баланса.
-1. Постмортем прошлого проекта Андрея: https://suvitruf.ru/2018/07/10/4124/unnyworld-postmortem/
-1. Про инвестиции: https://dtf.ru/gamedev/10999-blog-tri-goda-razrabotki-svoey-mmo
-1. Предостерегающая статья про геймдев: https://dtf.ru/u/1922-andrei-apanasik/1692595-kak-ne-vkatitsya-v-geymdev
-1. Про Factorio: https://dtf.ru/u/1922-andrei-apanasik/1832542-kak-factorio-umudryaetsya-rabotat-bez-lagov-s-takim-chislom-elementov-na-ekrane
+1. <https://github.com/yohamta/donburi> - ECS для Go.
+1. <https://github.com/Leopotam/goecs> - ещё один ECS для Go.
+1. Стартам Андрея: <https://balancy.co>. Сама админка и CDN универсальны, но плагин пока только под Unity. Можно в теории и для Go попробовать использовать.
+1. <https://machinations.io> - это тулза для прогонки баланса.
+1. Постмортем прошлого проекта Андрея: <https://suvitruf.ru/2018/07/10/4124/unnyworld-postmortem/>
+1. Про инвестиции: <https://dtf.ru/gamedev/10999-blog-tri-goda-razrabotki-svoey-mmo>
+1. Предостерегающая статья про геймдев: <https://dtf.ru/u/1922-andrei-apanasik/1692595-kak-ne-vkatitsya-v-geymdev>
+1. Про Factorio: <https://dtf.ru/u/1922-andrei-apanasik/1832542-kak-factorio-umudryaetsya-rabotat-bez-lagov-s-takim-chislom-elementov-na-ekrane>
