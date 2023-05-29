@@ -1,22 +1,22 @@
-# Iskander (Alex) Sharipov
+# Iskander Sharipov
 
-**Location**: Unspecified. Mostly interested in remote jobs; I may consider a relocation to English-speaking country<br>
+**Location**: Georgia<br>
 **Education**: Bachelor's degree in Computer Science ([Kazan Federal University](https://en.wikipedia.org/wiki/Kazan_Federal_University))<br>
 
 * [Go](https://github.com/golang/go/commits?author=quasilyte) and [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte) programming languages contributor
 
 * Maintainer of several static analyzers <sup>[[go-critic]](https://go-critic.github.io/)</sup> <sup>[[noverify]](https://github.com/VKCOM/noverify)</sup> <sup>[[go-ruleguard]](https://github.com/quasilyte/go-ruleguard)</sup> <sup>[[go-consistent]](https://github.com/quasilyte/go-consistent)</sup>
 
-* Skilled in low-level programming and optimizations (mostly x86-64) <sup>[[jit]](https://github.com/quasilyte/go-jdk)</sup>
+* Skilled in low-level programming and optimizations <sup>[[jit]](https://github.com/quasilyte/go-jdk)</sup>
 
-* Open-source enthusiast. Contributed to dozens of projects, maintain a lot of [my own](http://quasilyte.dev/status/)
+* Open-source enthusiast. Contributed to dozens of projects, and maintain a lot of [my own](http://quasilyte.dev/status/)
 
 * Created a lot of [tech talks and articles](https://github.com/quasilyte/talks); also organized several [workshops](https://github.com/quasilyte/talks#workshops)
 
 <table><caption>Working experience (~9 years)</caption>
 <tr><td>
   
-  <b>2019-today</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)<br>
+  <b>2019-2023</b> @ <a href="https://vk.com">vk.com</a>. KPHP compiler team (C++) and Backend infrastructure (Go)<br>
   <ul>
     <li>
         <a href="https://github.com/VKCOM/kphp/">KPHP</a> runtime and compiler
@@ -33,6 +33,16 @@
   </ul>
   Commits: <a href="https://github.com/VKCOM/kphp/commits?author=quasilyte">KPHP</a>, <a href="https://github.com/VKCOM/noverify/commits?author=quasilyte">NoVerify</a><br>
   
+</td></tr>
+<tr><td>
+  
+  <b>2021</b> @ Huawei. Go performance engineer<br>
+  <ul>
+    <li>Researched profile-guided static analysis opportunities</li>
+    <li>Worked on Go compiler optimizations & runtime optimizations</li>
+  </ul>
+  Related open souce projects: [go-perfguard](https://github.com/quasilyte/go-perfguard), [perf-heatmap](https://github.com/quasilyte/perf-heatmap), [qpprof](https://github.com/quasilyte/qpprof).
+
 </td></tr>
 <tr><td>
   
