@@ -1,6 +1,6 @@
 # Iskander Sharipov
 
-**Location**: Georgia<br>
+**Location**: Georgia (remote work preferred)<br>
 **Education**: Bachelor's degree in Computer Science ([Kazan Federal University](https://en.wikipedia.org/wiki/Kazan_Federal_University))<br>
 
 * [Go](https://github.com/golang/go/commits?author=quasilyte) and [KPHP](https://github.com/VKCOM/kphp/commits?author=quasilyte) programming languages contributor
@@ -41,7 +41,7 @@
     <li>Researched profile-guided static analysis opportunities</li>
     <li>Worked on Go compiler optimizations & runtime optimizations</li>
   </ul>
-  Related open souce projects: <a href="https://github.com/quasilyte/go-perfguard">go-perfguard</a>, <a href="https://github.com/quasilyte/perf-heatmap">perf-heatmap</a>, <a href="https://github.com/quasilyte/qpprof">qpprof</a>.
+  Related open souce projects: <a href="https://github.com/quasilyte/go-perfguard">go-perfguard</a>, <a href="https://github.com/quasilyte/perf-heatmap">perf-heatmap</a>, <a href="https://github.com/quasilyte/qpprof">qpprof</a>
 
 </td></tr>
 <tr><td>
