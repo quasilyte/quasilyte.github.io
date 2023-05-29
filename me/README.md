@@ -41,7 +41,7 @@
     <li>Researched profile-guided static analysis opportunities</li>
     <li>Worked on Go compiler optimizations & runtime optimizations</li>
   </ul>
-  Related open souce projects: [go-perfguard](https://github.com/quasilyte/go-perfguard), [perf-heatmap](https://github.com/quasilyte/perf-heatmap), [qpprof](https://github.com/quasilyte/qpprof).
+  Related open souce projects: <a href="https://github.com/quasilyte/go-perfguard">go-perfguard</a>, <a href="https://github.com/quasilyte/perf-heatmap">perf-heatmap</a>, <a href="https://github.com/quasilyte/qpprof">qpprof</a>.
 
 </td></tr>
 <tr><td>
