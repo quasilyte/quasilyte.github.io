@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+
+<!-- head -->
+  <link rel="stylesheet" href="pico.min.css"> 
+  <link rel="stylesheet" href="default.min.css"> 
+  <link rel="stylesheet" href="styles.css"> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.153.0/three.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.22.0/ace.min.js" type="text/javascript" charset="utf-8"></script>
+  <script src="sandbox.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="utf-8"/>
+<!-- end head -->
+
+<div class="container">
+  <div class="grid">
+    <div class="grid">
+      <select id="texture_select" name="select">
+        <option value="0" selected>Texture 1</option>
+        <option value="1">Texture 2</option>
+        <option value="2">Texture 3</option>
+      </select>
+
+      <input type="url" id="texture_url1" placeholder="https://i.imgur.com/UwtJJAP.jpeg" pattern="https://.*">
+      <input type="file" id="texture_file1" accept="image/*">
+      <input hidden type="url" id="texture_url2" placeholder="https://i.imgur.com/UwtJJAP.jpeg" pattern="https://.*">
+      <input hidden type="file" id="texture_file2" accept="image/*">
+      <input hidden type="url" id="texture_url3" placeholder="https://i.imgur.com/UwtJJAP.jpeg" pattern="https://.*">
+      <input hidden type="file" id="texture_file3" accept="image/*">
+    </div>
+  </div>
+
+  <div class="main_block container">
+    <button id="render_button" class="contrast">Render</button>
+    <div id="shader_options">
+      <div class="grid">
+        <label>
+          Snippet:
+          <select id="snippet_select" name="select"></select>
+        </label>
+        <label>
+          Blending mode:
+          <select id="blending_mode_select" name="select">
+            <option value="overwrite" selected>Overwrite</option>
+            <option value="none">None</option>
+            <option value="normal">Normal</option>
+            <option value="additive">Additive</option>
+            <option value="subtractive">Subtractive</option>
+            <option value="multiply">Multiply </option>
+          </select>
+        </label>
+      </div>
+    </div>
+    <div id="shader_editor_container">
+      <div id="shader_editor"></div>
+    </div>
+    <div id="renderer_container" hidden></div>
+    <div id="shader_error" hidden></div>
+  </div>
+</div>
+
+<script type="text/plain" id="snippet0" data-name="Brighten" data-url1="https://i.imgur.com/dZt06IB.png" data-blend="normal">
+varying vec2 texPos; // Position in texels
+uniform sampler2D texture1;
+
+void main() {
+    // Extract the pixel and multiply its RGBA by 2.
+    gl_FragColor = texture2D(texture1, texPos) * 2.0;
+}
+</script>
+
+<script type="text/plain" id="snippet1" data-name="Fade-in/Fade-out" data-url1="https://i.imgur.com/UwtJJAP.jpeg" data-blend="overwrite">
+varying vec2 texPos; // Position in texels
+uniform float time;  // Frame ticker (increases over time)
+uniform sampler2D texture1;
+
+void main() {
+    vec4 color = texture2D(texture1, texPos);
+    // Sine will take values from -1 to +1, so the image will be
+    // invisible for a while.
+    // alpha=1 means fully opaque while <=0 means transparent.
+    color.a = sin(time);
+    gl_FragColor = color;
+}
+</script>
+
+<script type="text/plain" id="snippet2" data-name="Dissolve" data-url1="https://i.imgur.com/UwtJJAP.jpeg" data-url2="https://i.imgur.com/WdVJwxh.png" data-blend="overwrite">
+varying vec2 texPos; // Position in texels
+uniform float time;  // Frame ticker (increases over time)
+uniform sampler2D texture1; // The Doge image
+uniform sampler2D texture2; // The noise provider
+
+void main() {
+    float limit = abs(2.0 * fract(time/3.0) - 1.0);
+    float level = texture2D(texture2, texPos).r;
+    gl_FragColor = step(limit, level) * texture2D(texture1, texPos);
+}
+</script>
+
+<script type="text/plain" id="snippet3" data-name="Planet" data-url1="https://i.imgur.com/pdcXbX6.png" data-blend="overwrite">
+varying vec2 pos;    // Position in pixels
+uniform float time;  // Frame ticker (increases over time)
+uniform sampler2D texture1;
+uniform vec2 textureSize;
+
+float slide(float v, float size) {
+	  return mod(v-(30.0*time), size);
+}
+
+void main() {
+    float planetSize = 64.0;
+    vec2 center = textureSize * 0.5;
+    // Don't render anything outside of the planet radius.
+    if (distance(pos, center) > planetSize) {
+        gl_FragColor = vec4(0.0);
+        return;
+    }
+    vec2 lightPos = vec2(center.x*0.85, center.y*0.9);
+    float lightDist = distance(lightPos, pos) / planetSize;
+    vec4 colorMultiplier = vec4(1, 1, 1, 1);
+    colorMultiplier.rgb *= clamp(1.8-lightDist*1.6, 0.0, 1.0);
+    vec2 p = vec2(slide(pos.x, textureSize.x), pos.y);
+    gl_FragColor = texture2D(texture1, toTex(textureSize, p)) * colorMultiplier;
+}
+</script>
+
+<script type="text/plain" id="snippet4" data-name="Empty" data-blend="normal">
+varying vec2 pos;    // Position in pixels
+varying vec2 texPos; // Position in texels
+uniform float time;  // Frame ticker (increases over time)
+uniform sampler2D texture1;
+uniform sampler2D texture2;
+uniform sampler2D texture3;
+
+void main() {
+    gl_FragColor = vec4(0.5, 0, 0, 1);
+}
+</script>
+
+<!--
+varying vec2 texPos; // texel position
+varying vec2 pos;    // pixel position
+uniform float time;  // frame delta (increases over time)
+uniform sampler2D texture1;
+uniform sampler2D texture2;
+uniform sampler2D texture3;
+-->
