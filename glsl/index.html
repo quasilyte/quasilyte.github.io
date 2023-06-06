@@ -96,7 +96,46 @@ void main() {
 }
 </script>
 
-<script type="text/plain" id="snippet3" data-name="Planet" data-url1="https://i.imgur.com/pdcXbX6.png" data-blend="overwrite">
+
+<script type="text/plain" id="snippet3" data-name="Chromatic Aberration" data-url1="https://i.imgur.com/WsXy8Rj.png" data-blend="overwrite">
+varying vec2 texPos;    // Position in texels
+uniform vec2 cursorPos; // Mouse cursor position in pixels
+uniform sampler2D texture1;
+uniform vec2 textureSize;
+
+void main() {
+    vec2 center = textureSize * 0.5;
+    vec2 amount = (center - cursorPos) * 0.0005;
+    float r = texture2D(texture1, texPos + amount).r;
+    float g = texture2D(texture1, texPos).g;
+    float b = texture2D(texture1, texPos - amount).b;
+    gl_FragColor = vec4(r, g, b, 1.0);
+}
+</script>
+
+<script type="text/plain" id="snippet4" data-name="Water" data-url1="https://i.imgur.com/WsXy8Rj.png" data-blend="normal">
+varying vec2 pos;    // Position in pixels
+varying vec2 texPos; // Position in texels
+uniform float time;  // Frame ticker (increases over time)
+uniform sampler2D texture1;
+uniform vec2 textureSize;
+
+void main() {
+    float border = textureSize.y*0.6 + 4.0*cos(time*3.0+pos.y/10.0);
+    if (pos.y < border) {
+        gl_FragColor = texture2D(texture1, texPos);
+        return;
+    }
+    float xoffset = 4.0 * cos(time*3.0+pos.y/10.0);
+    float yoffset = 20.0 * (1.0 + cos(time*3.0+pos.y/40.0));
+    vec2 p = vec2(pos.x+xoffset, border*2.0-(pos.y+yoffset));
+    vec3 rgb = texture2D(texture1, toTex(textureSize, p)).rgb;
+    vec3 overlay = vec3(0.5, 1.0, 1.0);
+    gl_FragColor = vec4(mix(rgb, overlay, 0.25), 1.0);
+}
+</script>
+
+<script type="text/plain" id="snippet5" data-name="Planet" data-url1="https://i.imgur.com/pdcXbX6.png" data-blend="overwrite">
 varying vec2 pos;    // Position in pixels
 uniform float time;  // Frame ticker (increases over time)
 uniform sampler2D texture1;
@@ -123,7 +162,7 @@ void main() {
 }
 </script>
 
-<script type="text/plain" id="snippet4" data-name="Empty" data-blend="normal">
+<script type="text/plain" id="snippet6" data-name="Empty" data-blend="normal">
 varying vec2 pos;    // Position in pixels
 varying vec2 texPos; // Position in texels
 uniform float time;  // Frame ticker (increases over time)

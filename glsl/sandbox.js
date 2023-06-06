@@ -20,12 +20,15 @@ function main() {
   let sceneObject = null;
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 100.0);
   camera.position.z = 1.0;
-  const uniforms = {};
+  const uniforms = {
+    "cursorPos": {"value": new THREE.Vector2(0.0, 0.0)},
+  };
   const textureLoader = new THREE.TextureLoader();
   let currentTextureIndex = 0;
   let editingCode = true;
   let currentFragmentShader = '';
   const snippets = [];
+  let cursorPos = {"x": 0.0, "y": 0.0};
 
   const $shaderError = document.getElementById("shader_error");
   const $editorContainer = document.getElementById("shader_editor_container");
@@ -140,11 +143,11 @@ vec2 fromTex(vec2 textureSize, vec2 texPos) { return textureSize*texPos; }
       uniforms.textureHeight = {"value": renderingContext.height+0.0};
       uniforms.textureSize = {"value": new THREE.Vector2(renderingContext.width, renderingContext.height)};
       if (index === 0) {
-        uniforms.texture1 = {"type": "t", "value": texture};
+        uniforms.texture1 = {"value": texture};
       } else if (index === 1) {
-        uniforms.texture2 = {"type": "t", "value": texture};
+        uniforms.texture2 = {"value": texture};
       } else {
-        uniforms.texture3 = {"type": "t", "value": texture};
+        uniforms.texture3 = {"value": texture};
       }
     });
   }
@@ -153,6 +156,7 @@ vec2 fromTex(vec2 textureSize, vec2 texPos) { return textureSize*texPos; }
     if (editingCode) {
       return;
     }
+    uniforms.cursorPos.value = new THREE.Vector2(cursorPos.x, renderingContext.maxHeight-cursorPos.y);
     uniforms.time.value += FRAME_DELTA;
     renderer.render(scene, camera);
   }
@@ -231,11 +235,20 @@ vec2 fromTex(vec2 textureSize, vec2 texPos) { return textureSize*texPos; }
     renderingContext.maxWidth = $editorDiv.offsetWidth;
     renderingContext.maxHeight = $editorDiv.offsetHeight;
 
+    $rendererContainer.addEventListener("mousemove", (e) => {
+      if (!e) {
+        return;
+      }
+      const rect = e.target.getBoundingClientRect();
+      cursorPos.x = e.clientX - rect.left;
+      cursorPos.y = e.clientY - rect.top;
+    });
+
     for (let $input of textureFileInputs) {
       $input.addEventListener("change", onFileUpload);
     }
     for (let $input of textureURLInputs) {
-      $input.setAttribute("title", "An external image URL (e.g. imgur-hosted image)");
+      $input.setAttribute("title", "An external image URL (e.g. imgur-hosted image), press enter to load");
       $input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") {
           updateTextureFromURL(textureURLInputs[currentTextureIndex].value);
@@ -253,7 +266,7 @@ vec2 fromTex(vec2 textureSize, vec2 texPos) { return textureSize*texPos; }
       textureURLInputs[currentTextureIndex].hidden = false;
     });
 
-    const NUM_SNIPPETS = 5;
+    const NUM_SNIPPETS = 7;
     for (let i = 0; i < NUM_SNIPPETS; i++) {
       const $elem = document.getElementById(`snippet${i}`);
       snippets.push({
