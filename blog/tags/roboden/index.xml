@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>[roboden] on Iskander (Alex) Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/roboden/</link>
+    <description>Recent content in [roboden] on Iskander (Alex) Sharipov technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 22 Sep 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/roboden/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Generations-based array</title>
+      <link>https://quasilyte.dev/blog/post/gen-map/</link>
+      <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/gen-map/</guid>
+      <description>Intro I was intrigued by the sparse map/set described in Russ Cox&amp;rsquo;s article.
+And I&amp;rsquo;m not the only one: this exact implementation is used in Go source code more than once! The compiler uses it for many ID-like maps and sets; regexp package uses it for a queue.
+But there is one thing that is still bugging me: it&amp;rsquo;s hard to make it very efficient. All operations I care about are O(1), but get and set operations clearly become slower in comparison with a straightforward slice approach.</description>
+    </item>
+    
+  </channel>
+</rss>
