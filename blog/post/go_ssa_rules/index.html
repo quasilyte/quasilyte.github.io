@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.91.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -35,7 +35,7 @@
     a, a:visited {color: #33cc99;}
     .pagination a {color: #33cc99;}
     .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
-    a:focus, a:hover {color: #137458;}
+    a:focus, a:hover {color: #178b6b;}
     h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
     .older-posts:hover, .newer-posts:hover {color: #178b6b;}
 </style>
@@ -105,8 +105,7 @@
 <p>This is the first article in the series about <a href="https://github.com/golang/go/tree/master/src/cmd/compile/internal/ssa">Go compiler SSA backend</a>, this is why I&rsquo;ve included some fundamental and architectural info besides DSL overview.</p>
 <h2 id="introduction">Introduction</h2>
 <p>Go compiler frontend boundary ends when SSA form is generated. Functions that perform that translation can be found at <a href="https://github.com/golang/go/blob/master/src/cmd/compile/internal/gc/ssa.go">cmd/compile/internal/gc/ssa.go</a>. <code>ssa.Compile</code> function is an entry point for compiler SSA backend, it&rsquo;s defined in <a href="https://github.com/golang/go/blob/master/src/cmd/compile/internal/ssa/compile.go">cmd/compile/internal/ssa/compile.go</a>.</p>
-<details>
-<summary>Terminology</summary>
+<!-- raw HTML omitted -->
 <table>
 <thead>
 <tr>
@@ -133,14 +132,14 @@
 </tr>
 </tbody>
 </table>
-</details>
+<!-- raw HTML omitted -->
 <p>SSA optimizer consists of several optimization passes. Every such pass traverses a body of a function that is being compiled, doing actions like removing dead nodes (values) and replacements of one forms in favor of others that are potentially more efficient. Some of these passes use &ldquo;rewrite rules&rdquo; that perform such SSA updates.</p>
 <p>Rewrite rules are described using <a href="https://en.wikipedia.org/wiki/S-expression">S-expressions</a>. These <code>S-expressions</code> encode <a href="https://github.com/golang/go/blob/master/src/cmd/compile/internal/ssa/value.go#L19">ssa.Value</a> nodes and form something like a <a href="https://en.wikipedia.org/wiki/Control_flow_graph">CFG</a> of a program. In the simplest case, rewrite rule replaces one <code>ssa.Value</code> with another.</p>
 <p>For example, this rule folds 8-bit constants multiplication:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">(Mul8 (Const8 [c]) (Const8 [d])) -&gt; (Const8 [int64(int8(c*d))])
 </code></pre></div><p>There are two main categories for SSA values: high-level, almost completely machine-independent and ones that are architecture-dependent (they usually map to native instructions in <code>1-to-1</code> fashion).</p>
 <p>Optimizations are described in terms of these two categories. High-level optimizations that are shared among all targets go first, then target-specific rules are applied.</p>
-<p>All rules-specific code is located at <a href="https://github.com/golang/go/tree/master/src/cmd/compile/internal/ssa/gen">cmd/compile/internal/ssa/gen</a>.<br>
+<p>All rules-specific code is located at <a href="https://github.com/golang/go/tree/master/src/cmd/compile/internal/ssa/gen">cmd/compile/internal/ssa/gen</a>.<!-- raw HTML omitted -->
 We&rsquo;ll be touching only these two sets:</p>
 <ol>
 <li><a href="https://github.com/golang/go/blob/master/src/cmd/compile/internal/ssa/gen/genericOps.go">genericOps.go</a> - machine-independent operations.</li>
@@ -149,7 +148,7 @@ We&rsquo;ll be touching only these two sets:</p>
 <p>After next few passes that operate on the abstract machine model, so-called &ldquo;lowering&rdquo; is applied, which performs a transition from <code>genericOps</code> into arch-specific set. For our case, this operation set is <code>AMD64Ops</code>. All <code>lower</code> following passes operate on the operations from the second category.</p>
 <p>After all optimizations are done, code generator plays its role. AMD64 code generation implementation can be found inside <a href="https://github.com/golang/go/tree/master/src/cmd/compile/internal/amd64">cmd/compile/internal/amd64</a> package. Code generator purpose is to replace <code>ssa.Block</code> and <code>ssa.Value</code> objects with a sequence of corresponding <a href="https://github.com/golang/go/blob/0dc814cd7f6a5c01213169be17e823b69e949ada/src/cmd/internal/obj/link.go#L271">obj.Prog</a>s that are passed to the <a href="https://github.com/golang/go/tree/master/src/cmd/internal/obj/x86">x86 assembler</a>. Assembler emits machine code which will become executable after <a href="https://github.com/golang/go/tree/master/src/cmd/link">linking</a> is done.</p>
 <h1 id="optimization-rules">Optimization rules</h1>
-<p>Files that define operations have &ldquo;<code>${ARCH}Ops.go</code>&rdquo; name pattern.<br>
+<p>Files that define operations have &ldquo;<code>${ARCH}Ops.go</code>&rdquo; name pattern.<!-- raw HTML omitted -->
 Optimization rules have &ldquo;<code>${ARCH}.Rules</code>&rdquo; filename pattern.</p>
 <p>High-level (generic) rules perform some simple rewrites, most of the <a href="https://en.wikipedia.org/wiki/Constant_folding">constant folding</a> and some other transformations that make further processing easier.</p>
 <p>Every arch-specific <code>Rules</code> file consist of two parts:</p>
@@ -220,7 +219,7 @@ Form that we are matching (and want to <span style="color:#a6e22e">replace</span
 (ADDQconst _) -&gt; v
 (ADDQconst x) -&gt; (ADDQconst x)
 </code></pre></div><p>If <code>AuxInt</code> is not specified explicitly (expression inside square brackets), then pattern will match any <code>AuxInt</code> value. Same things apply to the <code>{}</code>-parameters (more on that below).</p>
-<p><code>v</code> variable is automatically bound to the outmost pattern match.<br>
+<p><code>v</code> variable is automatically bound to the outmost pattern match.<!-- raw HTML omitted -->
 For example, <code>(ADDQconst (SUBQconst x))</code> has <code>ADDQconst</code> bound to <code>v</code>.</p>
 <p>If same variable is used more than once inside pattern, it will require matching of a multiple S-expression parts between them:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">(ADDQconst [v] (ADDQconst [v] x))
@@ -247,12 +246,11 @@ For example, <code>(ADDQconst (SUBQconst x))</code> has <code>ADDQconst</code> b
 <li>It defines a memory flow inside SSA program. If instruction modifies memory, new SSA value of type <code>types.TypeMem</code> is created and returned as a result of such operation.</li>
 </ol>
 <p>Just like <code>OpPhi</code> is a very special opcode that is treated differently in different passes, <code>types.TypeMem</code> is treated with additional care in many passes.</p>
-<details>
-<summary>More on Phi</summary>
+<!-- raw HTML omitted -->
 <p><code>Phi</code> has different roles that vary from pass to pass.</p>
 <p>In the earlier phases of SSA backend, it serves classical role and the program itself is valid SSA. It expresses value selection depending on the execution path that reached it.</p>
 <p>For example, if there are two ways to enter a block, and both of them modify memory, then destination block with get memory of <code>(Phi mem1 mem2)</code>. Loops also result in a <code>Phi</code> operation.</p>
-</details>
+<!-- raw HTML omitted -->
 <p>Another special type is <code>types.TypeFlags</code>. It describes <a href="https://en.wikipedia.org/wiki/FLAGS_register">CPU flags</a> generation.</p>
 <p>Instructions like <code>ADDQ</code> do not have <code>types.TypeFlags</code> type even though they do produce flags. They&rsquo;re only marked with <code>clobberFlags</code> attribute.</p>
 <p><code>types.Flags</code> is used for instructions that do not write result to any of its explicit arguments, like <code>CMPQ</code>, that reads both operands and updates CPU state accordingly by setting appropriate flags that can be used by instruction that follows it.</p>
@@ -276,8 +274,7 @@ For example, <code>(ADDQconst (SUBQconst x))</code> has <code>ADDQconst</code> b
 <li><code>ssa.txt</code> contains textual SSA dump.</li>
 <li><code>ssa.html</code> is generated automatically and contains same information as <code>ssa.txt</code>, but in more human-readable and interactive format. Try opening it in your browser.</li>
 </ul>
-<details>
-<summary>fusedMulAdd machine code</summary>
+<!-- raw HTML omitted -->
 <p><code>~r3</code> renamed to <code>ret</code> for clarity.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-asm" data-lang="asm"><span style="color:#a6e22e">v7</span>  (<span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">MOVSD</span> <span style="color:#66d9ef">a</span>(<span style="color:#66d9ef">SP</span>), <span style="color:#66d9ef">X0</span>
 <span style="color:#a6e22e">v11</span> (<span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">MOVSD</span> <span style="color:#66d9ef">c</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">16</span>(<span style="color:#66d9ef">SP</span>), <span style="color:#66d9ef">X1</span>
@@ -286,11 +283,10 @@ For example, <code>(ADDQconst (SUBQconst x))</code> has <code>ADDQconst</code> b
 <span style="color:#a6e22e">v13</span> (<span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">ADDSD</span> <span style="color:#66d9ef">X1</span>, <span style="color:#66d9ef">X0</span>
 <span style="color:#a6e22e">v15</span> (<span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">MOVSD</span> <span style="color:#66d9ef">X0</span>, <span style="color:#66d9ef">ret</span><span style="color:#960050;background-color:#1e0010">+</span><span style="color:#ae81ff">24</span>(<span style="color:#66d9ef">SP</span>)
 <span style="color:#a6e22e">b1</span>  (<span style="color:#ae81ff">4</span>) <span style="color:#66d9ef">RET</span>
-</code></pre></div></details>
+</code></pre></div><!-- raw HTML omitted -->
 <p>This is how SSA for the <code>fusedMulAdd</code> looks after the <code>lower</code> pass (from ssa.html):</p>
 <p><img src="https://habrastorage.org/webt/zs/yb/ax/zsybaxjcr1s0_u1csmhgkt3d1za.png" alt=""></p>
-<details>
-<summary>Textual SSA format</summary>
+<!-- raw HTML omitted -->
 <p>If you want to copy that for whatever reason:</p>
 <pre tabindex="0"><code>lower [77667 ns]
 b1:
@@ -305,15 +301,14 @@ b1:
     v14 (4) = VarDef &lt;mem&gt; {~r3} v1
     v15 (4) = MOVSDstore &lt;mem&gt; {~r3} v2 v13 v14
 Ret v15 (line +4)
-</code></pre></details>
+</code></pre><!-- raw HTML omitted -->
 <p>We can translate that to S-expressions:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">(MOVQstore {~r3} 
            (SP)
            (ADDSD (MULSD (Arg {a})
                          (Arg {c}))
                   (Arg {b})))
-</code></pre></div><details>
-<summary>SSA after regalloc pass</summary>
+</code></pre></div><!-- raw HTML omitted -->
 <p><img src="https://habrastorage.org/webt/ef/kx/u5/efkxu5pdwqvs14c9xwblajxoywo.png" alt=""></p>
 <pre tabindex="0"><code>regalloc [87237 ns]
 b1:
@@ -330,11 +325,11 @@ b1:
     v13 (4) = ADDSD &lt;float64&gt; v12 v6 : X0
     v15 (4) = MOVSDstore &lt;mem&gt; {~r3} v2 v13 v14
 Ret v15 (line +4)
-</code></pre></details>
+</code></pre><!-- raw HTML omitted -->
 <h2 id="defining-new-optimization-rules">Defining new optimization rules</h2>
 <p>Processors that have <a href="https://en.wikipedia.org/wiki/FMA_instruction_set">FMA</a> can evaluate <code>a*c + b</code> in a single instruction as opposed to 2 <code>MULSD</code>+<code>ADDSD</code>.</p>
 <p>We&rsquo;ll take <a href="https://github.com/TocarIP">Ilya Tocar</a> <a href="https://go-review.googlesource.com/c/go/+/117295">CL117295</a> as a foundation for our experiment.</p>
-<p>For your convenience, I&rsquo;ve prepared minimal <code>diff</code> patch:<br>
+<p>For your convenience, I&rsquo;ve prepared minimal <code>diff</code> patch:<!-- raw HTML omitted -->
 <a href="https://gist.github.com/Quasilyte/0d4dbb0f8311f38d00a7b2d25dcec704">https://gist.github.com/Quasilyte/0d4dbb0f8311f38d00a7b2d25dcec704</a>.</p>
 <p><strong>1. Adding new opcode - FMASD</strong></p>
 <p>Find <code>AMD64ops</code> slice variable inside <code>compile/internal/ssa/gen/AMD64Ops.go</code> and add new element to it (position does not matter):</p>
@@ -355,11 +350,10 @@ Ret v15 (line +4)
 <p>Compiler check can be implemented by using <code>config</code> like this:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-lisp" data-lang="lisp">//<span style="color:#75715e">; If config.useFMA is false, rule rewrite won&#39;t happen.</span>
 (ADDSD (MULSD x y) z) &amp;&amp; config.useFMA-&gt; (FMASD z x y)
-</code></pre></div><details>
-<summary>How to check FMA availability on the machine?</summary>
+</code></pre></div><!-- raw HTML omitted -->
 <p>If <code>lscpu</code> available, then this should suffice:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">$ lscpu | grep fma
-</code></pre></div></details>
+</code></pre></div><!-- raw HTML omitted -->
 <p><strong>3. Codegen implementation</strong></p>
 <p>Now we need to add <code>FMASD</code> code generation into <code>ssaGenValue</code> function defined in <code>compile/internal/amd64/ssa.go</code>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">ssaGenValue</span>(<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">gc</span>.<span style="color:#a6e22e">SSAGenState</span>, <span style="color:#a6e22e">v</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">ssa</span>.<span style="color:#a6e22e">Value</span>) {

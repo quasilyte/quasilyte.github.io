@@ -23,9 +23,9 @@ Then you realize that it&amp;rsquo;s not enough to just have some IR that is sui
       <pubDate>Fri, 27 Mar 2020 17:08:04 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/pratt-parsers-go/</guid>
-      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/ru/post/494316/.
+      <description>Original (ru): https://habr.com/ru/post/494316/.
  Recursive descent parsing works well when you can continue parsing using the current context and a given token.
-Some expressions make parsing harder: postfix, infix and other. They introduce a problem: you don&amp;rsquo;t know which kind of expression you&amp;rsquo;re processing until you&amp;rsquo;ve already parsed half of it.</description>
+Some expressions make parsing harder: postfix, infix and other. They introduce a problem: you don&amp;rsquo;t know which kind of expression you&amp;rsquo;re processing until you&amp;rsquo;ve already parsed half of it. Most of the time you also care about operations precedence and their associativity, so the result AST has a proper shape.</description>
     </item>
     
     <item>

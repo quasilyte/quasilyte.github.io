@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.91.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -35,7 +35,7 @@
     a, a:visited {color: #33cc99;}
     .pagination a {color: #33cc99;}
     .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
-    a:focus, a:hover {color: #137458;}
+    a:focus, a:hover {color: #178b6b;}
     h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
     .older-posts:hover, .newer-posts:hover {color: #178b6b;}
 </style>
@@ -80,7 +80,7 @@
     <nav id="TableOfContents"></nav>
     
     <section class="post-content">
-        <center>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.</center>
+        <!-- raw HTML omitted -->
 <p><img src="https://habrastorage.org/webt/l7/s7/gc/l7s7gccru4deae3xyln5scwfof8.jpeg" alt=""></p>
 <blockquote>
 <p>Original (ru): <a href="https://habr.com/post/481696/">https://habr.com/post/481696/</a>.</p>
@@ -124,8 +124,7 @@ gogrep -x <span style="color:#e6db74">&#39;$s[:]&#39;</span> -a <span style="col
 
 <span style="color:#75715e"># Search+replace.</span>
 gogrep -x <span style="color:#e6db74">&#39;$s[:]&#39;</span> -a <span style="color:#e6db74">&#39;type([]byte)&#39;</span> -s <span style="color:#e6db74">&#39;$s&#39;</span> -w std
-</code></pre></div><details>
-<summary>If you wonder what would that query reveal</summary>
+</code></pre></div><!-- raw HTML omitted -->
 <p>Only the first 30 results are showed (out of 300+):</p>
 <pre tabindex="0"><code>$GOROOT/src/archive/tar/format.go:163:59: b[:]
 $GOROOT/src/archive/tar/reader.go:345:33: tr.blk[:]
@@ -157,7 +156,7 @@ $GOROOT/src/archive/zip/writer.go:319:31: mbuf[:]
 $GOROOT/src/archive/zip/writer.go:386:16: buf[:]
 $GOROOT/src/archive/zip/writer.go:398:23: buf[:]
 $GOROOT/src/bytes/bytes.go:172:24: b[:]
-</code></pre></details>
+</code></pre><!-- raw HTML omitted -->
 <h1 id="search-patterns">Search patterns</h1>
 <p>A <strong>search pattern</strong> is a small Go code fragment that can include <strong>$-expressions</strong> (we&rsquo;ll refer to them as &ldquo;pattern variables&rdquo;). A pattern can be an expression, a statement, or a declaration.</p>
 <p><strong>Pattern variables</strong> are Go variables with <code>$</code> prefix. Pattern variables with the same name always match identical AST nodes. The only exception is <code>$_</code> variable that can be used multiple times to express &ldquo;whatever&rdquo; parts of the pattern.</p>

@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Generations-based array &middot; Iskander (Alex) Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about systems programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">Technical blog about systems programming and related topics</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Generations-based array</h1>
+        <div class="post-meta">
+            <time datetime="22 September 2023">
+                22 September 2023
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#intro">Intro</a></li><br>
+    <li><a href="#the-problem">The Problem</a></li><br>
+    <li><a href="#benchmark-results">Benchmark Results</a></li><br>
+    <li><a href="#sparse-map-issues">Sparse Map Issues</a></li><br>
+    <li><a href="#generations-map">Generations Map</a></li><br>
+    <li><a href="#conclusion">Conclusion</a></li><br>
+  </ul>
+</nav>
+    
+    <section class="post-content">
+        <h2 id="intro">Intro</h2>
+<p>I was fascinated by the sparse map/set described in Russ Cox article <a href="https://research.swtch.com/sparse">research.swtch.com/sparse</a>.</p>
+<p>And I&rsquo;m not the only one: this exact implementation is used in Go source code more than once! The compiler uses it for many ID-like maps and sets; regexp package uses it for a <a href="https://github.com/golang/go/blob/795414d1c628f763defa43199ab51ea3dc3241d8/src/regexp/exec.go#L17">queue</a>.</p>
+<p>But there is one thing that is still bugging me: it&rsquo;s hard to make it very efficient. All operations I care about are O(1), just like with normal array, but <code>get</code> and <code>set</code> operations clearly become slower.</p>
+<p>In fact, if your arrays are not that big (less than 0xffff bytes?), you might be better off with an array with O(n) clear operation that will be quite efficient thanks to the memclrNoHeapPointers. If you do many <code>get</code>+<code>set</code> operations, the increased constant overhead may be too much.</p>
+<p>In this article, I&rsquo;ll propose a different data structure that can replace sparse-dense map (and set) if you don&rsquo;t need the iteration over the elements.</p>
+<h2 id="the-problem">The Problem</h2>
+<p>Let me start with a problem that I&rsquo;m trying to solve.</p>
+<p>Imagine that you need a mapping structure that you can re-use. Something like a <code>map[uint16]T</code>, but with a more predictable allocations pattern.</p>
+<p>Your function may look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">doWork</span>(<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">state</span>) <span style="color:#a6e22e">result</span> {
+    <span style="color:#a6e22e">s</span>.<span style="color:#66d9ef">map</span>.<span style="color:#a6e22e">Reset</span>() <span style="color:#75715e">// You want the memory to be re-used
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// Do the work using the map.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Only get+set operations are used here.
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>If your &ldquo;map&rdquo; can re-use the memory properly, this code may become zero-alloc.</p>
+<p>Our requirements can be described as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Operation</th>
+<th>Complexity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Set</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Get</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>Reset</td>
+<td>O(1)</td>
+</tr>
+</tbody>
+</table>
+<p>We want it all, plus the efficient memory re-use.</p>
+<p>We&rsquo;ll analyze these choices today:</p>
+<ul>
+<li><code>map[uint16]T</code></li>
+<li><code>[]T</code></li>
+<li><code>sparseMap</code></li>
+<li><code>generationsMap</code></li>
+</ul>
+<p>The slice and map solutions do not fit our requirements, but we&rsquo;ll use them for a comparison.</p>
+<h2 id="benchmark-results">Benchmark Results</h2>
+<p>Let&rsquo;s start by comparing the raw performance.</p>
+<table>
+<thead>
+<tr>
+<th>Data Structure</th>
+<th style="text-align:right">Set</th>
+<th style="text-align:right">Get</th>
+<th style="text-align:right">Reset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>map</td>
+<td style="text-align:right">(x16.8) 27988</td>
+<td style="text-align:right">(x40.7) 15631</td>
+<td style="text-align:right">1002</td>
+</tr>
+<tr>
+<td>slice</td>
+<td style="text-align:right">1665</td>
+<td style="text-align:right">686</td>
+<td style="text-align:right">4144</td>
+</tr>
+<tr>
+<td>sparse</td>
+<td style="text-align:right">(x6.8) 11347</td>
+<td style="text-align:right">(x1.7) 1193</td>
+<td style="text-align:right">11</td>
+</tr>
+<tr>
+<td>generations</td>
+<td style="text-align:right">(x1.2) 1978</td>
+<td style="text-align:right">(x1.1) 781</td>
+<td style="text-align:right">16</td>
+</tr>
+</tbody>
+</table>
+<p>Observations:</p>
+<ul>
+<li>Map is heavily outclassed</li>
+<li>Both sparse and generation maps have a crazy-fast reset</li>
+<li>Even with 5000 elements (8*5000=40000 bytes), a slice reset takes noticeable time</li>
+<li><code>sparse.set()</code> operation is ~7 times slower than slice!</li>
+<li><code>sparse.get()</code> operation is ~2 times slower than slice</li>
+<li>Generations map is almost as fast as a slice, but reset is much faster</li>
+</ul>
+<p>We&rsquo;ll talk about the generations map implementation later, don&rsquo;t you worry.</p>
+<p>You can find the exact benchmarks code <a href="(https://gist.github.com/quasilyte/a64bd66093c20c5e146b60e2cf3f3191)">here</a>.</p>
+<p>Some benchmark notes:</p>
+<ul>
+<li>I used a <a href="https://github.com/golang/go/blob/795414d1c628f763defa43199ab51ea3dc3241d8/src/cmd/compile/internal/ssa/sparsemap.go">real-world</a> sparse-dense implementation</li>
+<li>Every <code>get</code>/<code>set</code> goes through a noinline wrapper to avoid the unwanted optimizations</li>
+<li>Every <code>get</code>/<code>set</code> test runs the operation 5000 times</li>
+<li>Every benchmark is using 5000 elements (it&rsquo;s important for slice reset)</li>
+<li>The measurements above are divided by 10 for an easier interpretation</li>
+<li>The value type used is <code>int</code> (8 bytes on my x86-64 machine)</li>
+</ul>
+<p>Now, you should be cautious about random benchmarks posted on the internet. But no matter how you write and/or run these, generations map will always be faster than a sparse-dense map (or set). It&rsquo;s almost as fast as a slice solution while still having a very fast <code>O(1)</code> reset.</p>
+<p>There are reasons for it to be faster. Let&rsquo;s talk about them.</p>
+<h2 id="sparse-map-issues">Sparse Map Issues</h2>
+<p>Why <code>sparse.set()</code> operation is so slow?</p>
+<p>When it comes to insertion of a new value, the sparse map has to do two memory writes. One for the <code>sparse</code> and one for the <code>dense</code>. Updating the existing value only writes to <code>dense</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">sparseMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">int32</span>, <span style="color:#a6e22e">v</span> <span style="color:#a6e22e">T</span>) {
+	<span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">sparse</span>[<span style="color:#a6e22e">k</span>]
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> &lt; int32(len(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span>)) <span style="color:#f92672">&amp;&amp;</span> <span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">key</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">k</span> {
+		<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span>[<span style="color:#a6e22e">i</span>].<span style="color:#a6e22e">val</span> = <span style="color:#a6e22e">v</span>
+		<span style="color:#66d9ef">return</span>
+	}
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span> = append(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span>, <span style="color:#a6e22e">sparseEntry</span>[<span style="color:#a6e22e">T</span>]{<span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span>})
+	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">sparse</span>[<span style="color:#a6e22e">k</span>] = int32(len(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span>)) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
+}
+</code></pre></div><p>Another issue is that two slices mean twice as much bound checks that can occur. And while you can be careful and use uint keys and check for the bounds yourself to stop compiler from generating an implicit boundcheck, you&rsquo;ll still pay for these if statements.</p>
+<p>The <code>sparse.get()</code> operation also suffers from a double memory read.</p>
+<h2 id="generations-map">Generations Map</h2>
+<p>It&rsquo;s possible to use some of the ideas behind the sparse-dense map and create an even more specialized data structure.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>] <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">seq</span> <span style="color:#66d9ef">uint32</span>
+	<span style="color:#a6e22e">val</span> <span style="color:#a6e22e">T</span>
+}
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>] <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">elems</span> []<span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span>]
+	<span style="color:#a6e22e">seq</span>   <span style="color:#66d9ef">uint32</span>
+}
+
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newGenerationsMap</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>](<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>] {
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]{
+		<span style="color:#a6e22e">elems</span>: make([]<span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span>], <span style="color:#a6e22e">n</span>),
+		<span style="color:#a6e22e">seq</span>:   <span style="color:#ae81ff">1</span>,
+	}
+}
+</code></pre></div><p>Every element will have a generation counter (seq). The container itself will have its own counter. The container counter starts with 1, while elements start with 0.</p>
+<p>Both <code>get</code> and <code>set</code> operations look very similar to the slice version, but with a <code>seq</code> check.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>, <span style="color:#a6e22e">v</span> <span style="color:#a6e22e">T</span>) {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)) {
+		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>[<span style="color:#a6e22e">k</span>] = <span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span>]{<span style="color:#a6e22e">val</span>: <span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">seq</span>: <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span>}
+	}
+}
+
+<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#a6e22e">T</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)) {
+		<span style="color:#a6e22e">el</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>[<span style="color:#a6e22e">k</span>]
+		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">el</span>.<span style="color:#a6e22e">seq</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> {
+			<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">el</span>.<span style="color:#a6e22e">val</span>
+		}
+	}
+	<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">zero</span> <span style="color:#a6e22e">T</span>
+	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">zero</span>
+}
+</code></pre></div><p>If <code>seq</code> of the element is identical to the container&rsquo;s counter, then this element is defined. Otherwise, it doesn&rsquo;t matter what are the contents of this element.</p>
+<p>Setting the element means updating the element&rsquo;s counter to the container&rsquo;s counter.</p>
+<p>You probably can already guess how <code>Reset</code> will look like.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
+	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span><span style="color:#f92672">++</span>
+}
+</code></pre></div><p>Well, this is good enough for the most use cases, but there is a small chance that our <code>uint32</code> will overflow, making some undefined elements defined. Increasing the <code>seq</code> size to <code>uint64</code> could help, but it will increase the per-element size overhead. Instead, we can do a real clear operation one in <code>MaxUint32</code> resets.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">MaxUint32</span> {
+		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> = <span style="color:#ae81ff">1</span>
+		<span style="color:#a6e22e">clear</span>(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)
+	} <span style="color:#66d9ef">else</span> {
+		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span><span style="color:#f92672">++</span>
+	}
+}
+</code></pre></div><p>It&rsquo;s definitely possible to use <code>uint8</code> or <code>uint16</code> for the <code>seq</code> field. That would mean less per-element size overhead at the price of a more frequent data clear.</p>
+<ul>
+<li>The generations map does exactly 1 memory read and write</li>
+<li>It&rsquo;s easier to get rid of all implicit bound checks</li>
+<li>Its memory consumption is comparable to the sparse-dense array</li>
+<li>The <code>Reset</code> complexity is constant (amortized)</li>
+<li>Arguably, it&rsquo;s even easier to implement and understand</li>
+</ul>
+<p>It&rsquo;s possible to make a generations-based set too. The <code>get</code> operation can be turned into <code>contains</code> with ease. With sets, only the counters are needed.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsSet</span>) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">bool</span> {
+	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">counters</span>)) {
+		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">counters</span>[<span style="color:#a6e22e">k</span>] <span style="color:#f92672">==</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span>
+	}
+	<span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span>
+}
+</code></pre></div><p>It may sound fascinating, right? Well, you can&rsquo;t use this data structure as a drop-in replacement for a sparse-dense. For instance, a generations-based map can&rsquo;t be iterated efficiently.</p>
+<p>You can add a length counter if you really need it, but that will add some extra overhead to the <code>set</code> operation. I would advise you not to do so. The main reason this structure can be so fast is its simplicity.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I used this structure in my <a href="https://github.com/quasilyte/pathing/">pathfinding</a> library for Go. The results were great: 5-8% speedup just for a simple data structure check. Keep in mind that this library is already heavily optimized, so every coupld of percentages count.</p>
+<p>In turn, this pathfinding library was used in a game I released on Steam: <a href="https://store.steampowered.com/app/2416030/Roboden/">Roboden</a>.</p>
+<p>Therefore, I would consider this data structure idea to be production-ready.</p>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/performance">[performance] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/shortread">[shortread] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Generations-based%20array&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fgen-map%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fgen-map%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fgen-map%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that got lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2023 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

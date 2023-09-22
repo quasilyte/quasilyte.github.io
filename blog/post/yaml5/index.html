@@ -8,7 +8,7 @@
     <meta name="author" content="Iskander Sharipov">
     <meta name="description" content="Technical blog about systems programming and related topics">
     
-    <meta name="generator" content="Hugo 0.91.0" />
+    <meta name="generator" content="Hugo 0.92.2" />
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
@@ -35,7 +35,7 @@
     a, a:visited {color: #33cc99;}
     .pagination a {color: #33cc99;}
     .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
-    a:focus, a:hover {color: #137458;}
+    a:focus, a:hover {color: #178b6b;}
     h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
     .older-posts:hover, .newer-posts:hover {color: #178b6b;}
 </style>
@@ -87,9 +87,9 @@
 </ul>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-js" data-lang="js"><span style="color:#960050;background-color:#1e0010">#</span> <span style="color:#a6e22e">JSON5</span><span style="color:#f92672">?</span> <span style="color:#a6e22e">YAML</span><span style="color:#f92672">?</span>
 {<span style="color:#a6e22e">a</span><span style="color:#f92672">:</span> <span style="color:#ae81ff">1</span>, <span style="color:#a6e22e">b</span><span style="color:#f92672">:</span> [<span style="color:#e6db74">&#39;x&#39;</span>, <span style="color:#e6db74">&#39;y&#39;</span>]}
-</code></pre></div><p>What you see above is a valid <a href="https://yaml.org/spec/1.2/spec.html">YAML 1.2</a> document.<br>
+</code></pre></div><p>What you see above is a valid <a href="https://yaml.org/spec/1.2/spec.html">YAML 1.2</a> document.<!-- raw HTML omitted -->
 It uses the flow-style syntax for objects and arrays.</p>
-<p>If you look at the <a href="https://json5.org/">JSON5</a> feature list, you can deduce that YAML is a superset of JSON5.<br>
+<p>If you look at the <a href="https://json5.org/">JSON5</a> feature list, you can deduce that YAML is a superset of JSON5.<!-- raw HTML omitted -->
 The only difference is the single-line comment syntax.</p>
 <p>Yes, we can <a href="https://github.com/go-critic/go-critic/pull/966">go and re-write</a> all YAML files in a JSON5 style.</p>
 <p><a href="https://github.com/quasilyte/yaml5">YAML5</a> is the &ldquo;JSON with comments and trailing commas&rdquo; that some of us were waiting for. Just take YAML and write it like JSON5, the <code>yaml5 lint</code> tool can enforce our promise of not using any features outside of the JSON5 subset:</p>
