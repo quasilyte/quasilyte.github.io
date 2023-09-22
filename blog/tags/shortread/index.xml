@@ -13,9 +13,9 @@
       <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/gen-map/</guid>
-      <description>Intro I was fascinated by the sparse map/set described in Russ Cox article research.swtch.com/sparse.
+      <description>Intro I was intrigued by the sparse map/set described in Russ Cox&amp;rsquo;s article.
 And I&amp;rsquo;m not the only one: this exact implementation is used in Go source code more than once! The compiler uses it for many ID-like maps and sets; regexp package uses it for a queue.
-But there is one thing that is still bugging me: it&amp;rsquo;s hard to make it very efficient. All operations I care about are O(1), just like with normal array, but get and set operations clearly become slower.</description>
+But there is one thing that is still bugging me: it&amp;rsquo;s hard to make it very efficient. All operations I care about are O(1), but get and set operations clearly become slower in comparison with a straightforward slice approach.</description>
     </item>
     
     <item>

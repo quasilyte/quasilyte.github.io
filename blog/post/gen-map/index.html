@@ -90,13 +90,13 @@
     
     <section class="post-content">
         <h2 id="intro">Intro</h2>
-<p>I was fascinated by the sparse map/set described in Russ Cox article <a href="https://research.swtch.com/sparse">research.swtch.com/sparse</a>.</p>
+<p>I was intrigued by the sparse map/set described in <a href="https://research.swtch.com/sparse">Russ Cox&rsquo;s article</a>.</p>
 <p>And I&rsquo;m not the only one: this exact implementation is used in Go source code more than once! The compiler uses it for many ID-like maps and sets; regexp package uses it for a <a href="https://github.com/golang/go/blob/795414d1c628f763defa43199ab51ea3dc3241d8/src/regexp/exec.go#L17">queue</a>.</p>
-<p>But there is one thing that is still bugging me: it&rsquo;s hard to make it very efficient. All operations I care about are O(1), just like with normal array, but <code>get</code> and <code>set</code> operations clearly become slower.</p>
-<p>In fact, if your arrays are not that big (less than 0xffff bytes?), you might be better off with an array with O(n) clear operation that will be quite efficient thanks to the memclrNoHeapPointers. If you do many <code>get</code>+<code>set</code> operations, the increased constant overhead may be too much.</p>
-<p>In this article, I&rsquo;ll propose a different data structure that can replace sparse-dense map (and set) if you don&rsquo;t need the iteration over the elements.</p>
+<p>But there is one thing that is still bugging me: it&rsquo;s hard to make it very efficient. All operations I care about are O(1), but <code>get</code> and <code>set</code> operations clearly become slower in comparison with a straightforward slice approach.</p>
+<p>In fact, if your arrays are not that big (less than 0xffff bytes?), you might be better off using a slice with O(n) clear operation. If you do many <code>get</code>+<code>set</code>, the increased overhead may be too much.</p>
+<p>In this article, I&rsquo;ll propose a different data structure that can replace a sparse-dense map (and set) if you don&rsquo;t need the iteration over the elements.</p>
 <h2 id="the-problem">The Problem</h2>
-<p>Let me start with a problem that I&rsquo;m trying to solve.</p>
+<p>Let me start with a problem that we&rsquo;re trying to address.</p>
 <p>Imagine that you need a mapping structure that you can re-use. Something like a <code>map[uint16]T</code>, but with a more predictable allocations pattern.</p>
 <p>Your function may look like this:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">doWork</span>(<span style="color:#a6e22e">s</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">state</span>) <span style="color:#a6e22e">result</span> {
@@ -185,7 +185,6 @@
 <li><code>sparse.get()</code> operation is ~2 times slower than slice</li>
 <li>Generations map is almost as fast as a slice, but reset is much faster</li>
 </ul>
-<p>We&rsquo;ll talk about the generations map implementation later, don&rsquo;t you worry.</p>
 <p>You can find the exact benchmarks code <a href="(https://gist.github.com/quasilyte/a64bd66093c20c5e146b60e2cf3f3191)">here</a>.</p>
 <p>Some benchmark notes:</p>
 <ul>
@@ -196,7 +195,7 @@
 <li>The measurements above are divided by 10 for an easier interpretation</li>
 <li>The value type used is <code>int</code> (8 bytes on my x86-64 machine)</li>
 </ul>
-<p>Now, you should be cautious about random benchmarks posted on the internet. But no matter how you write and/or run these, generations map will always be faster than a sparse-dense map (or set). It&rsquo;s almost as fast as a slice solution while still having a very fast <code>O(1)</code> reset.</p>
+<p>Now, you should be cautious about random benchmarks posted on the internet. But no matter how you write and/or run these, generations map will always be faster than a sparse-dense map (or set). It&rsquo;s almost as fast as a slice solution while still having a very fast O(1) reset.</p>
 <p>There are reasons for it to be faster. Let&rsquo;s talk about them.</p>
 <h2 id="sparse-map-issues">Sparse Map Issues</h2>
 <p>Why <code>sparse.set()</code> operation is so slow?</p>
@@ -210,7 +209,7 @@
 	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span> = append(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span>, <span style="color:#a6e22e">sparseEntry</span>[<span style="color:#a6e22e">T</span>]{<span style="color:#a6e22e">k</span>, <span style="color:#a6e22e">v</span>})
 	<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">sparse</span>[<span style="color:#a6e22e">k</span>] = int32(len(<span style="color:#a6e22e">s</span>.<span style="color:#a6e22e">dense</span>)) <span style="color:#f92672">-</span> <span style="color:#ae81ff">1</span>
 }
-</code></pre></div><p>Another issue is that two slices mean twice as much bound checks that can occur. And while you can be careful and use uint keys and check for the bounds yourself to stop compiler from generating an implicit boundcheck, you&rsquo;ll still pay for these if statements.</p>
+</code></pre></div><p>Another issue is that two slices mean twice as much boundchecks that can occur. And while you can be careful and use uint keys and check for the bounds yourself to stop compiler from generating an implicit boundcheck, you&rsquo;ll still pay for these if statements.</p>
 <p>The <code>sparse.get()</code> operation also suffers from a double memory read.</p>
 <h2 id="generations-map">Generations Map</h2>
 <p>It&rsquo;s possible to use some of the ideas behind the sparse-dense map and create an even more specialized data structure.</p>
@@ -230,7 +229,7 @@
 		<span style="color:#a6e22e">seq</span>:   <span style="color:#ae81ff">1</span>,
 	}
 }
-</code></pre></div><p>Every element will have a generation counter (seq). The container itself will have its own counter. The container counter starts with 1, while elements start with 0.</p>
+</code></pre></div><p>Every element will have a generation counter (seq). The container itself will have its own counter. The container&rsquo;s counter starts with 1, while elements start with 0.</p>
 <p>Both <code>get</code> and <code>set</code> operations look very similar to the slice version, but with a <code>seq</code> check.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>, <span style="color:#a6e22e">v</span> <span style="color:#a6e22e">T</span>) {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)) {
@@ -250,11 +249,11 @@
 }
 </code></pre></div><p>If <code>seq</code> of the element is identical to the container&rsquo;s counter, then this element is defined. Otherwise, it doesn&rsquo;t matter what are the contents of this element.</p>
 <p>Setting the element means updating the element&rsquo;s counter to the container&rsquo;s counter.</p>
-<p>You probably can already guess how <code>Reset</code> will look like.</p>
+<p>You can probably already guess how <code>Reset</code> will look like:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
 	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span><span style="color:#f92672">++</span>
 }
-</code></pre></div><p>Well, this is good enough for the most use cases, but there is a small chance that our <code>uint32</code> will overflow, making some undefined elements defined. Increasing the <code>seq</code> size to <code>uint64</code> could help, but it will increase the per-element size overhead. Instead, we can do a real clear operation one in <code>MaxUint32</code> resets.</p>
+</code></pre></div><p>Well, this is good enough for the most use cases, but there is a small chance that our <code>uint32</code> will overflow, making some undefined elements defined. Increasing the <code>seq</code> size to <code>uint64</code> could help, but it will increase the per-element size overhead. Instead, we can do a real clear operation once in <code>MaxUint32</code> resets.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">MaxUint32</span> {
 		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> = <span style="color:#ae81ff">1</span>
@@ -266,10 +265,10 @@
 </code></pre></div><p>It&rsquo;s definitely possible to use <code>uint8</code> or <code>uint16</code> for the <code>seq</code> field. That would mean less per-element size overhead at the price of a more frequent data clear.</p>
 <ul>
 <li>The generations map does exactly 1 memory read and write</li>
-<li>It&rsquo;s easier to get rid of all implicit bound checks</li>
+<li>It&rsquo;s easier to get rid of all implicit boundchecks</li>
 <li>Its memory consumption is comparable to the sparse-dense array</li>
 <li>The <code>Reset</code> complexity is constant (amortized)</li>
-<li>Arguably, it&rsquo;s even easier to implement and understand</li>
+<li>Arguably, it&rsquo;s even easier to implement and understand than a sparse-dense map</li>
 </ul>
 <p>It&rsquo;s possible to make a generations-based set too. The <code>get</code> operation can be turned into <code>contains</code> with ease. With sets, only the counters are needed.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsSet</span>) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">bool</span> {
@@ -281,9 +280,9 @@
 </code></pre></div><p>It may sound fascinating, right? Well, you can&rsquo;t use this data structure as a drop-in replacement for a sparse-dense. For instance, a generations-based map can&rsquo;t be iterated efficiently.</p>
 <p>You can add a length counter if you really need it, but that will add some extra overhead to the <code>set</code> operation. I would advise you not to do so. The main reason this structure can be so fast is its simplicity.</p>
 <h2 id="conclusion">Conclusion</h2>
-<p>I used this structure in my <a href="https://github.com/quasilyte/pathing/">pathfinding</a> library for Go. The results were great: 5-8% speedup just for a simple data structure check. Keep in mind that this library is already heavily optimized, so every coupld of percentages count.</p>
+<p>I used this structure in my <a href="https://github.com/quasilyte/pathing/">pathfinding</a> library for Go. The results were great: 5-8% speedup just for a simple data structure change. Keep in mind that this library is already heavily optimized, so every couple of percentages count.</p>
 <p>In turn, this pathfinding library was used in a game I released on Steam: <a href="https://store.steampowered.com/app/2416030/Roboden/">Roboden</a>.</p>
-<p>Therefore, I would consider this data structure idea to be production-ready.</p>
+<p>Therefore, I would consider this data structure to be production-ready.</p>
 
     </section>
 
