@@ -24,11 +24,9 @@ package gorules import &amp;#34;github.com/quasilyte/go-ruleguard/dsl&amp;#34; /
       <pubDate>Wed, 08 Jan 2020 21:54:02 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/ruleguard/</guid>
-      <description>Original (ru): https://habr.com/post/481696/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/post/481696/.
  This article introduces a new static analysis library (and CLI utility) go-ruleguard. It&amp;rsquo;s like a gogrep that is adapted for the use inside your CI pipeline.
-You describe static analysis rules in terms of a special Go-like DSL. During the startup, ruleguard turns these definitions into a set of inspections to be executed.
-As a bonus, we&amp;rsquo;ll also talk about go/analysis and it&amp;rsquo;s predecessors.
-Static analysis extensibility There is a lot of Go linters, but only a few of them can be extended.</description>
+You describe static analysis rules in terms of a special Go-like DSL. During the startup, ruleguard turns these definitions into a set of inspections to be executed.</description>
     </item>
     
   </channel>

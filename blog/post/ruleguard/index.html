@@ -80,7 +80,7 @@
     <nav id="TableOfContents"></nav>
     
     <section class="post-content">
-        <!-- raw HTML omitted -->
+        <center>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.</center>
 <p><img src="https://habrastorage.org/webt/b5/p-/sq/b5p-sqgr-9b1e5mimtxaftmryau.png" alt=""></p>
 <blockquote>
 <p>Original (ru): <a href="https://habr.com/post/481696/">https://habr.com/post/481696/</a>.</p>
@@ -93,12 +93,12 @@
 <p>Two main options are <a href="https://golang.org/pkg/plugin/">Go plugins</a> and monolith. The monolith implies that all inspections (including your own) are available during the compilation.</p>
 <p><a href="https://github.com/mgechev/revive">revive</a> follows the monolith path as you&rsquo;re expected to include the new checks into the linter core to integrate them. <a href="https://github.com/go-critic/go-critic">go-critic</a> supports plugins model that makes it possible to build analyzer extensions independently from the go-critic code. Either way, in the end, you&rsquo;re going to work with <a href="https://golang.org/pkg/go/ast/">go/ast</a> and <a href="https://golang.org/pkg/go/types/">go/types</a> plus some linter plugin API to implement the inspection itself. Even the simplest checks can require a <a href="https://github.com/mgechev/revive/blob/master/rule/call-to-gc.go">significant amount of boilerplate code</a>.</p>
 <p><a href="https://godoc.org/golang.org/x/tools/go/analysis">go/analysis</a> will simplify this picture since it provides a framework that can be used by the different static analysis tools, so we get rid of the custom linter API part at least partially. However, it doesn&rsquo;t simplify the inspection implementation itself.</p>
-<!-- raw HTML omitted -->
+<details><summary>About `go/loader` and `go/packages`</summary><blockquote>
 <p>When you&rsquo;re implementing a Go static analyzer, you want to inspect an AST or SSA form of a target Go program. Before you can do that, source code needs to be properly &ldquo;loaded&rdquo;. Simply speaking, loading procedure includes <a href="https://golang.org/pkg/go/parser/">parsing</a>, type checking and <a href="https://golang.org/pkg/go/importer/">dependencies importing</a>.</p>
 <p>Every linter has to do all these loading steps in order to perform any meaningful work. <a href="https://godoc.org/golang.org/x/tools/go/loader">loader</a> package was one of the first attempts to make this process less tiresome. With <code>loader</code> it was possible to &ldquo;load&rdquo; all you need with a couple of function calls. <code>loader</code> became deprecated before it could stop being experimental. <a href="https://godoc.org/golang.org/x/tools/go/packages">packages</a> was a new way to do source code loading: it has an improved API and works with Go modules.</p>
 <p>Some time ago I created <a href="https://github.com/go-lintpack/lintpack">lintpack</a> - a linters framework that was used inside <a href="https://github.com/go-critic/go-critic">go-critic</a>. It could build a linter executable that includes different inspections providers. Now it&rsquo;s deprecated as well because we have <a href="https://godoc.org/golang.org/x/tools/go/analysis">analysis</a> framework from the Go team.</p>
 <p>Nowadays you&rsquo;re encouraged to use the above-mentioned analysis framework to create a static analysis tool without using Go parser of <code>go/packages</code> directly. The analysis package gives you a paradigm, a structure that you have to follow. You get a lot of good features and utilities in return. For instance, it greatly simplifies <a href="https://godoc.org/golang.org/x/tools/go/analysis/analysistest">analyzer testing</a>. If you wonder, lintpack also had <a href="https://github.com/go-lintpack/lintpack/tree/master/linttest">linttest</a> package that does the same, only the magic comment syntax is different.</p>
-<!-- raw HTML omitted -->
+</blockquote></details>
 <h1 id="ruleguard---created-to-be-extended">ruleguard - created to be extended</h1>
 <p><img src="https://habrastorage.org/webt/zp/ym/rj/zpymrjjb8zkqa_c069ccd-yf3xg.png" alt=""></p>
 <p><a href="https://github.com/quasilyte/go-ruleguard"><code>go-ruleguard</code></a> is a static analysis tool that includes <strong>zero</strong> inspections by default.</p>
@@ -189,7 +189,7 @@
 
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">w</span>
 }
-</code></pre></div><!-- raw HTML omitted -->
+</code></pre></div></details>
 <p>This is how it&rsquo;s done in <code>ruleguard</code>:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#f92672">package</span> <span style="color:#a6e22e">gorules</span>
 

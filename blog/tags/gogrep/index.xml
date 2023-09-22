@@ -13,11 +13,10 @@
       <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/profile-guided-gogrep/</guid>
-      <description>Original (ru): https://habr.com/ru/post/596755/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/ru/post/596755/.
  If you combine a structural code search of gogrep and CPU profile filtering with perf-heatmap, you&amp;rsquo;ll get a profile-guided code search.
 This combo lets you find complex code patterns that occur only on the &amp;ldquo;hot&amp;rdquo; code path, so optimizing them can be worthwhile.
-perf-heatmap can also be used by a text editor to display the source code lines performance heat levels as shown below.
-Introduction Let&amp;rsquo;s start with a question why would you ever want to do this.</description>
+perf-heatmap can also be used by a text editor to display the source code lines performance heat levels as shown below.</description>
     </item>
     
   </channel>

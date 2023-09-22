@@ -151,7 +151,7 @@ fine to use an empty prefix.</p>
 test.go:4:6: emptyStringTest: maybe use s <span style="color:#f92672">==</span> <span style="color:#e6db74">&#34;&#34;</span> instead? <span style="color:#f92672">(</span>rules.go:13<span style="color:#f92672">)</span>
 test.go:5:6: qrules/boolComparison: omit bool literal in expression <span style="color:#f92672">(</span>rules1.go:8<span style="color:#f92672">)</span>
 </code></pre></div><p>Using ruleguard from the <a href="https://github.com/go-critic/go-critic">go-critic</a> or <a href="https://github.com/golangci/golangci-lint">golangci-lint</a> stays the same. As long as bundles are installed and they can be located by the <code>go list $package_path</code>, everything should work fine.</p>
-<!-- raw HTML omitted -->
+<hr>
 <p>Limitations:</p>
 <ul>
 <li>Imported packages can&rsquo;t import other bundle packages (could be addressed later)</li>

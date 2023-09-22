@@ -233,14 +233,16 @@
 	}
 }
 </code></pre></div><p>Every element will have a generation counter (seq). The container itself will have its own counter. The container&rsquo;s counter starts with 1, while elements start with 0.</p>
+<img src="/blog/img/genmap1.png" width="75%" height="75%" title="empty state">
 <p>Both <code>get</code> and <code>set</code> operations look very similar to the slice version, but with a <code>seq</code> check.</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>, <span style="color:#a6e22e">v</span> <span style="color:#a6e22e">T</span>) {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)) {
 		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>[<span style="color:#a6e22e">k</span>] = <span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span>]{<span style="color:#a6e22e">val</span>: <span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">seq</span>: <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span>}
 	}
 }
-
-<span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#a6e22e">T</span> {
+</code></pre></div><p>Setting the element means updating the element&rsquo;s counter to the container&rsquo;s counter along with the value.</p>
+<img src="/blog/img/genmap2.png" width="75%" height="75%" title="set()">
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#a6e22e">T</span> {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)) {
 		<span style="color:#a6e22e">el</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>[<span style="color:#a6e22e">k</span>]
 		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">el</span>.<span style="color:#a6e22e">seq</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> {
@@ -251,7 +253,12 @@
 	<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">zero</span>
 }
 </code></pre></div><p>If <code>seq</code> of the element is identical to the container&rsquo;s counter, then this element is defined. Otherwise, it doesn&rsquo;t matter what are the contents of this element.</p>
-<p>Setting the element means updating the element&rsquo;s counter to the container&rsquo;s counter.</p>
+<table>
+	<tr>
+		<td><img src="/blog/img/genmap3.png" title="get() undefined"></td>
+		<td><img src="/blog/img/genmap4.png" title="get() defined"></td>
+	</tr>
+</table>
 <p>You can probably already guess how <code>Reset</code> will look like:</p>
 <div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
 	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span><span style="color:#f92672">++</span>
@@ -274,7 +281,7 @@
 <li>Arguably, it&rsquo;s even easier to implement and understand than a sparse-dense map</li>
 </ul>
 <p>It&rsquo;s possible to make a generations-based set too. The <code>get</code> operation can be turned into <code>contains</code> with ease. With sets, only the counters are needed.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsSet</span>) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">bool</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsSet</span>) <span style="color:#a6e22e">Contains</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">bool</span> {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">counters</span>)) {
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">counters</span>[<span style="color:#a6e22e">k</span>] <span style="color:#f92672">==</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span>
 	}

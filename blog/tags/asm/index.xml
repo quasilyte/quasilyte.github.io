@@ -13,10 +13,9 @@
       <pubDate>Sat, 20 Jun 2020 10:41:50 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/post/call-go-from-jit/</guid>
-      <description>Original (ru): https://habr.com/ru/post/489482/.
+      <description>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.  Original (ru): https://habr.com/ru/post/489482/.
  Intro As long as your assembler code does something simple, you&amp;rsquo;re golden.
-As soon as you&amp;rsquo;ll need to call a Go function from it, the first suggestion that you&amp;rsquo;ll probably get: don&amp;rsquo;t do it. Perhaps you would like to follow that advice, especially if you&amp;rsquo;re unsure why you needed it in the first place.
-But what if you can&amp;rsquo;t avoid that? Read-on, we have a cure.</description>
+As soon as you&amp;rsquo;ll need to call a Go function from it, the first suggestion that you&amp;rsquo;ll probably get: don&amp;rsquo;t do it. Perhaps you would like to follow that advice, especially if you&amp;rsquo;re unsure why you needed it in the first place.</description>
     </item>
     
     <item>

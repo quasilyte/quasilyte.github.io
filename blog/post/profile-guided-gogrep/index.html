@@ -92,7 +92,7 @@
 </nav>
     
     <section class="post-content">
-        <!-- raw HTML omitted -->
+        <center>If you found a typo or a misspelling, please [file an issue](https://github.com/quasilyte/blog-src/issues/new) or send a PR that fixes it.</center>
 <blockquote>
 <p>Original (ru): <a href="https://habr.com/ru/post/596755/">https://habr.com/ru/post/596755/</a>.</p>
 </blockquote>
@@ -100,7 +100,7 @@
 <p>This combo lets you find complex code patterns that occur only on the &ldquo;hot&rdquo; code path, so optimizing them can be worthwhile.</p>
 <p>perf-heatmap can also be used by a text editor to display the source code lines performance heat levels as shown below.</p>
 <p><img src="https://habrastorage.org/webt/a9/xv/tb/a9xvtbb0_gzuvebzlobcw9wyjb4.jpeg" alt=""></p>
-<!-- raw HTML omitted -->
+<cut/>
 <h2 id="introduction">Introduction</h2>
 <p>Let&rsquo;s start with a question why would you ever want to do this. We have good tools to work with CPU profiles after all, <code>go tool pprof</code> has great web UI and it&rsquo;s available for everyone.</p>
 <p>When using pprof, it&rsquo;s easy to know that <code>f()</code> function takes a lot of time. It&rsquo;s also possible to learn the paths that lead to that <code>f</code> function calls. It&rsquo;s less obvious to see what combination of arguments these calls imply though. And sometimes you want to have more semantics than just per-function aggregation.</p>
