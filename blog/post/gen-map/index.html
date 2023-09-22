@@ -138,7 +138,7 @@
 <li><code>map[uint16]T</code></li>
 <li><code>[]T</code></li>
 <li><code>sparseMap</code></li>
-<li><code>generationsMap</code></li>
+<li><code>genMap</code></li>
 </ul>
 <p>The slice and map solutions do not fit our requirements, but we&rsquo;ll use them for a comparison.</p>
 <h2 id="benchmark-results">Benchmark Results</h2>
@@ -188,6 +188,7 @@
 <li><code>sparse.get()</code> operation is ~2 times slower than slice</li>
 <li>Generations map is almost as fast as a slice, but reset is much faster</li>
 </ul>
+<p>The sparse and generations map do not zero their data during the <code>reset</code> operation. Therefore, avoid storing pointers in there. These pointers will be &ldquo;held&rdquo; by the container for a potentially long period of time, causing memory leaks. I would only recommend using both sparse and generations-based data structures with simple pointer-free.</p>
 <p>You can find the exact benchmarks code <a href="(https://gist.github.com/quasilyte/a64bd66093c20c5e146b60e2cf3f3191)">here</a>.</p>
 <p>Some benchmark notes:</p>
 <ul>
@@ -216,33 +217,33 @@
 <p>The <code>sparse.get()</code> operation also suffers from a double memory read.</p>
 <h2 id="generations-map">Generations Map</h2>
 <p>It&rsquo;s possible to use some of the ideas behind the sparse-dense map and create an even more specialized data structure.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>] <span style="color:#66d9ef">struct</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">genMapElem</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>] <span style="color:#66d9ef">struct</span> {
 	<span style="color:#a6e22e">seq</span> <span style="color:#66d9ef">uint32</span>
 	<span style="color:#a6e22e">val</span> <span style="color:#a6e22e">T</span>
 }
 
-<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>] <span style="color:#66d9ef">struct</span> {
-	<span style="color:#a6e22e">elems</span> []<span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span>]
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">genMap</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>] <span style="color:#66d9ef">struct</span> {
+	<span style="color:#a6e22e">elems</span> []<span style="color:#a6e22e">genMapElem</span>[<span style="color:#a6e22e">T</span>]
 	<span style="color:#a6e22e">seq</span>   <span style="color:#66d9ef">uint32</span>
 }
 
-<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newGenerationsMap</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>](<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>] {
-	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]{
-		<span style="color:#a6e22e">elems</span>: make([]<span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span>], <span style="color:#a6e22e">n</span>),
+<span style="color:#66d9ef">func</span> <span style="color:#a6e22e">newGenMap</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>](<span style="color:#a6e22e">n</span> <span style="color:#66d9ef">int</span>) <span style="color:#f92672">*</span><span style="color:#a6e22e">genMap</span>[<span style="color:#a6e22e">T</span>] {
+	<span style="color:#66d9ef">return</span> <span style="color:#f92672">&amp;</span><span style="color:#a6e22e">genMap</span>[<span style="color:#a6e22e">T</span>]{
+		<span style="color:#a6e22e">elems</span>: make([]<span style="color:#a6e22e">genMapElem</span>[<span style="color:#a6e22e">T</span>], <span style="color:#a6e22e">n</span>),
 		<span style="color:#a6e22e">seq</span>:   <span style="color:#ae81ff">1</span>,
 	}
 }
 </code></pre></div><p>Every element will have a generation counter (seq). The container itself will have its own counter. The container&rsquo;s counter starts with 1, while elements start with 0.</p>
 <img src="/blog/img/genmap1.png" width="75%" height="75%" title="empty state">
 <p>Both <code>get</code> and <code>set</code> operations look very similar to the slice version, but with a <code>seq</code> check.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>, <span style="color:#a6e22e">v</span> <span style="color:#a6e22e">T</span>) {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">genMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Set</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>, <span style="color:#a6e22e">v</span> <span style="color:#a6e22e">T</span>) {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)) {
-		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>[<span style="color:#a6e22e">k</span>] = <span style="color:#a6e22e">generationsElem</span>[<span style="color:#a6e22e">T</span>]{<span style="color:#a6e22e">val</span>: <span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">seq</span>: <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span>}
+		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>[<span style="color:#a6e22e">k</span>] = <span style="color:#a6e22e">genMapElem</span>[<span style="color:#a6e22e">T</span>]{<span style="color:#a6e22e">val</span>: <span style="color:#a6e22e">v</span>, <span style="color:#a6e22e">seq</span>: <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span>}
 	}
 }
 </code></pre></div><p>Setting the element means updating the element&rsquo;s counter to the container&rsquo;s counter along with the value.</p>
 <img src="/blog/img/genmap2.png" width="75%" height="75%" title="set()">
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#a6e22e">T</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">genMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#a6e22e">T</span> {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)) {
 		<span style="color:#a6e22e">el</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>[<span style="color:#a6e22e">k</span>]
 		<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">el</span>.<span style="color:#a6e22e">seq</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> {
@@ -260,11 +261,11 @@
 	</tr>
 </table>
 <p>You can probably already guess how <code>Reset</code> will look like:</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">genMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
 	<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span><span style="color:#f92672">++</span>
 }
 </code></pre></div><p>Well, this is good enough for the most use cases, but there is a small chance that our <code>uint32</code> will overflow, making some undefined elements defined. Increasing the <code>seq</code> size to <code>uint64</code> could help, but it will increase the per-element size overhead. Instead, we can do a real clear operation once in <code>MaxUint32</code> resets.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">genMap</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> <span style="color:#f92672">==</span> <span style="color:#a6e22e">math</span>.<span style="color:#a6e22e">MaxUint32</span> {
 		<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span> = <span style="color:#ae81ff">1</span>
 		<span style="color:#a6e22e">clear</span>(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">elems</span>)
@@ -281,7 +282,7 @@
 <li>Arguably, it&rsquo;s even easier to implement and understand than a sparse-dense map</li>
 </ul>
 <p>It&rsquo;s possible to make a generations-based set too. The <code>get</code> operation can be turned into <code>contains</code> with ease. With sets, only the counters are needed.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">generationsSet</span>) <span style="color:#a6e22e">Contains</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">bool</span> {
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">m</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">genSet</span>) <span style="color:#a6e22e">Contains</span>(<span style="color:#a6e22e">k</span> <span style="color:#66d9ef">uint</span>) <span style="color:#66d9ef">bool</span> {
 	<span style="color:#66d9ef">if</span> <span style="color:#a6e22e">k</span> &lt; uint(len(<span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">counters</span>)) {
 		<span style="color:#66d9ef">return</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">counters</span>[<span style="color:#a6e22e">k</span>] <span style="color:#f92672">==</span> <span style="color:#a6e22e">m</span>.<span style="color:#a6e22e">seq</span>
 	}
