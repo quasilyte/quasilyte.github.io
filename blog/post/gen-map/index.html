@@ -95,6 +95,9 @@
 <p>But there is one thing that is still bugging me: it&rsquo;s hard to make it very efficient. All operations I care about are O(1), but <code>get</code> and <code>set</code> operations clearly become slower in comparison with a straightforward slice approach.</p>
 <p>In fact, if your arrays are not that big (less than 0xffff bytes?), you might be better off using a slice with O(n) clear operation. If you do many <code>get</code>+<code>set</code>, the increased overhead may be too much.</p>
 <p>In this article, I&rsquo;ll propose a different data structure that can replace a sparse-dense map (and set) if you don&rsquo;t need the iteration over the elements.</p>
+<blockquote>
+<p>This discussion is not Go-specific, but I&rsquo;ll use Go in the examples.</p>
+</blockquote>
 <h2 id="the-problem">The Problem</h2>
 <p>Let me start with a problem that we&rsquo;re trying to address.</p>
 <p>Imagine that you need a mapping structure that you can re-use. Something like a <code>map[uint16]T</code>, but with a more predictable allocations pattern.</p>
@@ -152,27 +155,27 @@
 <tbody>
 <tr>
 <td>map</td>
-<td style="text-align:right">(x16.8) 27988</td>
-<td style="text-align:right">(x40.7) 15631</td>
-<td style="text-align:right">1002</td>
+<td style="text-align:right">(x17.9) 47802</td>
+<td style="text-align:right">(x28.6) 36922</td>
+<td style="text-align:right">1801</td>
 </tr>
 <tr>
 <td>slice</td>
-<td style="text-align:right">1665</td>
-<td style="text-align:right">686</td>
-<td style="text-align:right">4144</td>
+<td style="text-align:right">2665</td>
+<td style="text-align:right">1289</td>
+<td style="text-align:right">6450</td>
 </tr>
 <tr>
 <td>sparse</td>
-<td style="text-align:right">(x6.8) 11347</td>
-<td style="text-align:right">(x1.7) 1193</td>
-<td style="text-align:right">11</td>
+<td style="text-align:right">(x6.7) 17859</td>
+<td style="text-align:right">(x1.89) 2435</td>
+<td style="text-align:right">16</td>
 </tr>
 <tr>
 <td>generations</td>
-<td style="text-align:right">(x1.2) 1978</td>
-<td style="text-align:right">(x1.1) 781</td>
-<td style="text-align:right">16</td>
+<td style="text-align:right">(x1.1) 3068</td>
+<td style="text-align:right">(x1.04) 1349</td>
+<td style="text-align:right">26</td>
 </tr>
 </tbody>
 </table>
