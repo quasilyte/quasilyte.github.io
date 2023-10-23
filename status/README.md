@@ -22,14 +22,28 @@ I rarely do a translation into several languages, it's usually either English-on
 * <https://quasilyte.dev/gocorpus/> a structural search over Go corpus
 * <https://github.com/quasilyte/gocorpus> a corpus of Go code
 * <https://github.com/quasilyte/phpcorpus> a corpus of PHP code
+* <https://quasilyte.dev/status/gamesplayed> a list of videogames I played
 
 ## Games I created
 
+Big titles:
+
+* <https://store.steampowered.com/app/2416030/Roboden/> an indirect control asymmetrical RTS
+
+Smaller titles:
+
+* <https://quasilyte.itch.io/decipherism> a puzzle game where you solve the encoding machine ciphers
 * <https://quasilyte.itch.io/autotanks> a simple real-time strategy game
 * <https://quasilyte.itch.io/retrowave-city> a simple battle-city like game in retrowave style
-* <https://quasilyte.itch.io/decipherism> a puzzle game where you solve the encoding machine ciphers
 
-Well, there are x100 more games that I never finished nor published, but oh well.
+Game jam titles:
+
+* <https://quasilyte.itch.io/pixelspace-rangers> a text quest with arcade battles
+* <https://quasilyte.itch.io/cavebots> "No Heroes Allowed", but with robots
+* <https://quasilyte.itch.io/assemblox> an experimental RTS with modular buildings
+* <https://quasilyte.itch.io/sinecord> create music with a power of math
+
+Well, there are far more games that I never finished nor published, but oh well.
 
 ## Community-related projects I maintain
 
