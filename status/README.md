@@ -47,7 +47,6 @@ Well, there are far more games that I never finished nor published, but oh well.
 
 ## Community-related projects I maintain
 
-* <https://golangkazan.github.io> + <https://t.me/GolangKazan> Kazan Go community resources
 * <https://t.me/go_gamedev> Go gamedev community
 
 ## Projects I maintain
@@ -100,6 +99,7 @@ Unfortunately, I have limited resources.
 
 Therefore, some projects end up here.
 
+* <https://golangkazan.github.io> + <https://t.me/GolangKazan> Kazan Go community resources
 * <https://github.com/speaking-clubs-nizhny> curated list of speaking clubs in Nizhny Novgorod
   * <https://vk.com/speaking_clubs_nizhny> community group in vk social network
 * <https://github.com/speaking-clubs-kazan> curated list of speaking clubs in Kazan
