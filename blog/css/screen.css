@@ -2,7 +2,7 @@
 /* === Core Styles === */
 body {
   background-color: #ffffff;
-  color: #3c4242; /* darker color */
+  color: #596364; /* darker color */
   font-size: 15px;
   font-weight: 100;
   line-height: 1.6em;
@@ -44,7 +44,7 @@ li,
 dt,
 dd {
   font-size: 17px;
-  font-weight: 400;
+  font-weight: 100;
   line-height: 28px;
 }
 dt {
@@ -70,7 +70,7 @@ pre {
 code {
   font-family: Menlo, "Consolas", Courier, monospace;
   font-size: 1em;
-  color: #3c4242;
+  color: #596364;
   background-color: #f7f7f7;
   padding: 2px 4px;
   line-height: 1.2em;

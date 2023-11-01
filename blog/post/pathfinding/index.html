@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>Zero alloc pathfinding in Go &middot; Iskander (Alex) Sharipov technical blog</title>
+    <meta name="author" content="Iskander Sharipov">
+    <meta name="description" content="Technical blog about systems programming and related topics">
+    
+    <meta name="generator" content="Hugo 0.92.2" />
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="google-site-verification" content="3arx-7OykUZQqhpkEeGzuoeRvjyl7Z13LgxXTtBB9vU" />
+
+    <!-- RSS autodiscovery -->
+    
+
+    <link rel="shortcut icon" href="https://quasilyte.dev/blog/img/favicon.ico">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/concatenated.css">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/css/screen.css">
+    <link rel="stylesheet" href="https://quasilyte.dev/blog/hljs-themes/wombat.css">
+    
+
+    
+        <link rel="shortcut icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+        <link rel="icon" type="image/x-icon" href="https://quasilyte.dev/blog/favicon.ico">
+    
+
+    <!-- Stylesheet for theme color -->
+    <style type="text/css">
+    a, a:visited {color: #33cc99;}
+    .pagination a {color: #33cc99;}
+    .gist .gist-file .gist-meta a:visited {color: #33cc99 !important;}
+    a:focus, a:hover {color: #178b6b;}
+    h1.post-title a:focus, h1.post-title a:hover, h1.blog-title a:focus, h1.blog-title a:hover {color: #178b6b;}
+    .older-posts:hover, .newer-posts:hover {color: #178b6b;}
+</style>
+</head>
+
+<body class="home-template">
+    <header id="site-head">
+	
+	<h1 class="blog-title"><a href="https://quasilyte.dev/blog/">quasilyte blog</a></h1>
+	
+	
+	<h1 class="blog-subtitle">Technical blog about systems programming and related topics</h1>
+	
+</header>
+    
+<nav class="menu" role="nav">
+    <ul>
+        
+        	<li class="nav nav-current"><a href="/blog/tags/">[Posts by tags]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#report-an-issue">[Report an issue]</a></li>
+      	
+        	<li class="nav nav-current"><a href="/blog/post/faq/#subscribe">[Subscribe]</a></li>
+      	
+    </ul>
+</nav>
+
+    
+    <main class="content" role="main">
+    
+<article class="post">
+    <header>
+        <h1 class="post-title">Zero alloc pathfinding in Go</h1>
+        <div class="post-meta">
+            <time datetime="13 October 2023">
+                13 October 2023
+            </time>
+        </div>
+    </header>
+
+    
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#intro">Intro</a></li><br>
+    <li><a href="#evaluating-the-existing-libraries">Evaluating the Existing Libraries</a></li><br>
+    <li><a href="#the-tile-grid">The Tile Grid</a></li><br>
+    <li><a href="#the-path-object-representation">The Path Object Representation</a></li><br>
+    <li><a href="#the-priority-queue">The Priority Queue</a></li><br>
+    <li><a href="#the-best-associative-array">The Best Associative Array</a></li><br>
+    <li><a href="#going-a-star">Going A-star</a></li><br>
+    <li><a href="#the-final-benchmark-results">The Final Benchmark Results</a></li><br>
+    <li><a href="#closing-words">Closing Words</a></li><br>
+  </ul>
+</nav>
+    
+    <section class="post-content">
+        <h2 id="intro">Intro</h2>
+<p>Algorithms are important. The problem is you can implement the same algorithm so differently.</p>
+<p>The implementation performance can range from <u title="Even if it's written in Go">blazing fast</u> to barely acceptable.</p>
+<blockquote>
+<p>Tutorial: if you see an underlined text that is not a link, hover over it <u title="Nicely done! Yes, this is indeed a tooltip">to read a tooltip</u>.</p>
+</blockquote>
+<p>If you like optimizations, specialized data structures and bit tricks then this article is for you.</p>
+<img title="Profit!" src="/blog/img/pathing_stonks.png">
+<p>We&rsquo;ll concentrate on two algorithms today: A-star and <u title="Greedy best-first search; not to be confused with breadth-first search">greedy BFS</u>. Both are explained in a brilliant <a href="https://www.redblobgames.com/pathfinding/a-star/introduction.html">Introduction to the A* Algorithm</a> article.</p>
+<p>This article is not about the algorithms themselves, but rather their implementations. I&rsquo;ll focus on a few tricks that can turn an average A* library into the fastest A* <u title="This means that building a path doesn't require any heap memory allocations; therefore, no garbage is generated during that process">zero alloc</u> library.</p>
+<p>Why even bother about the pathfinding, you might ask. I&rsquo;m doing game development in Go using <a href="https://github.com/hajimehoshi/ebiten/">Ebitengine</a>, and I love it. My <a href="https://roboden-game.github.io/">Roboden</a> game needed a fast way to build paths: there are many units on the map and they&rsquo;re independent.</p>
+<p>And even though I&rsquo;ll use Go for every example, the fundamental principles can be used in most other languages.</p>
+<h2 id="evaluating-the-existing-libraries">Evaluating the Existing Libraries</h2>
+<p>After scanning the <a href="https://github.com/sedyh/awesome-ebitengine">awesome-ebitengine</a> and doing some GitHub search, we get these candidates:</p>
+<ul>
+<li><a href="https://github.com/kelindar/tile">github.com/kelindar/tile</a></li>
+<li><a href="https://github.com/beefsack/go-astar">github.com/beefsack/go-astar</a></li>
+<li><a href="https://github.com/fzipp/astar">github.com/fzipp/astar</a></li>
+<li><a href="https://github.com/s0rg/grid">github.com/s0rg/grid</a></li>
+<li><a href="https://github.com/solarlune/paths">github.com/solarlune/paths</a></li>
+</ul>
+<p>Roboden needs a <u title="Imagine a rectangular matrix-like map where we try to find a way from cell A to cell B">grid-based pathfinding</u>. Every library from this list can be used for that.</p>
+<p>Let&rsquo;s benchmark them to create a baseline. Every benchmark focuses on a different map kind: from a wall-free map to a maze-like layout.</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th style="text-align:right">Benchmark no_walls (<u title="Nanoseconds; 6114856 ns equals to ~0.006 seconds or ~6.1 ms">ns</u>)</th>
+<th style="text-align:right">Benchmark simple_wall (ns)</th>
+<th style="text-align:right">Benchmark multi_wall (ns)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tile</td>
+<td style="text-align:right"><code>107632 ns</code></td>
+<td style="text-align:right"><code>169613 ns</code></td>
+<td style="text-align:right"><code>182342 ns</code></td>
+</tr>
+<tr>
+<td>go-astar</td>
+<td style="text-align:right"><code>453939 ns</code></td>
+<td style="text-align:right"><code>939300 ns</code></td>
+<td style="text-align:right"><code>1032581 ns</code></td>
+</tr>
+<tr>
+<td>astar</td>
+<td style="text-align:right"><code>948367 ns</code></td>
+<td style="text-align:right"><code>1554290 ns</code></td>
+<td style="text-align:right"><code>1842812 ns</code></td>
+</tr>
+<tr>
+<td>grid</td>
+<td style="text-align:right"><code>1816039 ns</code></td>
+<td style="text-align:right"><code>1154117 ns</code></td>
+<td style="text-align:right"><code>1189989 ns</code></td>
+</tr>
+<tr>
+<td>paths</td>
+<td style="text-align:right"><code>6588751 ns</code></td>
+<td style="text-align:right"><code>5158604 ns</code></td>
+<td style="text-align:right"><code>6114856 ns</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Keep in mind that I discovered the <a href="https://github.com/kelindar/tile">tile</a> library after I made this little research. If we take it out of equotion, you&rsquo;ll see why I was motivated enough to implement my own library.</p>
+</blockquote>
+<p>Let&rsquo;s look at the memory allocations for these tests:</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th style="text-align:right">Benchmark no_walls (<u title="Bytes; 996889 bytes is almost a megabyte!">B/op</u>)</th>
+<th style="text-align:right">Benchmark simple_wall (B/op)</th>
+<th style="text-align:right">Benchmark multi_wall (B/op)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tile</td>
+<td style="text-align:right"><code>123118 B</code></td>
+<td style="text-align:right"><code>32950 B</code></td>
+<td style="text-align:right"><code>65763 B</code></td>
+</tr>
+<tr>
+<td>go-astar</td>
+<td style="text-align:right"><code>43653 B</code></td>
+<td style="text-align:right"><code>93122 B</code></td>
+<td style="text-align:right"><code>130731 B</code></td>
+</tr>
+<tr>
+<td>astar</td>
+<td style="text-align:right"><code>337336 B</code></td>
+<td style="text-align:right"><code>511908 B</code></td>
+<td style="text-align:right"><code>722690 B</code></td>
+</tr>
+<tr>
+<td>grid</td>
+<td style="text-align:right"><code>996889 B</code></td>
+<td style="text-align:right"><code>551976 B</code></td>
+<td style="text-align:right"><code>740523 B</code></td>
+</tr>
+<tr>
+<td>paths</td>
+<td style="text-align:right"><code>235168 B</code></td>
+<td style="text-align:right"><code>194768 B</code></td>
+<td style="text-align:right"><code>230416 B</code></td>
+</tr>
+</tbody>
+</table>
+<p>The last metric is the number of actual allocations:</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th style="text-align:right">Benchmark no_walls</th>
+<th style="text-align:right">Benchmark simple_wall</th>
+<th style="text-align:right">Benchmark multi_wall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>tile</td>
+<td style="text-align:right"><code>3</code></td>
+<td style="text-align:right"><code>3</code></td>
+<td style="text-align:right"><code>3</code></td>
+</tr>
+<tr>
+<td>go-astar</td>
+<td style="text-align:right"><code>529</code></td>
+<td style="text-align:right"><code>1347</code></td>
+<td style="text-align:right"><code>1557</code></td>
+</tr>
+<tr>
+<td>astar</td>
+<td style="text-align:right"><code>2008</code></td>
+<td style="text-align:right"><code>3677</code></td>
+<td style="text-align:right"><code>3600</code></td>
+</tr>
+<tr>
+<td>grid</td>
+<td style="text-align:right"><code>2976</code></td>
+<td style="text-align:right"><code>1900</code></td>
+<td style="text-align:right"><code>1759</code></td>
+</tr>
+<tr>
+<td>paths</td>
+<td style="text-align:right"><code>7199</code></td>
+<td style="text-align:right"><code>6368</code></td>
+<td style="text-align:right"><code>7001</code></td>
+</tr>
+</tbody>
+</table>
+<p>The tile library is impressive, but we can still do even better.</p>
+<details><summary>Benchmark details for nerds</summary><fieldset>
+<p>The benchmarking machine specs:</p>
+<pre tabindex="0"><code>OS: Linux Mint 21.1
+CPU: x86-64 12th Gen Intel(R) Core(TM) i5-1235U
+Turbo boost: disabled (intel_pstate/no_turbo=1)
+</code></pre><p>Go versions used:</p>
+<ul>
+<li><code>devel go1.21-c30faf9c54</code></li>
+<li><code>go1.20.8</code> (no major differences)</li>
+</ul>
+<p>I used <code>go test bench -benchmem</code> command to execute the benchmarks and <a href="https://github.com/quasilyte/qbenchstat">qbenchstat</a> tool to analyze the results.</p>
+</fieldset></details>
+<p>I&rsquo;ll start by focusing on the greedy BFS algorithm because I see more optimization opportunities there. The A* will be covered afterwards.</p>
+<p>The most performance-sensitive parts of greedy BFS are:</p>
+<ul>
+<li>A <u title="A structure that tells which cells are passable, etc">tile grid</u> structure</li>
+<li>The result path representation</li>
+<li>A <a href="https://en.wikipedia.org/wiki/Priority_queue">priority queue</a> used for <u title="A weighted set of cells/points to be processed by the algorithm">frontier</u></li>
+<li>An associative array to hold the intermediate results</li>
+</ul>
+<h2 id="the-tile-grid">The Tile Grid</h2>
+<p>Sometimes I&rsquo;ll refer to the 2D array elements as <strong>cells</strong>. Every cell has a <strong>coordinate</strong> inside a matrix that contains it.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GridCoord</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">X</span> <span style="color:#66d9ef">int</span>
+    <span style="color:#a6e22e">Y</span> <span style="color:#66d9ef">int</span>
+}
+</code></pre></div><p>A tile grid maps the world landscape to something meaningful for a pathfinding algorithm. In our case, every cell contains a enum-like value.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">CellType</span> <span style="color:#66d9ef">int</span>
+
+<span style="color:#75715e">// These constants are defined by a user-side.
+</span><span style="color:#75715e">// You&#39;ll see how they&#39;re interpreted by the library later.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">const</span> (
+  <span style="color:#a6e22e">CellPlain</span> <span style="color:#a6e22e">CellType</span> = <span style="color:#66d9ef">iota</span> <span style="color:#75715e">// 0
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">CellSand</span>                  <span style="color:#75715e">// 1
+</span><span style="color:#75715e"></span>  <span style="color:#a6e22e">CellLava</span>                  <span style="color:#75715e">// 2
+</span><span style="color:#75715e"></span>)
+</code></pre></div><p>Two bits can fit up to four tiles. With this per-cell size, a map of 3600 (60x60) cells will require just 900 bytes.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Grid</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">numCols</span> <span style="color:#66d9ef">uint</span>
+    <span style="color:#a6e22e">numRows</span> <span style="color:#66d9ef">uint</span>
+
+    <span style="color:#75715e">// This slice stores 4 tiles per byte.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">bytes</span> []<span style="color:#66d9ef">byte</span>
+}
+</code></pre></div><p>Access to the individual cell will require some extra arithmetics:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">g</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">Grid</span>) <span style="color:#a6e22e">GetCellTile</span>(<span style="color:#a6e22e">c</span> <span style="color:#a6e22e">GridCoord</span>) <span style="color:#66d9ef">uint8</span> {
+    <span style="color:#a6e22e">x</span> <span style="color:#f92672">:=</span> uint(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">X</span>)
+    <span style="color:#a6e22e">y</span> <span style="color:#f92672">:=</span> uint(<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Y</span>)
+    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">x</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">numCols</span> <span style="color:#f92672">||</span> <span style="color:#a6e22e">y</span> <span style="color:#f92672">&gt;=</span> <span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">numRows</span> {
+        <span style="color:#66d9ef">return</span> <span style="color:#ae81ff">0</span> <span style="color:#75715e">// Out-of-bounds access
+</span><span style="color:#75715e"></span>    }
+    <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">y</span><span style="color:#f92672">*</span><span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">numCols</span> <span style="color:#f92672">+</span> <span style="color:#a6e22e">x</span>
+    <span style="color:#a6e22e">byteIndex</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">i</span> <span style="color:#f92672">/</span> <span style="color:#ae81ff">4</span>   <span style="color:#75715e">// MOVL + SHRL
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">shift</span> <span style="color:#f92672">:=</span> (<span style="color:#a6e22e">i</span> <span style="color:#f92672">%</span> <span style="color:#ae81ff">4</span>) <span style="color:#f92672">*</span> <span style="color:#ae81ff">2</span> <span style="color:#75715e">// ANDL + SHLL
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">return</span> (<span style="color:#a6e22e">g</span>.<span style="color:#a6e22e">bytes</span>[<span style="color:#a6e22e">byteIndex</span>] <span style="color:#f92672">&gt;&gt;</span> <span style="color:#a6e22e">shift</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0b11</span>
+}
+</code></pre></div><blockquote>
+<p>Dividing a value by a constant factor (esp. if it&rsquo;s a power-of-two) can by optimized by the Go compiler quite well. There will be no IDIV instruction in the code above.</p>
+</blockquote>
+<p>Different <u title="I usually call them units in the game development context">actors</u> can have different movement types. One actor can only traverse plains, another can also pass through the sand, while airborne units can cross even lava.</p>
+<p>This means that a single tile like CellSand can be interpreted differently based on the actor.</p>
+<p>Let&rsquo;s introduce a concept of a layer. A layer maps a tile value stored in the grid from its raw value <code>[0-3]</code> to an actual traversal cost which can exceed this range. Since the max number of tile kinds per grid is 4, only four keys need to be mapped.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GridLayer</span> [<span style="color:#ae81ff">4</span>]<span style="color:#66d9ef">byte</span>
+
+<span style="color:#75715e">// The tile argument value is in [0-3] range.
+</span><span style="color:#75715e"></span><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">l</span> <span style="color:#a6e22e">GridLayer</span>) <span style="color:#a6e22e">Get</span>(<span style="color:#a6e22e">tile</span> <span style="color:#66d9ef">int</span>) <span style="color:#66d9ef">byte</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">l</span>[<span style="color:#a6e22e">i</span>]
+}
+</code></pre></div><p>The implicitly inserted bound check can be eliminated:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-diff" data-lang="diff"><span style="color:#f92672">- return l[i]
+</span><span style="color:#f92672"></span><span style="color:#a6e22e">+ return l[tile &amp; 0b11]
+</span></code></pre></div><p>Layers extend the 2 bits of information to a whole byte. By convention, a value of 0 would mean &ldquo;blocked&rdquo; (can&rsquo;t be traversed). For a greedy BFS any other value would mean a passable cell with a cost of 1. Our A* will treat the non-zero value as an actual traversal cost.</p>
+<p>Every movement type will get its own grid layer:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">var</span> <span style="color:#a6e22e">NormalLayer</span> = <span style="color:#a6e22e">pathing</span>.<span style="color:#a6e22e">GridLayer</span>{
+    <span style="color:#a6e22e">CellPlain</span>: <span style="color:#ae81ff">1</span>, <span style="color:#75715e">// Passable
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">CellSand</span>:  <span style="color:#ae81ff">0</span>, <span style="color:#75715e">// Can&#39;t traverse
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">CellLava</span>:  <span style="color:#ae81ff">0</span>, <span style="color:#75715e">// Can&#39;t traverse
+</span><span style="color:#75715e"></span>}
+
+<span style="color:#66d9ef">var</span> <span style="color:#a6e22e">FlyingLayer</span> = <span style="color:#a6e22e">pathing</span>.<span style="color:#a6e22e">GridLayer</span>{
+    <span style="color:#a6e22e">CellPlain</span>: <span style="color:#ae81ff">1</span>, <span style="color:#75715e">// Passable
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">CellSand</span>:  <span style="color:#ae81ff">1</span>, <span style="color:#75715e">// Passable
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">CellLava</span>:  <span style="color:#ae81ff">1</span>, <span style="color:#75715e">// Passable
+</span><span style="color:#75715e"></span>}
+</code></pre></div><p>A pathfinding library would use these mapped values instead of the exact tiles themselves. The layer is passed as a <code>BuildPath()</code> function call argument.</p>
+<p>My grid map advantages:</p>
+<ul>
+<li>Only 2 bits per cell</li>
+<li>A single grid can be used for different movement types</li>
+</ul>
+<p>These 2 bits are not only about saving some memory.</p>
+<p>Let&rsquo;s assume that some machine has a 64-byte wide cache line. The grid map access patterns involve fetching the cell neighbors. The cells to the left and right are always really close. The cells to the up and down will be <code>numCols</code> away from the cell itself. The smaller per-cell size is, the higher the chance that <code>2*numCols</code> will be located inside the same cache-line.</p>
+<blockquote>
+<p>The <a href="https://en.wikipedia.org/wiki/Z-order_curve">Morton order</a> could also be helpful here, but I haven&rsquo;t tried it.</p>
+</blockquote>
+<h2 id="the-path-object-representation">The Path Object Representation</h2>
+<p>Almost every library follows a simple <i>path</i> - a path is stored as an array of points.</p>
+<p>Let&rsquo;s take this illustration for example:</p>
+<img title="Legend: yellow=path, red=wall, green=plain, blue=start/finish" src="/blog/img/pathing_map.png" width="20%" height="20%">
+<p>The path from {0,1} to {2,3} can look like this:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby">{<span style="color:#ae81ff">0</span>,<span style="color:#ae81ff">0</span>} {<span style="color:#ae81ff">1</span>,<span style="color:#ae81ff">0</span>} {<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">0</span>} {<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">1</span>} {<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">2</span>} {<span style="color:#ae81ff">2</span>,<span style="color:#ae81ff">3</span>}
+</code></pre></div><p>But there is another way:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-ruby" data-lang="ruby"><span style="color:#66d9ef">Up</span> <span style="color:#66d9ef">Right</span> <span style="color:#66d9ef">Right</span> <span style="color:#66d9ef">Down</span> <span style="color:#66d9ef">Down</span> <span style="color:#66d9ef">Down</span>
+</code></pre></div><p>This kind of encoding requires only 4 values:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">Direction</span> <span style="color:#66d9ef">int</span>
+
+<span style="color:#66d9ef">const</span> (
+    <span style="color:#a6e22e">DirRight</span> <span style="color:#a6e22e">Direction</span> = <span style="color:#66d9ef">iota</span>
+    <span style="color:#a6e22e">DirDown</span>
+    <span style="color:#a6e22e">DirLeft</span>
+    <span style="color:#a6e22e">DirUp</span>
+)
+</code></pre></div><p>You probably already know where I&rsquo;m going. Four values - two bits.</p>
+<img src="/blog/img/pathing_bithack.png">
+<p>A single uint64 can fit up to 32 steps. It&rsquo;s probably not enough, so let&rsquo;s take a couple of uint64s to make it 64.</p>
+<p>To make these packed steps usable, we need a way to iterate over them. I&rsquo;ll use a couple of bytes for <code>len</code> and <code>pos</code> fields just for that.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">const</span> (
+    <span style="color:#a6e22e">gridPathBytes</span>  = (<span style="color:#ae81ff">16</span> <span style="color:#f92672">-</span> <span style="color:#ae81ff">2</span>)          <span style="color:#75715e">// Two bytes are reserved
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">gridPathMaxLen</span> = <span style="color:#a6e22e">gridPathBytes</span> <span style="color:#f92672">*</span> <span style="color:#ae81ff">4</span> <span style="color:#75715e">// 56
+</span><span style="color:#75715e"></span>)
+
+<span style="color:#66d9ef">type</span> <span style="color:#a6e22e">GridPath</span> <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">bytes</span> [<span style="color:#a6e22e">gridPathBytes</span>]<span style="color:#66d9ef">byte</span>
+    <span style="color:#a6e22e">len</span>   <span style="color:#66d9ef">byte</span>
+    <span style="color:#a6e22e">pos</span>   <span style="color:#66d9ef">byte</span>
+}
+</code></pre></div><p>A GridPath object size is 16 bytes. Its memory layout illustrated below.</p>
+<img title="The actual path length limit will be 56" src="/blog/img/pathing_pathmem.png">
+<p>The individual path elements carry little sense: they can&rsquo;t be used in isolation. When iterated one by one, hovewer, they encode the entire route. I like to call them deltas because of that.</p>
+<blockquote>
+<p>Just please don&rsquo;t convert the deltas into an actual <u title="Slice is a builtin dynamic array of Go, like std::vector or ArrayList. If you ever call them 'arrays', some folks will get extremely mad!">slice</u> of points because it ruins the entire idea. Use this path object directly.</p>
+</blockquote>
+<p>GridPath properties:</p>
+<ul>
+<li>The max path length is 56 (it&rsquo;ll be important later)</li>
+<li>It doesn&rsquo;t require a heap allocation</li>
+<li>It has a value-semantics, a simple assignment results in deep copy</li>
+</ul>
+<p>When a pathfinding algorithm finds a solution, it usually builds a reversed path. Some libraries just return an inversed path while others put an extra effort to inverse the slice elements. If path is iterated in the reverse order, no extra efforts will be required to reverse the actual contents of the path.</p>
+<p>The Go compiler starts to place more and more function arguments into registers. A current Go tip in <a href="https://godbolt.org/">godbolt</a> generates a single <a href="https://www.felixcloutier.com/x86/movups">MOVUPS</a> instruction to pass the GridPath object (I would rather prefer two MOVQs into a pair of general-purpose registers, but whatever).</p>
+<img title="The packed deltas are far superior" width="50%" height="50%"  src="/blog/img/pathing_deltas.png">
+<h2 id="the-priority-queue">The Priority Queue</h2>
+<p>Only three priority queue operations are needed for our task:</p>
+<ul>
+<li><code>Push(coord, p)</code> - add coordinate to a queue</li>
+<li><code>Pop() -&gt; (coord, p)</code> - extract a coordinate with a <strong>minimal</strong> p-value</li>
+<li><code>Reset()</code> - clear the queue, keep the memory for re-use</li>
+</ul>
+<p>The <code>p</code> priority depends on the exact algorithm. A greedy BFS uses a <a href="https://en.wikipedia.org/wiki/Taxicab_geometry">Manhattan distance</a> between the <code>coord</code> and the finish point.</p>
+<p>Based on this description, a minheap sounds like a good fit. We&rsquo;ll use it for A*. As for the greedy BFS, I found <a href="https://en.wikipedia.org/wiki/Bucket_queue">bucket queue</a> to be a better bet.</p>
+<p>With each priority value being a separate bucket, the Push operation is straightforward: append to that bucket using <code>p</code> as an index.</p>
+<p>The most obvious way to implement a Pop operation is to iterate over the buckets until a non-empty one found. Then element is popped out of this non-empty bucket. Don&rsquo;t do that.</p>
+<p>A max path length of 56 allows us to use a very efficient bitmask approach.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">type</span> <span style="color:#a6e22e">priorityQueue</span>[<span style="color:#a6e22e">T</span> <span style="color:#a6e22e">any</span>] <span style="color:#66d9ef">struct</span> {
+    <span style="color:#a6e22e">buckets</span> [<span style="color:#ae81ff">64</span>][]<span style="color:#a6e22e">T</span>
+    <span style="color:#a6e22e">mask</span>    <span style="color:#66d9ef">uint64</span>
+}
+</code></pre></div><p>With this definition in mind, we&rsquo;ll start with a Push method.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">q</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">priorityQueue</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Push</span>(<span style="color:#a6e22e">priority</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">value</span> <span style="color:#a6e22e">T</span>) {
+    <span style="color:#75715e">// A q.buckets[i] boundcheck is removed due to this &amp;-masking.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> uint(<span style="color:#a6e22e">priority</span>) <span style="color:#f92672">&amp;</span> <span style="color:#ae81ff">0b111111</span>
+    <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>] = append(<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>], <span style="color:#a6e22e">value</span>)
+    <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">mask</span> <span style="color:#f92672">|=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#a6e22e">i</span>
+}
+</code></pre></div><p>The <code>q.mask</code> starts with all bits being 0. Whether we push an element into an empty bucket, an associated bit will be set to 1.</p>
+<p>The Pop method is more complex, but also very efficient:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">q</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">priorityQueue</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Pop</span>() <span style="color:#a6e22e">T</span> {
+    <span style="color:#75715e">// The TrailingZeros64 on amd64 is a couple of
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// machine instructions (BSF and CMOV).
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">//
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// We only need to execute these two to
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// get an index of a non-empty bucket.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> uint(<span style="color:#a6e22e">bits</span>.<span style="color:#a6e22e">TrailingZeros64</span>(<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">mask</span>))
+
+    <span style="color:#75715e">// This explicit length check is needed to remove
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// the q.buckets[i] bound checks below.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">if</span> <span style="color:#a6e22e">i</span> &lt; uint(len(<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>)) {
+        <span style="color:#75715e">// These two lines perform a pop operation.
+</span><span style="color:#75715e"></span>        <span style="color:#a6e22e">e</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>][len(<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>])<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+        <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>][:len(<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>])<span style="color:#f92672">-</span><span style="color:#ae81ff">1</span>]
+
+        <span style="color:#66d9ef">if</span> len(<span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>]) <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span> {
+            <span style="color:#75715e">// If this bucket is empty now, clear the associated bit.
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// This preserves the invariant.
+</span><span style="color:#75715e"></span>            <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">mask</span> <span style="color:#f92672">&amp;^=</span> <span style="color:#ae81ff">1</span> <span style="color:#f92672">&lt;&lt;</span> <span style="color:#a6e22e">i</span>
+        }
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">e</span>
+    }
+
+    <span style="color:#75715e">// If the queue is empty, return a zero value.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">var</span> <span style="color:#a6e22e">x</span> <span style="color:#a6e22e">T</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">x</span>
+}
+</code></pre></div><p>To implement a proper Reset, every bucket slice needs to be <u title="In C++ terms, it would mean calling a std::vector::clear(); or ArrayList.clear() in Java">resliced to zero</u>.</p>
+<p>Here is a sad part: all 64 slices will be processed every time, even if most of them are already free. This is where the bitmask shines again.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">q</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">priorityQueue</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">Reset</span>() {
+    <span style="color:#a6e22e">mask</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">mask</span>
+
+    <span style="color:#75715e">// The first bucket to clear is the first non-empty one.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Skip all empty buckets &#34;to the right&#34;.
+</span><span style="color:#75715e"></span>    <span style="color:#a6e22e">offset</span> <span style="color:#f92672">:=</span> uint(<span style="color:#a6e22e">bits</span>.<span style="color:#a6e22e">TrailingZeros64</span>(<span style="color:#a6e22e">mask</span>))
+    <span style="color:#a6e22e">mask</span> <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#a6e22e">offset</span>
+    <span style="color:#a6e22e">i</span> <span style="color:#f92672">:=</span> <span style="color:#a6e22e">offset</span>
+
+    <span style="color:#75715e">// When every bucket &#34;to the left&#34; is empty, the mask will be
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// equal to 0 and this loop will terminate.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">for</span> <span style="color:#a6e22e">mask</span> <span style="color:#f92672">!=</span> <span style="color:#ae81ff">0</span> {
+        <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>] = <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">buckets</span>[<span style="color:#a6e22e">i</span>][:<span style="color:#ae81ff">0</span>]
+        <span style="color:#a6e22e">mask</span> <span style="color:#f92672">&gt;&gt;=</span> <span style="color:#ae81ff">1</span>
+        <span style="color:#a6e22e">i</span><span style="color:#f92672">++</span>
+    }
+
+    <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">mask</span> = <span style="color:#ae81ff">0</span>
+}
+</code></pre></div><p>There is a special magic around this implementation. A Reset of an empty queue will reslice exactly 0 buckets. A queue with a single non-empty bucket will require a single bucket reslice. All other cases require a reslicing inside a <u title="A number of buckets that includes the first and the last non-empty bucket, plus all buckets in between them">window</u>. It&rsquo;s possible to do it a bit differently, but it would require using <a href="https://pkg.go.dev/math/bits#TrailingZeros64">bits.TrailingZeros64</a> more than once.</p>
+<p>As a bonus that nobody asked for, here is how IsEmpty method can be implemented:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> (<span style="color:#a6e22e">q</span> <span style="color:#f92672">*</span><span style="color:#a6e22e">priorityQueue</span>[<span style="color:#a6e22e">T</span>]) <span style="color:#a6e22e">IsEmpty</span>() <span style="color:#66d9ef">bool</span> {
+    <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">q</span>.<span style="color:#a6e22e">mask</span> <span style="color:#f92672">==</span> <span style="color:#ae81ff">0</span>
+}
+</code></pre></div><p>I would understand if you fell in love with <a href="https://pkg.go.dev/math/bits">math/bits</a> package after this.</p>
+<p><img src="/blog/img/pathing_mathbits.png" alt=""></p>
+<h2 id="the-best-associative-array">The Best Associative Array</h2>
+<p>Semantically speaking, we need <code>map[GridCoord]T</code> with only two little differences:</p>
+<ul>
+<li>It should be fast</li>
+<li>It should be easier to re-use its memory</li>
+</ul>
+<p>A GridCoord is a struct of two int-typed fields. We can pack the coordinate into a single uint:</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-go" data-lang="go"><span style="color:#66d9ef">func</span> <span style="color:#a6e22e">packCoord</span>(<span style="color:#a6e22e">numCols</span> <span style="color:#66d9ef">int</span>, <span style="color:#a6e22e">c</span> <span style="color:#a6e22e">GridCoord</span>) <span style="color:#66d9ef">uint</span> {
+    <span style="color:#66d9ef">return</span> uint((<span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">Y</span> <span style="color:#f92672">*</span> <span style="color:#a6e22e">numCols</span>) <span style="color:#f92672">+</span> <span style="color:#a6e22e">c</span>.<span style="color:#a6e22e">X</span>)
+}
+</code></pre></div><p>With a max path length of 56, the search area can be approximated to a square of 56*2+1 cells. Using the search window local coordinates instead of a grid global coordinates makes the <code>packCoord</code> value range quite small: <code>[0-12544]</code>.</p>
+<p>So instead of thinking in terms of <code>map[GridCoord]T</code> it&rsquo;s possible to concentrate on <code>map[uint16]T</code> and make our brain take us further.</p>
+<p>A first attempt to find a better data structure for this is to use a plain slice. The slice index would be identical to the lookup key. This option has good Get and Set performance, but Reset is slow.</p>
+<p>The next step is to consider a <a href="https://research.swtch.com/sparse">sparse map</a>. The Reset becomes very fast at the cost of a slower Get and Set.</p>
+<p>My personal recommendation is to use <a href="https://quasilyte.dev/blog/post/gen-map/">generations map</a> here:</p>
+<table>
+<thead>
+<tr>
+<th>Data Structure</th>
+<th style="text-align:right">Set</th>
+<th style="text-align:right">Get</th>
+<th style="text-align:right">Reset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>slice</td>
+<td style="text-align:right"><code>266</code></td>
+<td style="text-align:right"><code>128</code></td>
+<td style="text-align:right"><code>6450</code></td>
+</tr>
+<tr>
+<td>generations map</td>
+<td style="text-align:right">(x1.1) <code>306</code></td>
+<td style="text-align:right">(x1.04) <code>134</code></td>
+<td style="text-align:right"><code>26</code></td>
+</tr>
+<tr>
+<td>sparse map</td>
+<td style="text-align:right">(x6.7) <code>1785</code></td>
+<td style="text-align:right">(x1.89) <code>243</code></td>
+<td style="text-align:right"><code>16</code></td>
+</tr>
+<tr>
+<td>map[uint16]T</td>
+<td style="text-align:right">(x17.9) <code>4780</code></td>
+<td style="text-align:right">(x28.6) <code>3692</code></td>
+<td style="text-align:right"><code>1801</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="going-a-star">Going A-star</h2>
+<p>A couple of changes can turn our greedy BFS into an A*:</p>
+<ul>
+<li>Two generations map instead of one (or one, if elements contain the combined data)</li>
+<li>MinHeap instead of a bucket queue</li>
+<li>A different <code>p</code> calculation</li>
+</ul>
+<p>The A* can respect the traversal costs without a performance penalty.</p>
+<p>How to choose between the greedy bfs and A*?</p>
+<ul>
+<li>By default, you probably want to go with A*</li>
+<li>Greedy BFS works faster and uses less memory</li>
+</ul>
+<p>Greedy BFS often managed to find an optimal path, although some complicated maps can confuse it.</p>
+<p>When greedy BFS finds an optimal route, it&rsquo;s almost always a bit different from the route A* would produce. This can be used to produce less predictable paths from your game units. For instance, every odd path can be generated using greedy BFS algorithm and every even path can utilize A*.</p>
+<p>Depending on the exact greedy BFS implementation, its quality can be varying. My greedy BFS implementation shows somewhat inspiring results: among many tests, it fails to find an optimal route only a couple of times.</p>
+<p><img src="/blog/img/pathing_comparison.png" alt=""></p>
+<p>There is also a <a href="https://en.wikipedia.org/wiki/Jump_point_search">jump point search</a>, but I didn&rsquo;t had enough time to take it into account. I may incorporate its ideas into my A* implementation.</p>
+<h2 id="the-final-benchmark-results">The Final Benchmark Results</h2>
+<p>My new <a href="https://github.com/quasilyte/pathing/">pathing</a> combines everything I described above.</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th style="text-align:right">Benchmark no_walls</th>
+<th style="text-align:right">Benchmark simple_wall</th>
+<th style="text-align:right">Benchmark multi_wall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pathing</td>
+<td style="text-align:right"><code>3525 ns</code></td>
+<td style="text-align:right"><code>6353 ns</code></td>
+<td style="text-align:right"><code>16927 ns</code></td>
+</tr>
+<tr>
+<td>pathing A*</td>
+<td style="text-align:right"><code>20140 ns</code></td>
+<td style="text-align:right"><code>35846 ns</code></td>
+<td style="text-align:right"><code>44756 ns</code></td>
+</tr>
+<tr>
+<td>tile</td>
+<td style="text-align:right"><code>107632 ns</code></td>
+<td style="text-align:right"><code>169613 ns</code></td>
+<td style="text-align:right"><code>182342 ns</code></td>
+</tr>
+<tr>
+<td>go-astar</td>
+<td style="text-align:right"><code>453939 ns</code></td>
+<td style="text-align:right"><code>939300 ns</code></td>
+<td style="text-align:right"><code>1032581 ns</code></td>
+</tr>
+<tr>
+<td>astar</td>
+<td style="text-align:right"><code>948367 ns</code></td>
+<td style="text-align:right"><code>1554290 ns</code></td>
+<td style="text-align:right"><code>1842812 ns</code></td>
+</tr>
+<tr>
+<td>grid</td>
+<td style="text-align:right"><code>1816039 ns</code></td>
+<td style="text-align:right"><code>1154117 ns</code></td>
+<td style="text-align:right"><code>1189989 ns</code></td>
+</tr>
+<tr>
+<td>paths</td>
+<td style="text-align:right"><code>6588751 ns</code></td>
+<td style="text-align:right"><code>5158604 ns</code></td>
+<td style="text-align:right"><code>6114856 ns</code></td>
+</tr>
+</tbody>
+</table>
+<p>A* works slower, but it&rsquo;s still the fastest.</p>
+<p>Allocations-wise:</p>
+<table>
+<thead>
+<tr>
+<th>Library</th>
+<th style="text-align:right">Benchmark no_walls</th>
+<th style="text-align:right">Benchmark simple_wall</th>
+<th style="text-align:right">Benchmark multi_wall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pathing</td>
+<td style="text-align:right"><code>0</code></td>
+<td style="text-align:right"><code>0</code></td>
+<td style="text-align:right"><code>0</code></td>
+</tr>
+<tr>
+<td>pathing A*</td>
+<td style="text-align:right"><code>0</code></td>
+<td style="text-align:right"><code>0</code></td>
+<td style="text-align:right"><code>0</code></td>
+</tr>
+<tr>
+<td>tile</td>
+<td style="text-align:right"><code>3</code></td>
+<td style="text-align:right"><code>3</code></td>
+<td style="text-align:right"><code>3</code></td>
+</tr>
+<tr>
+<td>go-astar</td>
+<td style="text-align:right"><code>529</code></td>
+<td style="text-align:right"><code>1347</code></td>
+<td style="text-align:right"><code>1557</code></td>
+</tr>
+<tr>
+<td>astar</td>
+<td style="text-align:right"><code>2008</code></td>
+<td style="text-align:right"><code>3677</code></td>
+<td style="text-align:right"><code>3600</code></td>
+</tr>
+<tr>
+<td>grid</td>
+<td style="text-align:right"><code>2976</code></td>
+<td style="text-align:right"><code>1900</code></td>
+<td style="text-align:right"><code>1759</code></td>
+</tr>
+<tr>
+<td>paths</td>
+<td style="text-align:right"><code>7199</code></td>
+<td style="text-align:right"><code>6368</code></td>
+<td style="text-align:right"><code>7001</code></td>
+</tr>
+</tbody>
+</table>
+<img src="/blog/img/zeroalloc.png">
+<p>Every single data structure I used supports an efficient memory re-use. A single <code>BuildPath</code> call doesn&rsquo;t allocate anything. Even the returned path object doesn&rsquo;t involve the memory allocator.</p>
+<p>Is it possible to go even faster? I think so. But for now, I&rsquo;m quite satisfied with the results.</p>
+<details><summary>The promised kelindar/tile library review (optional reading)</summary><fieldset>
+<p>The <a href="https://github.com/kelindar/tile">kelindar/tile</a> allocates ~100000 with only 3 allocations. Let&rsquo;s investigate that.</p>
+<p>It uses a <a href="https://github.com/kelindar/tile/blob/28d6c88c33465e7826873b7107ca27894d62cad4/path.go#L151">custom heap</a> container for the frontier. It is much better than a pre-generics [container/heap], don&rsquo;t use it.</p>
+<p>Instead of allocating a new heap every time, a <a href="https://github.com/kelindar/tile/blob/28d6c88c33465e7826873b7107ca27894d62cad4/path.go#L127">sync.Pool</a> is used. On average, it greatly reduces the number of containers allocated.</p>
+<p>For a tile storage, <a href="https://github.com/kelindar/tile/blob/28d6c88c33465e7826873b7107ca27894d62cad4/grid.go#L183">3x3 pages</a> are used. It looks clever, but I don&rsquo;t have any data on whether it really helps or not. This scheme <a href="https://github.com/kelindar/tile/blob/28d6c88c33465e7826873b7107ca27894d62cad4/grid.go#L123">may involve fetching up to 3 pages</a> for a single get-neighbors call.</p>
+<p>The intermediate results are stored inside a builtin map. The low allocations count is a consequence of a <a href="https://github.com/kelindar/tile/blob/28d6c88c33465e7826873b7107ca27894d62cad4/path.go#L76">smart map size hint</a>: πr^2. With enough luck, this means a single allocation for the entire algorithm. It should be noted that this single allocation is rather big.</p>
+<p>The result is returned as a slice of points. This is another memory allocation.</p>
+<p>The points in the returned path are in reverse order.</p>
+</fieldset></details>
+<h2 id="closing-words">Closing Words</h2>
+<p>The algorithms are important, but their implementations may be paramount. A series of small optimization can have a phenomenal impact.</p>
+<p>My library has two major limitations:</p>
+<ol>
+<li>There is a max path length limit - 56</li>
+<li>A single Grid can contain up to 4 tiles (2 bits per cell)</li>
+</ol>
+<p>But there are workarounds:</p>
+<ol>
+<li>Partial path-building results can be combined</li>
+<li>Using separate enums per every biome can remove the issue</li>
+</ol>
+<p>I could go on, telling that you can increase the limit by using a 32-byte path objects, but you got the idea. Some limitations can enable significant optimizations.</p>
+<p>Do you find this article useful for you? If you want to thank me, consider playing my <a href="https://store.steampowered.com/app/2416030/Roboden/">Roboden</a> game. It&rsquo;s free, multi-platform, open source, and it&rsquo;s written in Go! I&rsquo;ll be extra happy if you would write a review. 😇</p>
+<p>Useful resources:</p>
+<ul>
+<li>Pathing library source code: <a href="https://github.com/quasilyte/pathing/">github.com/quasilyte/pathing</a></li>
+<li><a href="https://research.swtch.com/sparse">Sparse map explained by Russ Cox</a></li>
+<li><a href="https://quasilyte.dev/blog/post/gen-map/">Generations map explained by me</a></li>
+<li>Roboden game source code: <a href="https://github.com/quasilyte/roboden-game">github.com/quasilyte/roboden-game</a></li>
+<li><a href="https://factorio.com/blog/post/fff-317">Factorio pathfinding blog post</a></li>
+<li><a href="https://github.com/hajimehoshi/ebiten/">Ebitengine</a> - a cool game engine for Go</li>
+<li><a href="https://github.com/sedyh/awesome-ebitengine">Awesome Ebitengine list</a></li>
+<li>I also game a talk on this topic, you can find the slides on <a href="https://speakerdeck.com/quasilyte/zero-alloc-pathfinding">speakerdeck</a></li>
+</ul>
+
+    </section>
+
+    
+    <section class="post-tags" style="padding-bottom:60px;">
+        <div class="post-meta tags">
+            <i class="fa fa-fw fa-tag"></i>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/go">[go] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/performance">[performance] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/data-structure">[data-structure] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/roboden">[roboden] </a>
+            
+                
+                <a href="https://quasilyte.dev/blog/tags/habr-translation">[habr-translation] </a>
+            
+        </div>
+    </section>
+    
+    
+    <section class="share">
+    <p class="backtotop"><a data-scroll href="#site-head"><i class="fa fa-lg fa-fw fa-angle-double-up"></i></a><a data-scroll class="backtotoptext" href="#site-head"> Back to top</a></p>
+    <p class="info prompt">Share</p>
+    <a href="http://twitter.com/share?text=Zero%20alloc%20pathfinding%20in%20Go&url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fpathfinding%2f" title="Share on Twitter"
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <i class="fa fa-2x fa-fw fa-twitter-square"></i> <span class="hidden">Twitter</span>
+    </a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fpathfinding%2f" title="Share on Facebook"
+        onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <i class="fa fa-2x fa-fw fa-facebook-square" style="margin-left: -8px"></i> <span class="hidden">Facebook</span>
+    </a>
+    <a href="https://plus.google.com/share?url=https%3a%2f%2fquasilyte.dev%2fblog%2fpost%2fpathfinding%2f" title="Share on Google+"
+       onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <i class="fa fa-2x fa-fw fa-google-plus-square" style="margin-left: -8px"></i> <span class="hidden">Google+</span>
+    </a>
+</section>
+
+    <footer class="post-footer">
+        <section class="author">
+    <div class="authorimage" style="background: url(https://quasilyte.dev/blog/img/avatar.jpg)"></div>
+    <h4>Iskander Sharipov</h4>
+    <p class="bio">Lisper that got lost in a gophers land</p>
+    <p class="meta">
+      
+    </p>
+</section>
+    </footer>
+    
+</article>
+
+    </main>
+
+    <footer class="site-footer">
+	<div class="inner">
+		<section class="footer-social">
+      
+      <a href="//twitter.com/quasilyte" target="_blank" title="Twitter"><i class="fa fa-2x fa-fw fa-twitter"></i> <span class="hidden">Twitter</span></a>&nbsp;
+      
+      
+      <a href="//www.linkedin.com/in/quasilyte" target="_blank" title="linkedIn"><i class="fa fa-2x fa-fw fa-linkedin"></i> <span class="hidden">LinkedIn</span></a>&nbsp;
+      
+      
+      
+      
+      
+      <a href="//github.com/quasilyte" target="_blank" title="GitHub"><i class="fa fa-2x fa-fw fa-github"></i> <span class="hidden">GitHub</span></a>&nbsp;
+      
+      
+      
+      
+  </section>
+
+		<section class="copyright">&copy; 2023 <a href="https://quasilyte.dev/blog/">Iskander Sharipov</a>. Released under the MIT license.</section>
+	</div>
+</footer>
+
+    <script src="https://quasilyte.dev/blog/jquery.min.js"></script>
+<script src="https://quasilyte.dev/blog/js/index.js"></script>
+<script src="https://quasilyte.dev/blog/js/smooth-scroll.min.js"></script>
+<script src="https://quasilyte.dev/blog/highlight.pack.js"></script>
+
+
+<script>
+    smoothScroll.init({
+        speed: 800,
+        easing: 'easeInOutCubic',
+        updateURL: false,
+        offset: 125,
+    });
+</script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

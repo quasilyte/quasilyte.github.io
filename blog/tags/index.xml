@@ -6,40 +6,58 @@
     <description>Recent content in Tags on Iskander (Alex) Sharipov technical blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 May 2023 20:19:08 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>[gamedev]</title>
-      <link>https://quasilyte.dev/blog/tags/gamedev/</link>
-      <pubDate>Mon, 01 May 2023 20:19:08 +0000</pubDate>
+      <title>[data-structure]</title>
+      <link>https://quasilyte.dev/blog/tags/data-structure/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.dev/blog/tags/gamedev/</guid>
+      <guid>https://quasilyte.dev/blog/tags/data-structure/</guid>
       <description></description>
     </item>
     
     <item>
       <title>[go]</title>
       <link>https://quasilyte.dev/blog/tags/go/</link>
-      <pubDate>Mon, 01 May 2023 20:19:08 +0000</pubDate>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/go/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>[shaders]</title>
-      <link>https://quasilyte.dev/blog/tags/shaders/</link>
-      <pubDate>Mon, 01 May 2023 20:19:08 +0000</pubDate>
+      <title>[habr-translation]</title>
+      <link>https://quasilyte.dev/blog/tags/habr-translation/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.dev/blog/tags/shaders/</guid>
+      <guid>https://quasilyte.dev/blog/tags/habr-translation/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>[tutorial]</title>
-      <link>https://quasilyte.dev/blog/tags/tutorial/</link>
-      <pubDate>Mon, 01 May 2023 20:19:08 +0000</pubDate>
+      <title>[performance]</title>
+      <link>https://quasilyte.dev/blog/tags/performance/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
       
-      <guid>https://quasilyte.dev/blog/tags/tutorial/</guid>
+      <guid>https://quasilyte.dev/blog/tags/performance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[roboden]</title>
+      <link>https://quasilyte.dev/blog/tags/roboden/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/roboden/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[shortread]</title>
+      <link>https://quasilyte.dev/blog/tags/shortread/</link>
+      <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/shortread/</guid>
       <description></description>
     </item>
     
@@ -49,15 +67,6 @@
       <pubDate>Sat, 26 Mar 2022 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/compilers/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[shortread]</title>
-      <link>https://quasilyte.dev/blog/tags/shortread/</link>
-      <pubDate>Sat, 26 Mar 2022 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/shortread/</guid>
       <description></description>
     </item>
     
@@ -76,15 +85,6 @@
       <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/gogrep/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[habr-translation]</title>
-      <link>https://quasilyte.dev/blog/tags/habr-translation/</link>
-      <pubDate>Tue, 21 Dec 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/habr-translation/</guid>
       <description></description>
     </item>
     
@@ -157,6 +157,15 @@
       <pubDate>Sun, 07 Jun 2020 14:11:49 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/refactoring/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>[tutorial]</title>
+      <link>https://quasilyte.dev/blog/tags/tutorial/</link>
+      <pubDate>Sun, 07 Jun 2020 14:11:49 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/tags/tutorial/</guid>
       <description></description>
     </item>
     
@@ -292,15 +301,6 @@
       <pubDate>Wed, 21 Jun 2017 00:00:00 +0000</pubDate>
       
       <guid>https://quasilyte.dev/blog/tags/risc-v/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>[performance]</title>
-      <link>https://quasilyte.dev/blog/tags/performance/</link>
-      <pubDate>Fri, 19 May 2017 00:00:00 +0000</pubDate>
-      
-      <guid>https://quasilyte.dev/blog/tags/performance/</guid>
       <description></description>
     </item>
     

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>[roboden] on Iskander (Alex) Sharipov technical blog</title>
+    <link>https://quasilyte.dev/blog/tags/roboden/</link>
+    <description>Recent content in [roboden] on Iskander (Alex) Sharipov technical blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 13 Oct 2023 00:00:00 +0000</lastBuildDate><atom:link href="https://quasilyte.dev/blog/tags/roboden/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Zero alloc pathfinding in Go</title>
+      <link>https://quasilyte.dev/blog/post/pathfinding/</link>
+      <pubDate>Fri, 13 Oct 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/pathfinding/</guid>
+      <description>Intro Algorithms are important. The problem is you can implement the same algorithm so differently.
+The implementation performance can range from blazing fast to barely acceptable.
+ Tutorial: if you see an underlined text that is not a link, hover over it to read a tooltip.
+ If you like optimizations, specialized data structures and bit tricks then this article is for you.
+We&amp;rsquo;ll concentrate on two algorithms today: A-star and greedy BFS.</description>
+    </item>
+    
+    <item>
+      <title>Generations-based array</title>
+      <link>https://quasilyte.dev/blog/post/gen-map/</link>
+      <pubDate>Fri, 22 Sep 2023 00:00:00 +0000</pubDate>
+      
+      <guid>https://quasilyte.dev/blog/post/gen-map/</guid>
+      <description>Intro I was intrigued by the sparse map/set described in Russ Cox&amp;rsquo;s article.
+And I&amp;rsquo;m not the only one: this exact implementation is used in Go source code more than once! The compiler uses it for many ID-like maps and sets; regexp package uses it for a queue.
+But there is one thing that is still bugging me: it&amp;rsquo;s hard to make it very efficient. All operations I care about are O(1), but get and set operations clearly become slower in comparison with a straightforward slice approach.</description>
+    </item>
+    
+  </channel>
+</rss>
