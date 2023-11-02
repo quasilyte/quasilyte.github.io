@@ -2,27 +2,24 @@
 
 <script src="wasm_exec.js"></script>
 
-<div id="app_loader">
+<div id="app_loader" style="top: 50%; left: 50%">
     <center><span id="app_loading_progress">0%</span></center>
 </div>
 
 <script>
-if (!WebAssembly.instantiateStreaming) {
-    WebAssembly.instantiateStreaming = async (resp, importObject) => {
-        const source = await (await resp).arrayBuffer();
-        return await WebAssembly.instantiate(source, importObject);
-    };
-}
-
-const go = new Go();
-WebAssembly.instantiateStreaming(_download("main.wasm"), go.importObject).then(result => {
-    document.getElementById("app_loader").remove();
-    go.run(result.instance);
-});
 
 window.addEventListener("load", function() {
     document.body.focus();
 });
+
+(function() {
+    const go = new Go();
+    const goWasmModule = await _download("main.wasm").arrayBuffer();
+    WebAssembly.instantiate(goWasmModule, go.importObject).then(result => {
+        document.getElementById("app_loader").remove();
+        go.run(result.instance);
+    });
+})();
 
 function _localStorageAvailable() {
     try {
