@@ -2,7 +2,7 @@
 
 <script src="wasm_exec.js"></script>
 
-<div id="app_loader" style="top: 50%; left: 50%">
+<div id="app_loader" style="top: 50%; left: 50%; position: fixed;">
     <center><span id="app_loading_progress">0%</span></center>
 </div>
 
@@ -46,6 +46,7 @@ function _download(filename) {
             progressSpan.innerText = `${progress}% (${event.loaded}/${event.total})`;
         });
         xhr.addEventListener("loadend", () => {
+            console.log("loading finished");
             resolve(xhr.readyState === 4 && xhr.status === 200);
         });
         xhr.open("GET", filename, true);
