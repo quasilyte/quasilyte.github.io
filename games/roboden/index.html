@@ -2,31 +2,56 @@
 
 <script src="wasm_exec.js"></script>
 
+<div id="app_loader">
+    <center><span id="app_loading_progress">0%</span></center>
+</div>
+
 <script>
-    function _localStorageAvailable() {
-        try {
-            const key = `storage__test__`;
-            window.localStorage.setItem(key, null);
-            window.localStorage.removeItem(key);
-            return true;
-        } catch (e) {
-            return false;
-        }
+if (!WebAssembly.instantiateStreaming) {
+    WebAssembly.instantiateStreaming = async (resp, importObject) => {
+        const source = await (await resp).arrayBuffer();
+        return await WebAssembly.instantiate(source, importObject);
+    };
+}
+
+const go = new Go();
+WebAssembly.instantiateStreaming(_download("main.wasm"), go.importObject).then(result => {
+    document.getElementById("app_loader").remove();
+    go.run(result.instance);
+});
+
+window.addEventListener("load", function() {
+    document.body.focus();
+});
+
+function _localStorageAvailable() {
+    try {
+        const key = `storage__test__`;
+        window.localStorage.setItem(key, null);
+        window.localStorage.removeItem(key);
+        return true;
+    } catch (e) {
+        return false;
     }
+}
 
-    if (!WebAssembly.instantiateStreaming) {
-        WebAssembly.instantiateStreaming = async (resp, importObject) => {
-            const source = await (await resp).arrayBuffer();
-            return await WebAssembly.instantiate(source, importObject);
-        };
-    }
+function _download(filename) {
+    const progressSpan = document.getElementById("app_loading_progress");
 
-    const go = new Go();
-    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
-        go.run(result.instance);
+    const xhr = new XMLHttpRequest();
+    return new Promise((resolve) => {
+        xhr.addEventListener("progress", (event) => {
+            if (!event.lengthComputable) {
+                progressSpan.innerText = "???";
+                return
+            }
+            const progress = (100 * (event.loaded / event.total)) | 0;
+            progressSpan.innerText = `${progress}% (${event.loaded}/${event.total})`;
+        });
+        xhr.addEventListener("loadend", () => {
+            resolve(xhr.readyState === 4 && xhr.status === 200);
+        });
+        xhr.open("GET", filename, true);
     });
-
-    window.addEventListener("load", function() {
-        document.body.focus();
-    });
+}
 </script>
