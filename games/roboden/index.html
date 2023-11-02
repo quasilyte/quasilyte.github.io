@@ -1,26 +1,12 @@
 <!DOCTYPE html>
 
-<script src="wasm_exec.js"></script>
-
 <div id="app_loader" style="top: 50%; left: 50%; position: fixed;">
-    <center><span id="app_loading_progress">0%</span></center>
+    <center><span id="app_loading_progress">--</span></center>
 </div>
 
+<script src="wasm_exec.js"></script>
+
 <script>
-
-window.addEventListener("load", function() {
-    document.body.focus();
-});
-
-(async function() {
-    const go = new Go();
-    const goWasmModule = await _download("main.wasm");
-    WebAssembly.instantiate(goWasmModule, go.importObject).then(result => {
-        document.getElementById("app_loader").remove();
-        go.run(result.instance);
-    });
-})();
-
 function _localStorageAvailable() {
     try {
         const key = `storage__test__`;
@@ -32,28 +18,33 @@ function _localStorageAvailable() {
     }
 }
 
-function _download(filename) {
-    const progressSpan = document.getElementById("app_loading_progress");
+(function () {
+    let spinnerInterval = null;
 
-    const xhr = new XMLHttpRequest();
-    return new Promise((resolve) => {
-        xhr.addEventListener("progress", (event) => {
-            if (!event.lengthComputable) {
-                progressSpan.innerText = "???";
-                return
-            }
-            const progress = (100 * (event.loaded / event.total)) | 0;
-            progressSpan.innerText = `${progress}% (${event.loaded}/${event.total})`;
-        });
-        xhr.addEventListener("onload", () => {
-            console.log("loading finished");
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                resolve(xhr.response);
-            }
-        });
-        xhr.responseType = "arraybuffer";
-        xhr.open("GET", filename, true);
-        xhr.send();
+    if (!WebAssembly.instantiateStreaming) {
+        WebAssembly.instantiateStreaming = async (resp, importObject) => {
+            const source = await (await resp).arrayBuffer();
+            return await WebAssembly.instantiate(source, importObject);
+        };
+    }
+
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then(result => {
+        document.getElementById("app_loader").remove();
+        go.run(result.instance);
     });
-}
+
+    window.addEventListener("load", function() {
+        document.body.focus();
+
+        const progress = document.getElementById("app_loading_progress");
+        const spinnerFrames = ["\\", "|", "/", "--"];
+        let spinnerFrameIndex = 0;
+        spinnerInterval = setInterval(function() {
+            let frame = spinnerFrames[spinnerFrameIndex % spinnerFrames.length];
+            progress.innerText = frame;
+            spinnerFrameIndex++;
+        }, 200);
+    });
+})();
 </script>
