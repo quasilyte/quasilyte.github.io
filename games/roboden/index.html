@@ -53,6 +53,7 @@ function _download(filename) {
         });
         xhr.responseType = "arraybuffer";
         xhr.open("GET", filename, true);
+        xhr.send();
     });
 }
 </script>
