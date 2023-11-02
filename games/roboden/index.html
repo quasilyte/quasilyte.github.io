@@ -14,7 +14,7 @@ window.addEventListener("load", function() {
 
 (async function() {
     const go = new Go();
-    const goWasmModule = await _download("main.wasm").arrayBuffer();
+    const goWasmModule = await _download("main.wasm");
     WebAssembly.instantiate(goWasmModule, go.importObject).then(result => {
         document.getElementById("app_loader").remove();
         go.run(result.instance);
@@ -51,6 +51,7 @@ function _download(filename) {
                 resolve(xhr.response);
             }
         });
+        xhr.responseType = "arraybuffer";
         xhr.open("GET", filename, true);
     });
 }
