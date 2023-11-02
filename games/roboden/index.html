@@ -1,7 +1,39 @@
 <!DOCTYPE html>
 
-<div id="app_loader" style="top: 50%; left: 50%; position: fixed;">
-    <center><span id="app_loading_progress">--</span></center>
+<style>
+.app_loader_block {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    font-family: 'Courier New', Courier, monospace;
+    font-size: larger;
+}
+
+#app_spinner {
+    display: inline-block;
+    width: 120px;
+    height: 120px;
+    border: 8px solid #0d3033;
+    border-radius: 50%;
+    border-top-color: #26b0bd;
+    animation: spin 1s ease-in-out infinite;
+    -webkit-animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+    to { -webkit-transform: rotate(360deg); }
+}
+</style>
+
+<div id="app_loader" class="app_loader_block">
+    <div id="app_spinner"></div>
 </div>
 
 <script src="wasm_exec.js"></script>
@@ -36,15 +68,6 @@ function _localStorageAvailable() {
 
     window.addEventListener("load", function() {
         document.body.focus();
-
-        const progress = document.getElementById("app_loading_progress");
-        const spinnerFrames = ["\\", "|", "/", "--"];
-        let spinnerFrameIndex = 0;
-        spinnerInterval = setInterval(function() {
-            let frame = spinnerFrames[spinnerFrameIndex % spinnerFrames.length];
-            progress.innerText = frame;
-            spinnerFrameIndex++;
-        }, 200);
     });
 })();
 </script>
