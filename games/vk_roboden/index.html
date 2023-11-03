@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+
+<script src="wasm_exec.js"></script>
+<script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+
+<script>
+(function () {
+    const go = new Go();
+    WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).
+        then(result => {
+            console.log("sending VKWebAppInit message...");
+            vkBridge.send("VKWebAppInit").
+                then((data) => {
+                    console.log("VKWebAppInit success!");
+                    go.run(result.instance);
+                }).
+                catch((err) => {
+                    console.log("VKWebAppInit error", err);
+                });
+        });
+})();
+
+function _localStorageAvailable() {
+    try {
+        const key = "storage__test__";
+        window.localStorage.setItem(key, null);
+        window.localStorage.removeItem(key);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+</script>
