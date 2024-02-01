@@ -2,7 +2,7 @@
 
 So you want to do game development in Go?
 
-This document describes one of the paths you might take.
+This document describes one of the paths you can take.
 
 > This tutorial uses `bash` as a way to describe some actions in a programmer-friendly way. Keep in mind that these commands are not meant to be copy/pasted.
 
@@ -31,13 +31,13 @@ $ go run ./examples/snake
 
 There are ~80 examples in the folder. Most of them show how to solve one particular problem. Since they rarely use any third-party dependencies, you might expect there to be some boilerplate.
 
-> Explore the examples, look at the code. Try changing some parts and see how it goes.
+> Explore the examples, and look at the code. Try changing some parts and see how it goes.
 
-The assets used for these examples can be found at `examples/resources` folder.
+The assets used for these examples can be found in `examples/resources` folder.
 
 ## Step 2 - Make a Tiny Game
 
-I know that you know to create your dream game right away, but it might be impractical at this point. Try to make a simple game that would take you a couple of weeks to finish.
+I know that you want to create your dream game right away, but it might be impractical at this point. Try to make a simple game that would take you a couple of weeks to finish.
 
 Here is a list of game ideas:
 
@@ -67,7 +67,7 @@ Here is a list of things you might want to get sooner or later:
 
 If you don't like some particular library, there are almost always several alternatives.
 
-With examples and libraries you should be able to finish your first game. If it's still too challenging, take one of the games from the examples and start modifying it. Add menu, a couple of levels, and maybe new gameplay mechanics.
+With examples and libraries, you should be able to finish your first game. If it's still too challenging, take one of the games from the examples and start modifying it. Add a menu, a couple of levels, and maybe new gameplay mechanics.
 
 ## Step 4 - Getting Serious
 
@@ -77,7 +77,7 @@ Your toolbox should evolve to make bigger games. Here is a list of stuff I find 
 * Sprite editor: [aseprite](https://www.aseprite.org/)
 * Sound effects generator: [sfxr](https://www.drpetter.se/project_sfxr.html) (there are other versions on the web)
 
-If you want to get some free music for your game, take a look at [modarchive](https://modarchive.org/). Just make sure to give the appropriate credits for the author. You can either convert the modular music files to `ogg` or use the [xm player](https://github.com/quasilyte/xm) to play them directly.
+If you want to get some free music for your game, take a look at [modarchive](https://modarchive.org/). Just make sure to give the appropriate credit for the author (pay attention to the license of the track). You can either convert the modular music files to `ogg` or use the [xm player](https://github.com/quasilyte/xm) to play them directly.
 
 Check the [games](https://github.com/sedyh/awesome-ebitengine?tab=readme-ov-file#games) section of awesome-ebitengine to find some inspiration (these games have their sources published on GitHub). There is also [made-with-ebitengine](https://itch.io/queue/c/2030581/made-with-ebitengine) collection on `itch.io`.
 
