@@ -27,4 +27,5 @@ Levels:
 | Gorillaz - Feel Good Inc | 1 |
 | Green Day - Boulevard of Broken Dreams | 1 |
 | Placebo - Twenty Years | 1 |
+| Brad Sucks - Bad Attraction | 0 |
 | Blur - song 2 | 0 |
