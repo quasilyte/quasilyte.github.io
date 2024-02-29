@@ -24,5 +24,6 @@ Levels:
 |---|---|
 | Survivor - Eye of the Tiger | 3 |
 | Bob Dylan - Knocking On Heaven's Door | 2 |
+| Gorillaz - Feel Good Inc | 1 |
 | Green Day - Boulevard of Broken Dreams | 1 |
 | Blur - song 2 | 0 |
