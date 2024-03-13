@@ -20,7 +20,7 @@
 
 Обучающих материалов не так много, но с другой стороны у нас много [изолированных примеров](https://github.com/hajimehoshi/ebiten/tree/main/examples) и [игр с открытыми исходниками](https://github.com/sedyh/awesome-ebitengine?tab=readme-ov-file#games). На Хабре и YouTube можно найти статьи и стримы по Ebitengine (подробнее в другой секции).
 
-Сообщество Ebitengine не такое активное, как у Bevy. Основное общение происходит в англоязычном [дискорд-сервере](https://discord.com/invite/3tVdM5H8cC) (там очень активен автор движка - [Hajime Hoshi](https://github.com/hajimehoshi)). Если хочется общаться на русском, такой вариант тоже есть - телеграм-группа [t.me/go_gamedev](https://t.me/go_gamedev).
+Сообщество Ebitengine не очень громкое, но живое. Основное общение происходит в англоязычном [дискорд-сервере](https://discord.com/invite/3tVdM5H8cC) (там очень активен автор движка - [Hajime Hoshi](https://github.com/hajimehoshi)). Если хочется общаться на русском, такой вариант тоже есть - телеграм-группа [t.me/go_gamedev](https://t.me/go_gamedev).
 
 ## Предостережения
 
