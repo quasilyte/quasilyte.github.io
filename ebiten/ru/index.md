@@ -1,4 +1,5 @@
 ---
+seo: false
 extra_head_tags:
 - "<title>Разработка игр на Ebitengine</title>"
 - "<meta property='og:title' content='Разработка игр на Go'>"
