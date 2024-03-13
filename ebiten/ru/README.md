@@ -1,3 +1,21 @@
+
+<meta charset="utf-8">
+
+<title>Разработка игр на Ebitengine</title>
+
+<meta property="og:title" content="Разработка игр на Go">
+<meta property="og:type" content="website">
+<meta name="description" content="Памятка для интересующихся разработкой игр на Go">
+<meta property="og:description" content="Памятка для интересующихся разработкой игр на Go">
+<meta property="og:url" content="https://www.quasilyte.dev/ebiten/ru/">
+<meta property="og:image" content="https://www.quasilyte.dev/ebiten/ru/preview.png">
+<meta property="og:locale" content="en_US">
+
+<meta property="twitter:title" content="Разработка игр на Go">
+<meta property="twitter:description" content="Памятка для интересующихся разработкой игр на Go">
+<meta property="twitter:image" content="https://www.quasilyte.dev/ebiten/ru/preview.png">
+<meta property="twitter:url" content="https://www.quasilyte.dev/ebiten/ru/">
+
 ![Ebitengine logo](logo.png)
 
 # Разработка игр на Ebitengine
@@ -14,17 +32,17 @@
 
 > tl;dr: Go - подходящий язык, Ebitengine - неплохой игровой движок, сообщество - живое и расширяется.
 
-Можно довольно детально сравнивать языки программирования между друг другом, определяя на сколько он подходит для разработки игр. Британские учёные доказали, что Go - **достаточно хороший** язык для создания игр на нём. Производительности, контроля и удобств (типа генериков) будет достаточно, чтобы создать почти любую 2D-игру.
+Можно довольно детально сравнивать языки программирования между друг другом, определяя на сколько Go подходит для разработки игр. Британские учёные доказали, что Go - **достаточно хороший** язык для создания игр на нём. Производительности, контроля и удобств (типа генериков) будет достаточно, чтобы создать почти любую 2D-игру.
 
-Состояние экосистемы для разработки игр на Go не сравнится с Unity или другими меинстримовыми платформами. Тем не менее, в [awesome-ebitengine](https://github.com/sedyh/awesome-ebitengine) можно найти внушительный список библиотек, которые в большинстве случаев оберегают нас от написания велосипедов. Подобного арсенала хватит большинству начинающим в Go геймдеве.
+Состояние экосистемы для разработки игр на Go не сравнится с Unity или другими меинстримовыми платформами. Тем не менее, в [awesome-ebitengine](https://github.com/sedyh/awesome-ebitengine) можно найти внушительный список библиотек, которые в большинстве случаев оберегают нас от написания велосипедов. Подобного арсенала хватит большинству начинающим и продолжающим.
 
-Обучающих материалов не так много, но с другой стороны у нас много [изолированных примеров](https://github.com/hajimehoshi/ebiten/tree/main/examples) и [игр с открытыми исходниками](https://github.com/sedyh/awesome-ebitengine?tab=readme-ov-file#games). На [Хабре](https://habr.com/ru/search/?q=ebiten&target_type=posts&order=relevance) и YouTube есть выбор обучающих материалов.
+Всяких туториалов не так много, но зато [изолированных примеров](https://github.com/hajimehoshi/ebiten/tree/main/examples) и [игр с открытыми исходниками](https://github.com/sedyh/awesome-ebitengine?tab=readme-ov-file#games) в достатке. На [Хабре](https://habr.com/ru/search/?q=ebiten&target_type=posts&order=relevance) и YouTube при желании что-то найти можно.
 
 Сообщество Ebitengine не очень громкое, но живое. Основное общение происходит в англоязычном [дискорд-сервере](https://discord.com/invite/3tVdM5H8cC) (там очень активен автор движка - [Hajime Hoshi](https://github.com/hajimehoshi)). Для общения на русском есть [t.me/go_gamedev](https://t.me/go_gamedev).
 
 ## Предостережения
 
-Если у тебя есть желание попробовать делать игры на Go - нужно дать этому шанс. Но вместе с этим мне тебя предупредить: у этого выбора есть свои особенности.
+Если у тебя есть желание попробовать делать игры на Go - нужно дать этому шанс. Но, вместе с этим, мне нужно тебя предупредить об особенностях этого выбора.
 
 Ebitengine лучше подходит в качестве второго игрового движка, когда ты уже понимаешь базовые концепции. Возможность сравнивать и выбирать среди альтернатив будет очень важна.
 
