@@ -1,1 +1,7 @@
-<!-- {{ page.my_custom_meta }} -->
+{% if page.extra_head_tags %}
+  {% raw %}
+    {% for t in page.extra_head_tags %}
+      {{ t }}
+    {% endfor %}
+  {% endraw %}
+{% endif %}
