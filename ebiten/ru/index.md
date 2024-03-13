@@ -1,18 +1,9 @@
 ---
-seo: false
-extra_head_tags:
-- "<title>Разработка игр на Ebitengine</title>"
-- "<meta property='og:title' content='Разработка игр на Go'>"
-- "<meta property='og:type' content='website'>"
-- "<meta name='description' content='Памятка для интересующихся разработкой игр на Go'>"
-- "<meta property='og:description' content='Памятка для интересующихся разработкой игр на Go'>"
-- "<meta property='og:url' content='https://www.quasilyte.dev/ebiten/ru/'>"
-- "<meta property='og:image' content='https://www.quasilyte.dev/ebiten/ru/preview.png'>"
-- "<meta property='og:locale' content='en_US'>"
-- "<meta property='twitter:title' content='Разработка игр на Go'>"
-- "<meta property='twitter:description' content='Памятка для интересующихся разработкой игр на Go'>"
-- "<meta property='twitter:image' content='https://www.quasilyte.dev/ebiten/ru/preview.png'>"
-- "<meta property='twitter:url' content='https://www.quasilyte.dev/ebiten/ru/'>"
+title: Разработка игр на Ebitengine
+description: Памятка начинающего разработчика игр на Go
+image: https://www.quasilyte.dev/ebiten/ru/preview.png
+twitter:
+  card: summary
 ---
 
 ![Ebitengine logo](logo.png)
