@@ -1,5 +1,7 @@
-{% if page.extra_head_tags %}
-  {% for t in page.extra_head_tags %}
-    {{ t | safe }}
-  {% endfor %}
-{% endif %}
+<!-- begin custom headers -->
+
+{% for t in page.extra_head_tags %}
+  {{ t | safe }}
+{% endfor %}
+
+<!-- end custom header -->
