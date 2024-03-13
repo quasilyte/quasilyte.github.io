@@ -1,5 +1,5 @@
 ---
-my_custom_meta: fdfdf
+my_custom_meta: "fdfdf"
 ---
 
 <head>
