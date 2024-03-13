@@ -79,18 +79,18 @@ $ go run ./examples/snake
 
 > Я очень рекомендую экспериментировать, редактировать код, модифицировать игровые механики.
 
-Все игры из примеров используют ассеты из `examples/resources`.
+Все игры из примеров используют ассеты из [examples/resources](https://github.com/hajimehoshi/ebiten/tree/main/examples/resources).
 
 ## Создание первой игры
 
-Параллельно с ознакомлением с примерами можно начать делать свою небольшую игру. Как только сталкиваешься с тем, что не знаешь, как реализовать ту или иную механику - выполняй поиск по examples.
+Параллельно с ознакомлением с примерами можно начать делать свою небольшую игру. Как только сталкиваешься с тем, что не знаешь, как реализовать ту или иную механику - выполняй поиск по [examples](https://github.com/hajimehoshi/ebiten/tree/main/examples).
 
 Вот примеры игр, которые могут быть хорошим упражнением для неофита Ebitengine:
 
-* Астероиды
-* Space Invaders
-* Змейка
-* Арканоид
+* [Астероиды](https://en.wikipedia.org/wiki/Asteroids_(video_game))
+* [Space Invaders](https://en.wikipedia.org/wiki/Space_Invaders)
+* [Змейка](https://en.wikipedia.org/wiki/Snake_(video_game_genre))
+* [Арканоид](https://en.wikipedia.org/wiki/Arkanoid)
 
 > Не обязательно делать полный клон игры, это лишь концепты с относительно простым игровым дизайном.
 
@@ -130,7 +130,13 @@ Ebitengine - это code-first игровой движок, тут нет обя
 
 Для генерации простеньких звуков рекомендую [sfxr](https://www.drpetter.se/project_sfxr.html) (или его аналоги). Редактирую звуки я в [Audacity](https://www.audacityteam.org/).
 
+## Ресурсы для игр
+
 Мне очень нравится модульная музыка, поэтому не могу не порекомендовать [modarchive](https://modarchive.org/). Треки в формате XM можно [воспроизводить в игре напрямую](https://github.com/quasilyte/xm). Большую часть остальных форматов (IT, MOD, S3M, ...) можно конвертировать в XM через [MilkyTracker](https://milkytracker.org/).
+
+На [itch.io](https://itch.io/) есть довольно много хороших ассетов, часть из которых доступна бесплатно (идеально для прототипов). Примеры того, что там можно найти: спрайты, тайлсеты, наборы эффектов.
+
+Отдельно рекомендую всякие конструкторы, типа [retro-sprite-creator](https://retro-sprite-creator.nihey.org/character). Я настолько люблю конструкторы, что когда-то создал свой [конструктор для гоферов](https://www.quasilyte.dev/gopherkon/).
 
 ## Делитесь своим прогрессом
 
