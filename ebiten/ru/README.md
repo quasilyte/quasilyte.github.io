@@ -18,7 +18,7 @@
 
 Состояние экосистемы для разработки игр на Go не сравнится с Unity или другими меинстримовыми платформами. Тем не менее, в [awesome-ebitengine](https://github.com/sedyh/awesome-ebitengine) можно найти внушительный список библиотек, которые в большинстве случаев оберегают нас от написания велосипедов. Подобного арсенала хватит большинству начинающим в Go геймдеве.
 
-Обучающих материалов не так много, но с другой стороны у нас много [изолированных примеров](https://github.com/hajimehoshi/ebiten/tree/main/examples) и [игр с открытыми исходниками](https://github.com/sedyh/awesome-ebitengine?tab=readme-ov-file#games). На Хабре и YouTube можно найти статьи и стримы по Ebitengine (подробнее в другой секции).
+Обучающих материалов не так много, но с другой стороны у нас много [изолированных примеров](https://github.com/hajimehoshi/ebiten/tree/main/examples) и [игр с открытыми исходниками](https://github.com/sedyh/awesome-ebitengine?tab=readme-ov-file#games). На [Хабре](https://habr.com/ru/search/?q=ebiten&target_type=posts&order=relevance) и YouTube есть выбор обучающих материалов.
 
 Сообщество Ebitengine не очень громкое, но живое. Основное общение происходит в англоязычном [дискорд-сервере](https://discord.com/invite/3tVdM5H8cC) (там очень активен автор движка - [Hajime Hoshi](https://github.com/hajimehoshi)). Для общения на русском есть [t.me/go_gamedev](https://t.me/go_gamedev).
 
