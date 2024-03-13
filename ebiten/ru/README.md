@@ -111,6 +111,7 @@ $ go run ./examples/snake
 * [ebitengine-graphics](https://github.com/quasilyte/ebitengine-graphics) - удобные графические объекты (абстракции типа Sprite)
 * [gscene](https://github.com/quasilyte/gscene) - реализация сцен для Ebitengine
 * [gmath](https://github.com/quasilyte/gmath) - 2D вектора и прочие математические полезняшки
+* [gdata](github.com/quasilyte/gdata) - кросс-платформенные save/load состояния игры
 * [pathing](https://github.com/quasilyte/pathing/) - эффективный поиск пути по сетке
 
 Эти библиотеки более специфичные, но тоже могут быть полезны:
