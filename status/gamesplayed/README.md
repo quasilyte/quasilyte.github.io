@@ -22,6 +22,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | SpellForce: The Order of Dawn | RPG, RTS | Completed myself | 8.5 |
 | SpellForce: Breath of Winter | RPG, RTS | Completed myself | 8.5 |
 | Baba Is You | Programming, Puzzle | Completed myself | 8.5 |
+| Monster Hunter Rise | Action, RPG, Souls-like | Completed myself | 8.5 |
 | The Elder Scrolls III: Morrowind | RPG | Completed myself | 8 |
 | Space Rangers 2 | Adventure, Arcade, RPG | Completed myself | 8 |
 | Danganronpa 3 | Detective, Visual Novel | Completed myself | 8 |
@@ -32,6 +33,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Need For Speed: Most Wanted | Racing | Completed myself | 8 |
 | Warhammer 40000: Dawn of War | RTS | Completed myself | 8 |
 | Lord of the Rings: Battle for Middle Earth | RTS | Completed myself | 8 |
+| Team Buddies | Action, RTS | Completed myself | 8 |
+| Dragon Age: Origins | RPG | Completed myself | 8 |
 | Civilization 3 | Turn-based Strategy | Completed myself | 7.5 |
 | Space Rangers | Adventure, Arcade, RPG | Completed myself | 7.5 |
 | Dungeons & Dragons: Dragonshard | RTS | Completed myself | 7.5 |
@@ -63,6 +66,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Stronghold: Crusader | RTS | Completed myself | 7.5 |
 | Fable: The Lost Chapters | RPG | Completed myself | 7.5 |
 | PuzzleQuest: Challenge of the Warlords | Match-Three, Puzzle, RPG | Completed myself | 7.5 |
+| No Heroes Allowed | Puzzle, RTS | Completed myself | 7.5 |
+| King's Bounty (2008) | Turn-based Strategy | Completed myself | 7.5 |
 | Quake 3 Arena | FPS | Completed myself | 7 |
 | Robinson's Requiem | Adventure, Survival | Completed myself | 7 |
 | Civilization 4 | Turn-based Strategy | Completed myself | 7 |
@@ -103,6 +108,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Dungeon Siege | RPG | Completed myself | 7 |
 | Dungeon Siege: Legends of Aranna | RPG | Completed myself | 7 |
 | League of Legends | MOBA, Online | Completed myself | 7 |
+| Cladun | Action, RPG | Completed myself | 7 |
+| Cladun Returns | Action, RPG | Completed myself | 7 |
 | The Elder Scrolls IV: Oblivion | RPG | Completed myself | 6.5 |
 | Return to Castle Wolfenstein | FPS, Horror | Completed myself | 6.5 |
 | Heroes of Might And Magic II | Turn-based Strategy | Completed myself | 6.5 |
@@ -144,6 +151,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Perimeter | RTS | Completed myself | 6.5 |
 | Evil Genius | RTS | Completed myself | 6.5 |
 | Prince of Persia (GBA) | Platformer | Completed myself | 6.5 |
+| Roboden | RTS | Completed myself | 6.5 |
 | Blood Bowl | Sport, Turn-based Strategy | Completed myself | 6 |
 | Postal | Action, Sandbox | Completed myself | 6 |
 | Outlive | RTS | Completed myself | 6 |
@@ -224,6 +232,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | The Infectious Madness of Doctor Dekker | FMV | Completed via YouTube | 7.5 |
 | Bully | Action, Sandbox | Completed via YouTube | 7.5 |
 | Max Payne | FPS | Completed via YouTube | 7.5 |
+| Ghost Trick: Phantom Detective | Point and Click, Puzzle | Completed via YouTube | 7.5 |
 | The Elder Scrolls V: Skyrim | RPG | Completed via YouTube | 7 |
 | Shadow of the Colossus | RPG | Completed via YouTube | 7 |
 | Primordia | Point and Click | Completed via YouTube | 7 |
@@ -235,7 +244,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Backpack Hero | RPG, Rogue-like | Completed via YouTube | 7 |
 | Master of Orion II | Turn-based Strategy | Completed via YouTube | 7 |
 | System Shock 2 | FPS, RPG | Completed via YouTube | 7 |
-| Faster Than Light | Action, Rogue-like | Completed via YouTube | 7 |
+| Faster Than Light | Action, Rogue-like, Strategy | Completed via YouTube | 7 |
 | Danganronpa 2 | Detective, Visual Novel | Completed via YouTube | 7 |
 | Finding Paradise | Point and Click | Completed via YouTube | 7 |
 | Until Dawn | Action, Horror, Walking Simulator | Completed via YouTube | 7 |
@@ -268,6 +277,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Spore | Action, Adventure | Completed via YouTube | 7 |
 | Gothic | Adventure, RPG | Completed via YouTube | 7 |
 | Gothic 2 | Adventure, RPG | Completed via YouTube | 7 |
+| Cult of the Lamb | Action, RPG, Rogue-like | Completed via YouTube | 7 |
+| House of Ashes | FMV, Horror, Walking Simulator | Completed via YouTube | 7 |
 | The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
 | BioShock Infinite | FPS | Completed via YouTube | 6.5 |
 | Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
@@ -309,6 +320,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | The Hobbit | Action | Completed via YouTube | 6.5 |
 | Raft | Adventure, Sandbox, Survival | Completed via YouTube | 6.5 |
 | Vangers | Adventure, Arcade, Racing, Sandbox | Completed via YouTube | 6.5 |
+| Devil in Me | FMV, Horror, Walking Simulator | Completed via YouTube | 6.5 |
+| Beginners Guide | Walking Simulator | Completed via YouTube | 6.5 |
 | Galerians: Ash | Action, Horror | Completed via YouTube | 6 |
 | The Bad Rats | Puzzle | Completed via YouTube | 6 |
 | The Elder Scrolls II: Daggerfall | RPG | Completed via YouTube | 6 |
@@ -328,6 +341,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | McPixel | Puzzle | Completed via YouTube | 6 |
 | Bulb Boy | Point and Click | Completed via YouTube | 6 |
 | Risen | Adventure, RPG | Completed via YouTube | 6 |
+| Tokyo Jungle | Action, Survival | Completed via YouTube | 6 |
 | Fort Zombie | FPS, Survival | Completed via YouTube | 5.5 |
 | Beneath a Steel Sky | Point and Click | Completed via YouTube | 5.5 |
 | Recettear | RPG, Vendor Simulator | Completed via YouTube | 5.5 |
@@ -340,6 +354,9 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | The Complex | FMV | Completed via YouTube | 5.5 |
 | Gothic 3 | Adventure, RPG | Completed via YouTube | 5.5 |
 | Call of Cthulhu: Shadow of the Comet | Point and Click | Completed via YouTube | 5.5 |
+| This Means Warp | Action, Rogue-like, Strategy | Completed via YouTube | 5.5 |
+| Little Hope | FMV, Horror, Walking Simulator | Completed via YouTube | 5.5 |
+| Man of Medan | FMV, Horror, Walking Simulator | Completed via YouTube | 5.5 |
 | Genuine Blast Corps | Action, Racing | Completed via YouTube | 5 |
 | Brave Fencer Musashi | Action | Completed via YouTube | 5 |
 | 7 Days A Skeptic | Point and Click | Completed via YouTube | 5 |
@@ -352,6 +369,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Double Switch | FMV | Completed via YouTube | 5 |
 | The Bouncer | Fighting | Completed via YouTube | 5 |
 | 5 Days A Stranger | Point and Click | Completed via YouTube | 4.5 |
+| Among the Sleep | Walking Simulator | Completed via YouTube | 4.5 |
 | The Sandbox of God | Sandbox | Completed via YouTube | 3.5 |
 | Dark Souls | Action, RPG, Souls-like | Watched review/know about | 8 |
 | Minecraft | Action, RPG, Souls-like | Watched review/know about | 6 |
@@ -361,47 +379,47 @@ Here are some tables for stats.
 
 | Tag | Count | Avg. Rating |
 |---|---|---|
-| RPG | 79 | 6.99 |
-| Action | 65 | 6.79 |
-| RTS | 38 | 7.16 |
-| Point and Click | 35 | 6.44 |
+| RPG | 84 | 7.02 |
+| Action | 72 | 6.81 |
+| RTS | 41 | 7.17 |
+| Point and Click | 36 | 6.47 |
+| Horror | 34 | 6.68 |
 | FPS | 32 | 6.47 |
-| Horror | 30 | 6.75 |
+| Puzzle | 29 | 7.16 |
 | Arcade | 28 | 6.73 |
-| Puzzle | 27 | 7.13 |
 | Adventure | 25 | 7.02 |
-| Turn-based Strategy | 21 | 6.71 |
+| Turn-based Strategy | 22 | 6.75 |
 | Sandbox | 20 | 6.38 |
+| Walking Simulator | 20 | 6.55 |
+| Strategy | 18 | 6.81 |
+| FMV | 17 | 6.38 |
 | Detective | 16 | 7.25 |
 | Racing | 16 | 6.38 |
-| Strategy | 16 | 6.88 |
-| Walking Simulator | 14 | 6.82 |
-| FMV | 13 | 6.46 |
-| Survival | 12 | 6.46 |
+| Survival | 13 | 6.42 |
 | Platformer | 11 | 6.73 |
-| Rogue-like | 8 | 7.06 |
+| Rogue-like | 10 | 6.90 |
 | Online | 5 | 6.80 |
 | Visual Novel | 5 | 7.10 |
 | Interactive Movie | 5 | 7.00 |
-| Souls-like | 4 | 7.12 |
+| Souls-like | 5 | 7.40 |
 | Turn-based RPG | 4 | 6.88 |
 | Fighting | 3 | 6.17 |
 | Global Strategy | 2 | 7.00 |
-| MOBA | 2 | 6.50 |
-| MMO | 2 | 7.50 |
-| Talking Simulator | 2 | 7.25 |
 | Programming | 2 | 8.25 |
 | Engineering | 2 | 7.75 |
-| Stealth | 1 | 7.00 |
+| Talking Simulator | 2 | 7.25 |
+| MOBA | 2 | 6.50 |
+| MMO | 2 | 7.50 |
 | Sport | 1 | 6.00 |
+| Vendor Simulator | 1 | 5.50 |
+| Stealth | 1 | 7.00 |
 | Deckbuilder | 1 | 7.00 |
 | Match-Three | 1 | 7.50 |
-| Vendor Simulator | 1 | 5.50 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 174 |
-| Completed via YouTube | 166 |
+| Completed myself | 182 |
+| Completed via YouTube | 176 |
 | Watched review/know about | 3 |
 
 ### [itch.io](https://itch.io/) indie games
