@@ -139,6 +139,11 @@ $ go run ./examples/snake
 * [gdata](github.com/quasilyte/gdata) - кросс-платформенные save/load состояния игры
 * [pathing](https://github.com/quasilyte/pathing/) - эффективный поиск пути по сетке
 
+Для pixel-art игр могут быть полезны bitmap шрифты:
+
+* [hajimehoshi/bitmapfont](https://github.com/hajimehoshi/bitmapfont) - хорош тем, что там много языков
+* [quasilyte/bitsweetfont](https://github.com/quasilyte/bitsweetfont) - мало языков, но зато несколько размеров
+
 Эти библиотеки более специфичные, но тоже могут быть полезны:
 
 * [gsignal](https://github.com/quasilyte/gsignal/) - легковесные сигналы для Go
