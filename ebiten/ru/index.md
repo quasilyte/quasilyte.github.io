@@ -134,6 +134,7 @@ $ go run ./examples/snake
 * [ebitengine-input](https://github.com/quasilyte/ebitengine-input) - обработка ввода (клавиатура, контроллеры, мышь)
 * [ebitengine-resource](https://github.com/quasilyte/ebitengine-resource) - менеджер ресурсов
 * [ebitengine-graphics](https://github.com/quasilyte/ebitengine-graphics) - удобные графические объекты (абстракции типа Sprite)
+* [ebitengine-sound](https://github.com/quasilyte/ebitengine-sound) - более высокоуровневый способ работы со звуком и музыкой
 * [pathing](https://github.com/quasilyte/pathing/) - эффективный поиск пути по сетке
 * [gscene](https://github.com/quasilyte/gscene) - реализация сцен для Ebitengine
 * [gmath](https://github.com/quasilyte/gmath) - 2D вектора и прочие математические полезняшки
