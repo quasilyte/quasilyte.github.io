@@ -3,6 +3,7 @@
 <script>
 window.onload = function() {
     let outputDiv = document.getElementById("output");
+
     let params = new URLSearchParams(window.location.search);
     let data = params.get("data") || "";
     let schema = params.get("s") || "";
@@ -10,6 +11,21 @@ window.onload = function() {
     if (schema === "" || data === "" || width === 0) {
         return;
     }
+
+    // Expand the folded data.
+    let expanded = [];
+    const A = "a".charCodeAt(0);
+    const Z = "z".charCodeAt(0);
+    for (let i = 0; i < data.length; i++) {
+        let ch = data.charCodeAt(i);
+        if (ch < A || ch > Z) {
+            expanded.push(data[i]);
+            continue;
+        }
+        expanded.push("0".repeat(ch - A + 1));
+    }
+    data = expanded.join("");
+
     for (let i = 0; i < schema.length; i++) {
         let charFrom = i.toString();
         let charTo = schema[i];
@@ -19,18 +35,67 @@ window.onload = function() {
     let lines = [];
     for (let i = 0; i < data.length; i += width) {
         lines.push(data.substring(i, i + width));
-        console.log(i);
     }
 
     outputDiv.innerText = lines.join("\n");
-
-    // if (s) {
-    //     s = s.replaceAll("\\n", "\n");
-    //     s = s.replaceAll("\n\\", "\n");
-    //     if (s[0] == '\\') {
-    //         s = s.substring(1);
-    //     }
-    //     outputDiv.innerText = s;
-    // }
 };
+
+function asciinyaEncode(s) {
+    let lines = s.split("\n");
+    let width = lines[0].length;
+    s = lines.join("");
+
+    let alphabet = {};
+    for (let ch of s) {
+        alphabet[ch] = alphabet[ch] ? alphabet[ch] + 1 : 1;
+    }
+    let alphabetList = [];
+    for (let key in alphabet) {
+        alphabetList.push({"key": key, "n": alphabet[key]});
+    }
+    alphabetList.sort(function(x, y) { 
+        return y.n - x.n;
+    })
+
+    let schema = "";
+    let data = s;
+    let index = 0;
+    for (let pair of alphabetList) {
+        schema += pair.key;
+        let encoded = index.toString();
+        data = data.replaceAll(pair.key, encoded);
+        index++;
+    }
+
+    data = asciinyaFold(data, "0");
+
+    return `w=${width}&s=${schema}&data=${data}`;
+}
+
+function asciinyaFold(s, replaced) {
+    const A = "a".charCodeAt(0);
+    const Z = "z".charCodeAt(0);
+    parts = [];
+    let n = 0;
+    for (let i = 0; i < s.length; i++) {
+        let ch = s[i];
+        if (ch !== replaced) {
+            while (n > 0) {
+                let v = n < (Z - A) ? n : (Z - A);
+                n -= v;
+                parts.push(String.fromCharCode(v + A - 1));
+            }
+            parts.push(ch);
+            continue;
+        }
+        n++;
+    }
+    while (n > 0) {
+        let v = n < (Z - A) ? n : (Z - A);
+        n -= v;
+        parts.push(String.fromCharCode(v + A - 1));
+    }
+    return parts.join("");
+}
+
 </script>
