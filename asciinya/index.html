@@ -1,4 +1,4 @@
-<pre id="output"></pre>
+<div id="output"></div>
 
 <style>
     body {
@@ -29,12 +29,12 @@ window.onload = function() {
             expanded.push(data[i]);
             continue;
         }
-        expanded.push("0".repeat(ch - A + 1));
+        expanded.push("A".repeat(ch - A + 1));
     }
     data = expanded.join("");
 
     for (let i = 0; i < schema.length; i++) {
-        let charFrom = i.toString();
+        let charFrom = String.fromCharCode(65 + i);
         let charTo = schema[i];
         data = data.replaceAll(charFrom, charTo);
     }
@@ -64,19 +64,23 @@ function asciinyaEncode(s) {
         return y.n - x.n;
     })
 
+    if (alphabetList.length > 26) {
+        return `too many unique characters (${alphabetList.length})`;
+    }
+
     let schema = "";
     let data = s;
     let index = 0;
     for (let pair of alphabetList) {
         schema += pair.key;
-        let encoded = index.toString();
+        let encoded = String.fromCharCode(65 + index);
         data = data.replaceAll(pair.key, encoded);
         index++;
     }
 
-    data = asciinyaFold(data, "0");
+    data = asciinyaFold(data, "A");
 
-    return `w=${width}&s=${schema}&data=${data}`;
+    return `https://quasilyte.dev/asciinya?w=${width}&s=${schema}&data=${data}`;
 }
 
 function asciinyaFold(s, replaced) {
