@@ -1,0 +1,36 @@
+<pre id="output"></pre>
+
+<script>
+window.onload = function() {
+    let outputDiv = document.getElementById("output");
+    let params = new URLSearchParams(window.location.search);
+    let data = params.get("data") || "";
+    let schema = params.get("s") || "";
+    let width = +params.get("w") || 0;
+    if (schema === "" || data === "" || width === 0) {
+        return;
+    }
+    for (let i = 0; i < schema.length; i++) {
+        let charFrom = i.toString();
+        let charTo = schema[i];
+        data = data.replaceAll(charFrom, charTo);
+    }
+
+    let lines = [];
+    for (let i = 0; i < data.length; i += width) {
+        lines.push(data.substring(i, i + width));
+        console.log(i);
+    }
+
+    outputDiv.innerText = lines.join("\n");
+
+    // if (s) {
+    //     s = s.replaceAll("\\n", "\n");
+    //     s = s.replaceAll("\n\\", "\n");
+    //     if (s[0] == '\\') {
+    //         s = s.substring(1);
+    //     }
+    //     outputDiv.innerText = s;
+    // }
+};
+</script>
