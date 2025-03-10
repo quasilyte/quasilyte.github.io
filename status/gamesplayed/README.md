@@ -1,21 +1,22 @@
 
 ## Games Played
 
-There are 3 possible game title status here:
+There are 2 possible game title status here:
 
 1. Completed myself.
 2. Completed via let's play (e.g. YouTube).
-3. Extra category for the games I can discuss, but I haven't completed them.
 
-I usually try not to add an entry unless I either completed the game or feeling competent enough to include it at least in the 3rd category.
+I usually try not to add an entry unless I either completed the game or feeling competent enough to include it.
 
 Also, this list is never complete. I can't possibly remember every game I have ever played, but I'm doing my best here.
+
+The ratings can also get outdated or unsynchronized with what I would rate it **today**.
 
 | Game | Genre Tags | Status | Rating |
 |---|---|---|---|
 | Star Control II (Ur-Quan Masters) | Adventure, Arcade, RPG | Completed myself | 9 |
 | Deus Ex | Action, FPS, RPG | Completed myself | 8.5 |
-| Warzone 2100 | Adventure, Arcade, RPG | Completed myself | 8.5 |
+| Warzone 2100 | RTS | Completed myself | 8.5 |
 | WarCraft III | RTS | Completed myself | 8.5 |
 | Doki Doki Literature Club | Horror, Visual Novel | Completed myself | 8.5 |
 | Lord of the Rings: Battle for Middle Earth 2 | RTS | Completed myself | 8.5 |
@@ -23,6 +24,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | SpellForce: Breath of Winter | RPG, RTS | Completed myself | 8.5 |
 | Baba Is You | Programming, Puzzle | Completed myself | 8.5 |
 | Monster Hunter Rise | Action, RPG, Souls-like | Completed myself | 8.5 |
+| Eador: New Horizons | Turn-based Strategy | Completed myself | 8.5 |
 | The Elder Scrolls III: Morrowind | RPG | Completed myself | 8 |
 | Space Rangers 2 | Adventure, Arcade, RPG | Completed myself | 8 |
 | Danganronpa 3 | Detective, Visual Novel | Completed myself | 8 |
@@ -35,6 +37,8 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Lord of the Rings: Battle for Middle Earth | RTS | Completed myself | 8 |
 | Team Buddies | Action, RTS | Completed myself | 8 |
 | Dragon Age: Origins | RPG | Completed myself | 8 |
+| King's Bounty: Armored Princess | Turn-based Strategy | Completed myself | 8 |
+| Fantasy General | Turn-based Strategy | Completed myself | 8 |
 | Civilization 3 | Turn-based Strategy | Completed myself | 7.5 |
 | Space Rangers | Adventure, Arcade, RPG | Completed myself | 7.5 |
 | Dungeons & Dragons: Dragonshard | RTS | Completed myself | 7.5 |
@@ -65,9 +69,10 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Dungeon Siege 2: Broken World | RPG | Completed myself | 7.5 |
 | Stronghold: Crusader | RTS | Completed myself | 7.5 |
 | Fable: The Lost Chapters | RPG | Completed myself | 7.5 |
-| PuzzleQuest: Challenge of the Warlords | Match-Three, Puzzle, RPG | Completed myself | 7.5 |
+| PuzzleQuest: Challenge of the Warlords | Casual, Puzzle, RPG | Completed myself | 7.5 |
 | No Heroes Allowed | Puzzle, RTS | Completed myself | 7.5 |
-| King's Bounty (2008) | Turn-based Strategy | Completed myself | 7.5 |
+| King's Bounty: The Legend | Turn-based Strategy | Completed myself | 7.5 |
+| Eador: Genesis | Turn-based Strategy | Completed myself | 7.5 |
 | Quake 3 Arena | FPS | Completed myself | 7 |
 | Robinson's Requiem | Adventure, Survival | Completed myself | 7 |
 | Civilization 4 | Turn-based Strategy | Completed myself | 7 |
@@ -110,6 +115,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | League of Legends | MOBA, Online | Completed myself | 7 |
 | Cladun | Action, RPG | Completed myself | 7 |
 | Cladun Returns | Action, RPG | Completed myself | 7 |
+| Heroes of Annihilated Empires | RPG, RTS | Completed myself | 7 |
 | The Elder Scrolls IV: Oblivion | RPG | Completed myself | 6.5 |
 | Return to Castle Wolfenstein | FPS, Horror | Completed myself | 6.5 |
 | Heroes of Might And Magic II | Turn-based Strategy | Completed myself | 6.5 |
@@ -152,6 +158,11 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Evil Genius | RTS | Completed myself | 6.5 |
 | Prince of Persia (GBA) | Platformer | Completed myself | 6.5 |
 | Roboden | RTS | Completed myself | 6.5 |
+| S.W.I.N.E. | Tactics | Completed myself | 6.5 |
+| Toram Online | Action, MMO, Online, RPG | Completed myself | 6.5 |
+| Xenonauts | Turn-based Strategy | Completed myself | 6.5 |
+| Metal Knight | RTS | Completed myself | 6.5 |
+| Stardew Valley | Casual, Sandbox | Completed myself | 6.5 |
 | Blood Bowl | Sport, Turn-based Strategy | Completed myself | 6 |
 | Postal | Action, Sandbox | Completed myself | 6 |
 | Outlive | RTS | Completed myself | 6 |
@@ -210,6 +221,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | The Hex | Arcade, Platformer, Puzzle | Completed via YouTube | 8 |
 | Outer Wilds: Echoes of the Eye | Adventure, Puzzle | Completed via YouTube | 8 |
 | Papers, Please | Puzzle | Completed via YouTube | 8 |
+| Monster Loves You Too | Visual Novel | Completed via YouTube | 7.5 |
 | Sanitarium | Point and Click | Completed via YouTube | 7.5 |
 | Deus Ex: Human Revolution | Action, FPS, RPG | Completed via YouTube | 7.5 |
 | Hitman: Blood Money | FPS, Puzzle | Completed via YouTube | 7.5 |
@@ -249,6 +261,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Finding Paradise | Point and Click | Completed via YouTube | 7 |
 | Until Dawn | Action, Horror, Walking Simulator | Completed via YouTube | 7 |
 | Deltarune | Puzzle, RPG | Completed via YouTube | 7 |
+| Life Is Strange: True Colors | Walking Simulator | Completed via YouTube | 7 |
 | LISA: The Joyful | RPG | Completed via YouTube | 7 |
 | Oxenfree | Adventure, Puzzle | Completed via YouTube | 7 |
 | The Walking Dead | Walking Simulator | Completed via YouTube | 7 |
@@ -279,9 +292,14 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Gothic 2 | Adventure, RPG | Completed via YouTube | 7 |
 | Cult of the Lamb | Action, RPG, Rogue-like | Completed via YouTube | 7 |
 | House of Ashes | FMV, Horror, Walking Simulator | Completed via YouTube | 7 |
+| Still Wakes The Deep | Horror | Completed via YouTube | 6.5 |
 | The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
 | BioShock Infinite | FPS | Completed via YouTube | 6.5 |
 | Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
+| Metal Gear 2 | Action, Stealth | Completed via YouTube | 6.5 |
+| Metal Gear 3 | Action, Stealth | Completed via YouTube | 6.5 |
+| Metal Gear 4 | Action, Stealth | Completed via YouTube | 6.5 |
+| Metal Gear 5 | Action, Stealth | Completed via YouTube | 6.5 |
 | Way of the Samurai 4 | Action, RPG, Sandbox | Completed via YouTube | 6.5 |
 | Dead Space 2 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
 | Dead Space 3 | FPS, Horror, Survival | Completed via YouTube | 6.5 |
@@ -299,6 +317,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Life Is Strange: Before The Storm | Walking Simulator | Completed via YouTube | 6.5 |
 | Life Is Strange 2 | Walking Simulator | Completed via YouTube | 6.5 |
 | Her Story | FMV, Puzzle | Completed via YouTube | 6.5 |
+| She Sees Red | FMV | Completed via YouTube | 6.5 |
 | Psychonauts | Arcade, Platformer | Completed via YouTube | 6.5 |
 | Firewatch | Walking Simulator | Completed via YouTube | 6.5 |
 | Fahrenheit: Indigo Prophecy | Detective, Interactive Movie | Completed via YouTube | 6.5 |
@@ -322,10 +341,12 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Vangers | Adventure, Arcade, Racing, Sandbox | Completed via YouTube | 6.5 |
 | Devil in Me | FMV, Horror, Walking Simulator | Completed via YouTube | 6.5 |
 | Beginners Guide | Walking Simulator | Completed via YouTube | 6.5 |
+| Monster Loves You | Adventure, Visual Novel | Completed via YouTube | 6 |
 | Galerians: Ash | Action, Horror | Completed via YouTube | 6 |
 | The Bad Rats | Puzzle | Completed via YouTube | 6 |
 | The Elder Scrolls II: Daggerfall | RPG | Completed via YouTube | 6 |
 | Phantasmagoria | FMV, Point and Click | Completed via YouTube | 6 |
+| Metal Gear 1 | Action, Stealth | Completed via YouTube | 6 |
 | Alan Wake | FPS, Horror | Completed via YouTube | 6 |
 | The Turing Test | Puzzle | Completed via YouTube | 6 |
 | Made In Abyss: Binary Star Falling Into Darkness | Action, Adventure, RPG, Sandbox | Completed via YouTube | 6 |
@@ -342,6 +363,7 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Bulb Boy | Point and Click | Completed via YouTube | 6 |
 | Risen | Adventure, RPG | Completed via YouTube | 6 |
 | Tokyo Jungle | Action, Survival | Completed via YouTube | 6 |
+| Mortal Glory | Tactics | Completed via YouTube | 6 |
 | Fort Zombie | FPS, Survival | Completed via YouTube | 5.5 |
 | Beneath a Steel Sky | Point and Click | Completed via YouTube | 5.5 |
 | Recettear | RPG, Vendor Simulator | Completed via YouTube | 5.5 |
@@ -363,64 +385,62 @@ Also, this list is never complete. I can't possibly remember every game I have e
 | Trilby's Notes | Point and Click | Completed via YouTube | 5 |
 | 6 Days A Sacrifice | Point and Click | Completed via YouTube | 5 |
 | Alone In the Dark | Horror, Point and Click | Completed via YouTube | 5 |
-| Monster Loves You | Sandbox | Completed via YouTube | 5 |
 | Miasmata | Adventure, Horror | Completed via YouTube | 5 |
 | LISA: The First | RPG | Completed via YouTube | 5 |
 | Double Switch | FMV | Completed via YouTube | 5 |
 | The Bouncer | Fighting | Completed via YouTube | 5 |
+| The Casting of Frank Stone | FMV, Walking Simulator | Completed via YouTube | 4.5 |
 | 5 Days A Stranger | Point and Click | Completed via YouTube | 4.5 |
 | Among the Sleep | Walking Simulator | Completed via YouTube | 4.5 |
 | The Sandbox of God | Sandbox | Completed via YouTube | 3.5 |
-| Dark Souls | Action, RPG, Souls-like | Watched review/know about | 8 |
-| Minecraft | Action, RPG, Souls-like | Watched review/know about | 6 |
-| Dwarf Fortress | Sandbox | Watched review/know about | 5.5 |
 
 Here are some tables for stats.
 
 | Tag | Count | Avg. Rating |
 |---|---|---|
-| RPG | 84 | 7.02 |
-| Action | 72 | 6.81 |
-| RTS | 41 | 7.17 |
+| RPG | 83 | 6.99 |
+| Action | 76 | 6.78 |
+| RTS | 44 | 7.18 |
 | Point and Click | 36 | 6.47 |
-| Horror | 34 | 6.68 |
+| Horror | 35 | 6.67 |
 | FPS | 32 | 6.47 |
 | Puzzle | 29 | 7.16 |
-| Arcade | 28 | 6.73 |
-| Adventure | 25 | 7.02 |
-| Turn-based Strategy | 22 | 6.75 |
-| Sandbox | 20 | 6.38 |
-| Walking Simulator | 20 | 6.55 |
+| Arcade | 27 | 6.67 |
+| Turn-based Strategy | 27 | 6.93 |
+| Adventure | 25 | 6.92 |
+| Walking Simulator | 22 | 6.48 |
+| FMV | 19 | 6.29 |
+| Sandbox | 19 | 6.50 |
 | Strategy | 18 | 6.81 |
-| FMV | 17 | 6.38 |
-| Detective | 16 | 7.25 |
 | Racing | 16 | 6.38 |
+| Detective | 16 | 7.25 |
 | Survival | 13 | 6.42 |
 | Platformer | 11 | 6.73 |
 | Rogue-like | 10 | 6.90 |
-| Online | 5 | 6.80 |
-| Visual Novel | 5 | 7.10 |
+| Visual Novel | 7 | 7.00 |
+| Stealth | 6 | 6.50 |
+| Online | 6 | 6.75 |
 | Interactive Movie | 5 | 7.00 |
-| Souls-like | 5 | 7.40 |
 | Turn-based RPG | 4 | 6.88 |
+| Souls-like | 3 | 7.67 |
 | Fighting | 3 | 6.17 |
-| Global Strategy | 2 | 7.00 |
-| Programming | 2 | 8.25 |
-| Engineering | 2 | 7.75 |
+| MMO | 3 | 7.17 |
 | Talking Simulator | 2 | 7.25 |
+| Engineering | 2 | 7.75 |
 | MOBA | 2 | 6.50 |
-| MMO | 2 | 7.50 |
+| Tactics | 2 | 6.25 |
+| Programming | 2 | 8.25 |
+| Global Strategy | 2 | 7.00 |
+| Casual | 2 | 7.00 |
 | Sport | 1 | 6.00 |
-| Vendor Simulator | 1 | 5.50 |
-| Stealth | 1 | 7.00 |
 | Deckbuilder | 1 | 7.00 |
-| Match-Three | 1 | 7.50 |
+| Vendor Simulator | 1 | 5.50 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 182 |
-| Completed via YouTube | 176 |
-| Watched review/know about | 3 |
+| Completed myself | 192 |
+| Completed via YouTube | 187 |
+| Watched review/know about | <no value> |
 
 ### [itch.io](https://itch.io/) indie games
 
