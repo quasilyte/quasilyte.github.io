@@ -30,7 +30,7 @@ func main() {
 		{"Star Control II (Ur-Quan Masters)", "Adventure, Arcade, RPG", 9.0},
 		{"Space Rangers", "Adventure, Arcade, RPG", 7.5},
 		{"Space Rangers 2", "Adventure, Arcade, RPG", 8.0},
-		{"Warzone 2100", "Adventure, Arcade, RPG", 8.5},
+		{"Warzone 2100", "RTS", 8.5},
 		{"WarCraft II", "RTS", 7.0},
 		{"WarCraft III", "RTS", 8.5},
 		{"Praetorians", "RTS", 7.0},
@@ -177,7 +177,7 @@ func main() {
 		{"Evil Genius", "RTS", 6.5},
 		{"Blitzkrieg: Rolling Thunder", "Strategy", 6.0},
 		{"Fable: The Lost Chapters", "RPG", 7.5},
-		{"PuzzleQuest: Challenge of the Warlords", "RPG, Puzzle, Match-Three", 7.5},
+		{"PuzzleQuest: Challenge of the Warlords", "RPG, Puzzle, Casual", 7.5},
 		{"Prince of Persia (GBA)", "Platformer", 6.5},
 		{"Sims 2", "Sandbox", 5.5},
 		{"DCS: Black Shark", "Arcade", 6.0},
@@ -191,10 +191,28 @@ func main() {
 		{"No Heroes Allowed", "Puzzle, RTS", 7.5},
 		{"Monster Hunter Rise", "Action, RPG, Souls-like", 8.5},
 		{"Dragon Age: Origins", "RPG", 8.0},
-		{"King's Bounty (2008)", "Turn-based Strategy", 7.5},
+		{"King's Bounty: The Legend", "Turn-based Strategy", 7.5},
+		{"King's Bounty: Armored Princess", "Turn-based Strategy", 8.0},
+		{"Fantasy General", "Turn-based Strategy", 8.0},
+		{"S.W.I.N.E.", "Tactics", 6.5},
+		{"Toram Online", "Online, MMO, RPG, Action", 6.5},
+		{"Eador: Genesis", "Turn-based Strategy", 7.5},
+		{"Eador: New Horizons", "Turn-based Strategy", 8.5},
+		{"Xenonauts", "Turn-based Strategy", 6.5},
+		{"Metal Knight", "RTS", 6.5},
+		{"Heroes of Annihilated Empires", "RTS, RPG", 7.0},
+		{"Stardew Valley", "Casual, Sandbox", 6.5},
+		{"Spellforce: Conquest of Eo", "Turn-based Strategy, RPG, Global Strategy", 9.0},
+		{"Dungeon Keeper", "RTS", 8.0},
+		{"Caesar III", "City Simulator", 7.0},
+		{"Birthright: The Gorgon's Alliance", "Turn-based Strategy, Global Strategy", 7.0},
 	}
 
 	var gamesWatched = []gameInfo{
+		{"Monster Loves You", "Visual Novel, Adventure", 6},
+		{"Monster Loves You Too", "Visual Novel", 7.5},
+		{"The Casting of Frank Stone", "FMV, Walking Simulator", 4.5},
+		{"Still Wakes The Deep", "Horror", 6.5},
 		{"Galerians: Ash", "Action, Horror", 6.0},
 		{"The Orion Conspiracy", "Point and Click", 6.5},
 		{"The Bad Rats", "Puzzle", 6.0},
@@ -214,6 +232,11 @@ func main() {
 		{"Deus Ex: Mankind Devided", "FPS, RPG, Action", 7.0},
 		{"Hitman: Blood Money", "FPS, Puzzle", 7.5},
 		{"Metal Gear Solid 3: Snake Eater", "Action, Stealth", 7.0},
+		{"Metal Gear 1", "Action, Stealth", 6.0},
+		{"Metal Gear 2", "Action, Stealth", 6.5},
+		{"Metal Gear 3", "Action, Stealth", 6.5},
+		{"Metal Gear 4", "Action, Stealth", 6.5},
+		{"Metal Gear 5", "Action, Stealth", 6.5},
 		{"Tokobot", "Puzzle, Platformer", 7.5},
 		{"Way of the Samurai 4", "Action, RPG, Sandbox", 6.5},
 		{"SOMA", "Adventure, Horror", 7.5},
@@ -254,7 +277,6 @@ func main() {
 		{"To The Moon", "Point and Click", 7.5},
 		{"Finding Paradise", "Point and Click", 7.0},
 		{"Impostor Factory", "Point and Click", 6.5},
-		{"Monster Loves You", "Sandbox", 5.0},
 		{"Unholy Heights", "Strategy", 6.5},
 		{"Miasmata", "Adventure, Horror", 5.0},
 		{"Little Inferno", "Sandbox, Puzzle", 5.5},
@@ -274,10 +296,12 @@ func main() {
 		{"TUNIC", "Arcade, RPG, Action, Puzzle", 7.5},
 		{"Undertale", "RPG, Puzzle", 8.5},
 		{"Deltarune", "RPG, Puzzle", 7.0},
+		{"Life Is Strange: True Colors", "Walking Simulator", 7.0},
 		{"Life Is Strange", "Walking Simulator", 8.0},
 		{"Life Is Strange: Before The Storm", "Walking Simulator", 6.5},
 		{"Life Is Strange 2", "Walking Simulator", 6.5},
 		{"Her Story", "FMV, Puzzle", 6.5},
+		{"She Sees Red", "FMV", 6.5},
 		{"Tales from the Borderlands", "Walking Simulator", 7.5},
 		{"Wolf Among Us", "Walking Simulator", 7.5},
 		{"Psychonauts", "Arcade, Platformer", 6.5},
@@ -371,12 +395,7 @@ func main() {
 		{"Man of Medan", "FMV, Horror, Walking Simulator", 5.5},
 		{"Beginners Guide", "Walking Simulator", 6.5},
 		{"Ghost Trick: Phantom Detective", "Puzzle, Point and Click", 7.5},
-	}
-
-	var gamesBarelyKnow = []gameInfo{
-		{"Dark Souls", "Action, RPG, Souls-like", 8.0},
-		{"Minecraft", "Action, RPG, Souls-like", 6.0},
-		{"Dwarf Fortress", "Sandbox", 5.5},
+		{"Mortal Glory", "Tactics", 6.0},
 	}
 
 	sort.SliceStable(gamesPlayed, func(i, j int) bool {
@@ -384,9 +403,6 @@ func main() {
 	})
 	sort.SliceStable(gamesWatched, func(i, j int) bool {
 		return gamesWatched[i].Rating > gamesWatched[j].Rating
-	})
-	sort.SliceStable(gamesBarelyKnow, func(i, j int) bool {
-		return gamesBarelyKnow[i].Rating > gamesBarelyKnow[j].Rating
 	})
 
 	var allGames []fullGameInfo
@@ -406,14 +422,6 @@ func main() {
 			Status:    statusWatchedLetsplay,
 		})
 	}
-	for _, g := range gamesBarelyKnow {
-		allGames = append(allGames, fullGameInfo{
-			Name:      g.Name,
-			GenreTags: splitTags(g.GenreTags),
-			Rating:    g.Rating,
-			Status:    statusWatchedReview,
-		})
-	}
 
 	tagCounters := map[string]int{}
 	tagRatings := map[string]float64{}
@@ -431,11 +439,13 @@ func main() {
 		"Detective":           true,
 		"Turn-based Strategy": true,
 		"Strategy":            true,
+		"Tactics":             true,
 		"Sandbox":             true,
 		"Rogue-like":          true,
 		"Souls-like":          true,
 		"Survival":            true,
 		"Horror":              true,
+		"City Simulator":      true,
 		"Walking Simulator":   true,
 		"Sport":               true,
 		"Platformer":          true,
@@ -452,8 +462,8 @@ func main() {
 		"Global Strategy":     true,
 		"Engineering":         true,
 		"Programming":         true,
-		"Match-Three":         true,
 		"MOBA":                true,
+		"Casual":              true,
 	}
 	gamesListed := map[string]bool{}
 	for i := range allGames {
@@ -496,7 +506,6 @@ func main() {
 		"Tags":         ratedTagList,
 		"GamesPlayed":  len(gamesPlayed),
 		"GamesWatched": len(gamesWatched),
-		"GamesKnown":   len(gamesBarelyKnow),
 	})
 	fmt.Println(buf.String())
 }
@@ -545,15 +554,16 @@ type fullGameInfo struct {
 var resultTemplate = template.Must(template.New("").Parse(`
 ## Games Played
 
-There are 3 possible game title status here:
+There are 2 possible game title status here:
 
 1. Completed myself.
 2. Completed via let's play (e.g. YouTube).
-3. Extra category for the games I can discuss, but I haven't completed them.
 
-I usually try not to add an entry unless I either completed the game or feeling competent enough to include it at least in the 3rd category.
+I usually try not to add an entry unless I either completed the game or feeling competent enough to include it.
 
 Also, this list is never complete. I can't possibly remember every game I have ever played, but I'm doing my best here.
+
+The ratings can also get outdated or unsynchronized with what I would rate it **today**.
 
 | Game | Genre Tags | Status | Rating |
 |---|---|---|---|

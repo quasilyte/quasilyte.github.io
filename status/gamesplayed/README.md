@@ -15,6 +15,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Game | Genre Tags | Status | Rating |
 |---|---|---|---|
 | Star Control II (Ur-Quan Masters) | Adventure, Arcade, RPG | Completed myself | 9 |
+| Spellforce: Conquest of Eo | Global Strategy, RPG, Turn-based Strategy | Completed myself | 9 |
 | Deus Ex | Action, FPS, RPG | Completed myself | 8.5 |
 | Warzone 2100 | RTS | Completed myself | 8.5 |
 | WarCraft III | RTS | Completed myself | 8.5 |
@@ -39,6 +40,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Dragon Age: Origins | RPG | Completed myself | 8 |
 | King's Bounty: Armored Princess | Turn-based Strategy | Completed myself | 8 |
 | Fantasy General | Turn-based Strategy | Completed myself | 8 |
+| Dungeon Keeper | RTS | Completed myself | 8 |
 | Civilization 3 | Turn-based Strategy | Completed myself | 7.5 |
 | Space Rangers | Adventure, Arcade, RPG | Completed myself | 7.5 |
 | Dungeons & Dragons: Dragonshard | RTS | Completed myself | 7.5 |
@@ -116,6 +118,8 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Cladun | Action, RPG | Completed myself | 7 |
 | Cladun Returns | Action, RPG | Completed myself | 7 |
 | Heroes of Annihilated Empires | RPG, RTS | Completed myself | 7 |
+| Caesar III | City Simulator | Completed myself | 7 |
+| Birthright: The Gorgon's Alliance | Global Strategy, Turn-based Strategy | Completed myself | 7 |
 | The Elder Scrolls IV: Oblivion | RPG | Completed myself | 6.5 |
 | Return to Castle Wolfenstein | FPS, Horror | Completed myself | 6.5 |
 | Heroes of Might And Magic II | Turn-based Strategy | Completed myself | 6.5 |
@@ -398,22 +402,22 @@ Here are some tables for stats.
 
 | Tag | Count | Avg. Rating |
 |---|---|---|
-| RPG | 83 | 6.99 |
+| RPG | 84 | 7.02 |
 | Action | 76 | 6.78 |
-| RTS | 44 | 7.18 |
+| RTS | 45 | 7.20 |
 | Point and Click | 36 | 6.47 |
 | Horror | 35 | 6.67 |
 | FPS | 32 | 6.47 |
 | Puzzle | 29 | 7.16 |
+| Turn-based Strategy | 29 | 7.00 |
 | Arcade | 27 | 6.67 |
-| Turn-based Strategy | 27 | 6.93 |
 | Adventure | 25 | 6.92 |
 | Walking Simulator | 22 | 6.48 |
-| FMV | 19 | 6.29 |
 | Sandbox | 19 | 6.50 |
+| FMV | 19 | 6.29 |
 | Strategy | 18 | 6.81 |
-| Racing | 16 | 6.38 |
 | Detective | 16 | 7.25 |
+| Racing | 16 | 6.38 |
 | Survival | 13 | 6.42 |
 | Platformer | 11 | 6.73 |
 | Rogue-like | 10 | 6.90 |
@@ -422,23 +426,24 @@ Here are some tables for stats.
 | Online | 6 | 6.75 |
 | Interactive Movie | 5 | 7.00 |
 | Turn-based RPG | 4 | 6.88 |
-| Souls-like | 3 | 7.67 |
-| Fighting | 3 | 6.17 |
+| Global Strategy | 4 | 7.50 |
 | MMO | 3 | 7.17 |
-| Talking Simulator | 2 | 7.25 |
-| Engineering | 2 | 7.75 |
-| MOBA | 2 | 6.50 |
-| Tactics | 2 | 6.25 |
+| Fighting | 3 | 6.17 |
+| Souls-like | 3 | 7.67 |
 | Programming | 2 | 8.25 |
-| Global Strategy | 2 | 7.00 |
+| MOBA | 2 | 6.50 |
 | Casual | 2 | 7.00 |
-| Sport | 1 | 6.00 |
+| Talking Simulator | 2 | 7.25 |
+| Tactics | 2 | 6.25 |
+| Engineering | 2 | 7.75 |
 | Deckbuilder | 1 | 7.00 |
+| Sport | 1 | 6.00 |
+| City Simulator | 1 | 7.00 |
 | Vendor Simulator | 1 | 5.50 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 192 |
+| Completed myself | 196 |
 | Completed via YouTube | 187 |
 | Watched review/know about | <no value> |
 
