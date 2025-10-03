@@ -296,6 +296,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Gothic 2 | Adventure, RPG | Completed via YouTube | 7 |
 | Cult of the Lamb | Action, RPG, Rogue-like | Completed via YouTube | 7 |
 | House of Ashes | FMV, Horror, Walking Simulator | Completed via YouTube | 7 |
+| Factorio | Engineering, Sandbox | Completed via YouTube | 7 |
 | Still Wakes The Deep | Horror | Completed via YouTube | 6.5 |
 | The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
 | BioShock Infinite | FPS | Completed via YouTube | 6.5 |
@@ -413,7 +414,7 @@ Here are some tables for stats.
 | Arcade | 27 | 6.67 |
 | Adventure | 25 | 6.92 |
 | Walking Simulator | 22 | 6.48 |
-| Sandbox | 19 | 6.50 |
+| Sandbox | 20 | 6.53 |
 | FMV | 19 | 6.29 |
 | Strategy | 18 | 6.81 |
 | Detective | 16 | 7.25 |
@@ -422,29 +423,29 @@ Here are some tables for stats.
 | Platformer | 11 | 6.73 |
 | Rogue-like | 10 | 6.90 |
 | Visual Novel | 7 | 7.00 |
-| Stealth | 6 | 6.50 |
 | Online | 6 | 6.75 |
+| Stealth | 6 | 6.50 |
 | Interactive Movie | 5 | 7.00 |
 | Turn-based RPG | 4 | 6.88 |
 | Global Strategy | 4 | 7.50 |
-| MMO | 3 | 7.17 |
+| Engineering | 3 | 7.50 |
 | Fighting | 3 | 6.17 |
+| MMO | 3 | 7.17 |
 | Souls-like | 3 | 7.67 |
+| Tactics | 2 | 6.25 |
 | Programming | 2 | 8.25 |
 | MOBA | 2 | 6.50 |
-| Casual | 2 | 7.00 |
 | Talking Simulator | 2 | 7.25 |
-| Tactics | 2 | 6.25 |
-| Engineering | 2 | 7.75 |
-| Deckbuilder | 1 | 7.00 |
+| Casual | 2 | 7.00 |
 | Sport | 1 | 6.00 |
 | City Simulator | 1 | 7.00 |
 | Vendor Simulator | 1 | 5.50 |
+| Deckbuilder | 1 | 7.00 |
 
 | Status | Count |
 |---|---|
 | Completed myself | 196 |
-| Completed via YouTube | 187 |
+| Completed via YouTube | 188 |
 | Watched review/know about | <no value> |
 
 ### [itch.io](https://itch.io/) indie games

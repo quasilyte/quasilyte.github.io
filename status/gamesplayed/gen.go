@@ -396,6 +396,7 @@ func main() {
 		{"Beginners Guide", "Walking Simulator", 6.5},
 		{"Ghost Trick: Phantom Detective", "Puzzle, Point and Click", 7.5},
 		{"Mortal Glory", "Tactics", 6.0},
+		{"Factorio", "Sandbox, Engineering", 7.0},
 	}
 
 	sort.SliceStable(gamesPlayed, func(i, j int) bool {
