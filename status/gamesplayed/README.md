@@ -25,6 +25,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | SpellForce: Breath of Winter | RPG, RTS | Completed myself | 8.5 |
 | Baba Is You | Programming, Puzzle | Completed myself | 8.5 |
 | Monster Hunter Rise | Action, RPG, Souls-like | Completed myself | 8.5 |
+| Symphony of War | Turn-based Strategy | Completed myself | 8.5 |
 | Eador: New Horizons | Turn-based Strategy | Completed myself | 8.5 |
 | The Elder Scrolls III: Morrowind | RPG | Completed myself | 8 |
 | Space Rangers 2 | Adventure, Arcade, RPG | Completed myself | 8 |
@@ -40,7 +41,9 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Dragon Age: Origins | RPG | Completed myself | 8 |
 | King's Bounty: Armored Princess | Turn-based Strategy | Completed myself | 8 |
 | Fantasy General | Turn-based Strategy | Completed myself | 8 |
+| Brigandine | Global Strategy, RPG, Turn-based Strategy | Completed myself | 8 |
 | Dungeon Keeper | RTS | Completed myself | 8 |
+| NebuLeet | Engineering, Programming | Completed myself | 8 |
 | Civilization 3 | Turn-based Strategy | Completed myself | 7.5 |
 | Space Rangers | Adventure, Arcade, RPG | Completed myself | 7.5 |
 | Dungeons & Dragons: Dragonshard | RTS | Completed myself | 7.5 |
@@ -75,6 +78,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | No Heroes Allowed | Puzzle, RTS | Completed myself | 7.5 |
 | King's Bounty: The Legend | Turn-based Strategy | Completed myself | 7.5 |
 | Eador: Genesis | Turn-based Strategy | Completed myself | 7.5 |
+| Evil Islands | RPG | Completed myself | 7.5 |
 | Quake 3 Arena | FPS | Completed myself | 7 |
 | Robinson's Requiem | Adventure, Survival | Completed myself | 7 |
 | Civilization 4 | Turn-based Strategy | Completed myself | 7 |
@@ -106,6 +110,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Final Fantasy IX | Turn-based RPG | Completed myself | 7 |
 | SpellForce 2 | RPG, RTS | Completed myself | 7 |
 | Disciples | Turn-based Strategy | Completed myself | 7 |
+| Warlords Battlecry II | RTS | Completed myself | 7 |
 | Warlords IV: Heroes of Etheria | Turn-based Strategy | Completed myself | 7 |
 | MotorStorm: Arctic Edge (PSP) | Racing | Completed myself | 7 |
 | Every Extend Extra | Arcade | Completed myself | 7 |
@@ -117,9 +122,11 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | League of Legends | MOBA, Online | Completed myself | 7 |
 | Cladun | Action, RPG | Completed myself | 7 |
 | Cladun Returns | Action, RPG | Completed myself | 7 |
+| Tactics Ogre | Turn-based RPG | Completed myself | 7 |
 | Heroes of Annihilated Empires | RPG, RTS | Completed myself | 7 |
 | Caesar III | City Simulator | Completed myself | 7 |
 | Birthright: The Gorgon's Alliance | Global Strategy, Turn-based Strategy | Completed myself | 7 |
+| Din's Curse | Action, RPG, Rogue-like | Completed myself | 7 |
 | The Elder Scrolls IV: Oblivion | RPG | Completed myself | 6.5 |
 | Return to Castle Wolfenstein | FPS, Horror | Completed myself | 6.5 |
 | Heroes of Might And Magic II | Turn-based Strategy | Completed myself | 6.5 |
@@ -162,11 +169,16 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Evil Genius | RTS | Completed myself | 6.5 |
 | Prince of Persia (GBA) | Platformer | Completed myself | 6.5 |
 | Roboden | RTS | Completed myself | 6.5 |
+| Fantasy Wars | Turn-based Strategy | Completed myself | 6.5 |
 | S.W.I.N.E. | Tactics | Completed myself | 6.5 |
 | Toram Online | Action, MMO, Online, RPG | Completed myself | 6.5 |
 | Xenonauts | Turn-based Strategy | Completed myself | 6.5 |
 | Metal Knight | RTS | Completed myself | 6.5 |
 | Stardew Valley | Casual, Sandbox | Completed myself | 6.5 |
+| Brigandine The Legend of Runersia | Global Strategy, RPG, Turn-based Strategy | Completed myself | 6.5 |
+| Desktop Dungeons | Puzzle | Completed myself | 6.5 |
+| Battle for Wesnoth | Turn-based RPG | Completed myself | 6.5 |
+| Din's Legacy | Action, RPG, Rogue-like | Completed myself | 6.5 |
 | Blood Bowl | Sport, Turn-based Strategy | Completed myself | 6 |
 | Postal | Action, Sandbox | Completed myself | 6 |
 | Outlive | RTS | Completed myself | 6 |
@@ -193,6 +205,9 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Blitzkrieg: Rolling Thunder | Strategy | Completed myself | 6 |
 | DCS: Black Shark | Arcade | Completed myself | 6 |
 | DoTA 2 | MOBA, Online | Completed myself | 6 |
+| Fantasy General 2 | Turn-based Strategy | Completed myself | 6 |
+| Space Colony | City Simulator | Completed myself | 6 |
+| Battle Brothers | Turn-based RPG | Completed myself | 6 |
 | Heroes of Might And Magic | Turn-based Strategy | Completed myself | 5.5 |
 | Sonic the Hedgehog | Arcade, Platformer | Completed myself | 5.5 |
 | Desert Strike | Arcade | Completed myself | 5.5 |
@@ -205,6 +220,8 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Twisted Metal 4 | Action, Racing | Completed myself | 5.5 |
 | Dungeon Siege: Throne of Agony (PSP) | RPG | Completed myself | 5.5 |
 | Sims 2 | Sandbox | Completed myself | 5.5 |
+| Dune II | RTS | Completed myself | 5.5 |
+| SpellForce III | RPG, RTS | Completed myself | 5.5 |
 | Splinter Cell | FPS | Completed myself | 5 |
 | Need For Speed II | Racing | Completed myself | 5 |
 | Delta Force: Land Warrior | FPS | Completed myself | 5 |
@@ -252,6 +269,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | The Elder Scrolls V: Skyrim | RPG | Completed via YouTube | 7 |
 | Shadow of the Colossus | RPG | Completed via YouTube | 7 |
 | Primordia | Point and Click | Completed via YouTube | 7 |
+| Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 7 |
 | Deus Ex: Mankind Devided | Action, FPS, RPG | Completed via YouTube | 7 |
 | Metal Gear Solid 3: Snake Eater | Action, Stealth | Completed via YouTube | 7 |
 | Dead Space | FPS, Horror, Survival | Completed via YouTube | 7 |
@@ -300,7 +318,6 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Still Wakes The Deep | Horror | Completed via YouTube | 6.5 |
 | The Orion Conspiracy | Point and Click | Completed via YouTube | 6.5 |
 | BioShock Infinite | FPS | Completed via YouTube | 6.5 |
-| Blade Runner: The Game | Adventure, Point and Click | Completed via YouTube | 6.5 |
 | Metal Gear 2 | Action, Stealth | Completed via YouTube | 6.5 |
 | Metal Gear 3 | Action, Stealth | Completed via YouTube | 6.5 |
 | Metal Gear 4 | Action, Stealth | Completed via YouTube | 6.5 |
@@ -346,6 +363,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | Vangers | Adventure, Arcade, Racing, Sandbox | Completed via YouTube | 6.5 |
 | Devil in Me | FMV, Horror, Walking Simulator | Completed via YouTube | 6.5 |
 | Beginners Guide | Walking Simulator | Completed via YouTube | 6.5 |
+| Nobody wants to die | Walking Simulator | Completed via YouTube | 6 |
 | Monster Loves You | Adventure, Visual Novel | Completed via YouTube | 6 |
 | Galerians: Ash | Action, Horror | Completed via YouTube | 6 |
 | The Bad Rats | Puzzle | Completed via YouTube | 6 |
@@ -396,6 +414,7 @@ The ratings can also get outdated or unsynchronized with what I would rate it **
 | The Bouncer | Fighting | Completed via YouTube | 5 |
 | The Casting of Frank Stone | FMV, Walking Simulator | Completed via YouTube | 4.5 |
 | 5 Days A Stranger | Point and Click | Completed via YouTube | 4.5 |
+| Ascension to the Throne | Turn-based Strategy | Completed via YouTube | 4.5 |
 | Among the Sleep | Walking Simulator | Completed via YouTube | 4.5 |
 | The Sandbox of God | Sandbox | Completed via YouTube | 3.5 |
 
@@ -403,49 +422,49 @@ Here are some tables for stats.
 
 | Tag | Count | Avg. Rating |
 |---|---|---|
-| RPG | 84 | 7.02 |
-| Action | 76 | 6.78 |
-| RTS | 45 | 7.20 |
-| Point and Click | 36 | 6.47 |
+| RPG | 90 | 7.01 |
+| Action | 78 | 6.78 |
+| RTS | 48 | 7.12 |
+| Point and Click | 36 | 6.49 |
 | Horror | 35 | 6.67 |
+| Turn-based Strategy | 35 | 6.94 |
 | FPS | 32 | 6.47 |
-| Puzzle | 29 | 7.16 |
-| Turn-based Strategy | 29 | 7.00 |
+| Puzzle | 30 | 7.13 |
 | Arcade | 27 | 6.67 |
-| Adventure | 25 | 6.92 |
-| Walking Simulator | 22 | 6.48 |
+| Adventure | 25 | 6.94 |
+| Walking Simulator | 23 | 6.46 |
 | Sandbox | 20 | 6.53 |
 | FMV | 19 | 6.29 |
 | Strategy | 18 | 6.81 |
-| Detective | 16 | 7.25 |
 | Racing | 16 | 6.38 |
+| Detective | 16 | 7.25 |
 | Survival | 13 | 6.42 |
+| Rogue-like | 12 | 6.88 |
 | Platformer | 11 | 6.73 |
-| Rogue-like | 10 | 6.90 |
+| Turn-based RPG | 7 | 6.71 |
 | Visual Novel | 7 | 7.00 |
+| Global Strategy | 6 | 7.42 |
 | Online | 6 | 6.75 |
 | Stealth | 6 | 6.50 |
 | Interactive Movie | 5 | 7.00 |
-| Turn-based RPG | 4 | 6.88 |
-| Global Strategy | 4 | 7.50 |
-| Engineering | 3 | 7.50 |
-| Fighting | 3 | 6.17 |
-| MMO | 3 | 7.17 |
+| Engineering | 4 | 7.62 |
+| Programming | 3 | 8.17 |
 | Souls-like | 3 | 7.67 |
-| Tactics | 2 | 6.25 |
-| Programming | 2 | 8.25 |
+| MMO | 3 | 7.17 |
+| Fighting | 3 | 6.17 |
 | MOBA | 2 | 6.50 |
-| Talking Simulator | 2 | 7.25 |
 | Casual | 2 | 7.00 |
-| Sport | 1 | 6.00 |
-| City Simulator | 1 | 7.00 |
-| Vendor Simulator | 1 | 5.50 |
+| Talking Simulator | 2 | 7.25 |
+| City Simulator | 2 | 6.50 |
+| Tactics | 2 | 6.25 |
 | Deckbuilder | 1 | 7.00 |
+| Sport | 1 | 6.00 |
+| Vendor Simulator | 1 | 5.50 |
 
 | Status | Count |
 |---|---|
-| Completed myself | 196 |
-| Completed via YouTube | 188 |
+| Completed myself | 213 |
+| Completed via YouTube | 190 |
 | Watched review/know about | <no value> |
 
 ### [itch.io](https://itch.io/) indie games
